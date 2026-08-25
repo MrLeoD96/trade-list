@@ -1,4 +1,4 @@
-# LeoD's Trade List :)
+# LeoD's Trading List :)
 
 hiya i'm LeoD/LD. i started trading not too long ago (3 months or so) but i thought i'd do my own website for trading since those are always fun
 

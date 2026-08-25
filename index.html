@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musical Theater Archive</title>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #dcdcdc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+        }
+        /* Dark Mode Overrides for DataTables */
+        .dataTables_wrapper {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #3a3a3a;
+        }
+        table.dataTable {
+            background-color: #1e1e1e !important;
+            color: #dcdcdc !important;
+            border-collapse: collapse;
+            width: 100% !important;
+        }
+        table.dataTable thead th {
+            border-bottom: 2px solid #3a3a3a !important;
+            background-color: #252525;
+        }
+        table.dataTable tbody td {
+            border-bottom: 1px solid #333333 !important;
+            padding: 10px 8px;
+        }
+        table.dataTable tbody tr:nth-child(even) {
+            background-color: #242424 !important;
+        }
+        table.dataTable tbody tr:hover {
+            background-color: #303030 !important;
+        }
+        .dataTables_filter input, .dataTables_length select {
+            background-color: #1e1e1e !important;
+            color: #dcdcdc !important;
+            border: 1px solid #3a3a3a !important;
+            padding: 5px !important;
+            border-radius: 4px;
+        }
+        .dataTables_info, .dataTables_paginate {
+            color: #b0b0b0 !important;
+        }
+        .paginate_button {
+            color: #dcdcdc !important;
+            background-color: #2a2a2a !important;
+            border: 1px solid #3a3a3a !important;
+        }
+        .paginate_button.current {
+            background-color: #3a506b !important;
+            border-color: #3a506b !important;
+            color: #fff !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Musical Theater Archive</h1>
+        <table id="archiveTable" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Venue / Production</th>
+                    <th>Date</th>
+                    <th>Master</th>
+                    <th>Type</th>
+                    <th>Formats</th>
+                    <th>Resolutions</th>
+                    <th>File Sizes</th>
+                    <th>Cast</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <!-- jQuery and DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            fetch('data.json')
+                .then(response => response.json())
+                .then(data => {
+                    const tableData = data.map(row => {
+                        
+                        // Format Date
+                        let formattedDate = row.date || "-";
+                        if (row.date) {
+                            let parts = row.date.split('/');
+                            if (parts.length === 3) {
+                                let dt = new Date(parts[2], parts[1] - 1, parts[0]);
+                                let seq = row.master_sequence_num ? ` (${row.master_sequence_num})` : "";
+                                
+                                if (row.date_precision === 'day') {
+                                    formattedDate = dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + seq;
+                                } else if (row.date_precision === 'month') {
+                                    formattedDate = dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) + seq;
+                                } else if (row.date_precision === 'year') {
+                                    formattedDate = parts[2] + seq;
+                                } else {
+                                    formattedDate = row.date + seq;
+                                }
+                            }
+                        }
+
+                        // REMOVED Mega Link column entirely
+                        return [
+                            row.title || "-",
+                            row.venue_production || "-",
+                            formattedDate,
+                            row.master || "-",
+                            row.performance_type || "-",
+                            row.format_type || "-",
+                            row.quality_resolution || "-",
+                            row.file_size_original_text || "-",
+                            row.cast || "-",
+                            row.notes || "-"
+                        ];
+                    });
+
+                    $('#archiveTable').DataTable({
+                        data: tableData,
+                        pageLength: 25,
+                        order: [[ 0, "asc" ]],
+                        columnDefs: [
+                            { className: "dt-center", targets: [4, 5, 6, 7] }
+                        ]
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading data.json:', error);
+                    alert("Failed to load data.json. Make sure you ran export_db.py and uploaded data.json to your GitHub repo!");
+                });
+        });
+    </script>
+</body>
+</html>

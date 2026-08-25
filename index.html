@@ -44,7 +44,7 @@ body {
     color: var(--text);
     font-family: var(--sans);
     line-height: 1.55;
-    background: var(--bg); /* Solid color, no gradient */
+    background: var(--bg);
     -webkit-font-smoothing: antialiased;
 }
 button, input, select { font: inherit; color: inherit; }
@@ -52,7 +52,7 @@ button, input, select { font: inherit; color: inherit; }
 .site-header {
     padding: 48px 20px 24px;
     border-bottom: 1px solid var(--line);
-    background: var(--paper); /* Solid color */
+    background: var(--paper);
 }
 .header-inner, .page { max-width: 1080px; margin: 0 auto; }
 .eyebrow {
@@ -106,7 +106,7 @@ button, input, select { font: inherit; color: inherit; }
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
 }
 .status { color: var(--muted); font: 11px var(--mono-font); }
-.tools { display: flex; gap: 6px; align-items: center; }
+.tools { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .tool, .sort {
     height: 30px; color: var(--soft); background: transparent;
     border: 1px solid var(--line); border-radius: 6px;
@@ -286,7 +286,6 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 @media (max-width: 600px) {
     .site-header { padding: 32px 14px 18px; }
     .page { padding: 18px 14px 60px; }
-    .tools { flex-wrap: wrap; justify-content: flex-end; }
     .record summary { padding: 12px 14px; }
     .record-body { padding: 0 14px 16px 14px; }
     .summary-meta:nth-of-type(2) { display: none; }
@@ -322,8 +321,10 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
                     <option value="date-asc">Oldest first</option>
                     <option value="master-asc">Master A–Z</option>
                 </select>
-                <button class="tool" id="expandAll">Expand all</button>
-                <button class="tool" id="collapseAll">Collapse all</button>
+                <button class="tool" data-action="expand" data-target="shows">+ Shows</button>
+                <button class="tool" data-action="collapse" data-target="shows">- Shows</button>
+                <button class="tool" data-action="expand" data-target="recs">+ Recs</button>
+                <button class="tool" data-action="collapse" data-target="recs">- Recs</button>
             </div>
         </div>
     </div>
@@ -416,23 +417,38 @@ function isRequested(r) { return requestedItems.some(x => x.key === requestKey(r
 function getFileColor(format) {
     if (!format) return 'var(--soft)';
     const f = format.toLowerCase();
-    if (f.includes('vob')) return '#f59e0b';
-    if (f.includes('mp4')) return '#3b82f6';
-    if (f.includes('mkv')) return '#a855f7';
-    if (f.includes('mts')) return '#14b8a6';
-    if (f.includes('mov')) return '#ef4444';
-    if (f.includes('m4a') || f.includes('mp3')) return '#ec4899';
-    if (f.includes('wmv') || f.includes('avi')) return '#f97316';
+    if (f.includes('vob')) return '#f59e0b'; // Amber
+    if (f.includes('mp4')) return '#3b82f6'; // Blue
+    if (f.includes('mkv')) return '#a855f7'; // Purple
+    if (f.includes('mts')) return '#14b8a6'; // Teal
+    if (f.includes('mov')) return '#ef4444'; // Red
+    if (f.includes('m4a') || f.includes('mp3')) return '#ec4899'; // Pink
+    if (f.includes('wmv') || f.includes('avi')) return '#f97316'; // Orange
     return 'var(--soft)';
 }
 
 // Logic for splitting and coloring formats + sizes with slashes
-function getColoredFormatsAndSizes(formatStr, sizeStr) {
-    let formats = formatStr ? String(formatStr).split(/[,/]/).map(p => p.trim()).filter(Boolean) : [];
-    let sizes = sizeStr ? String(sizeStr).split(/[,/]/).map(p => p.trim()).filter(Boolean) : [];
+function getColoredFormatsAndSizes(formatStr, sizeStr, q) {
+    // Split by semicolon, comma, pipe, or slash. Filter out empty entries.
+    const splitRegex = /\s*[;,|/]\s*/;
+    let formats = formatStr ? String(formatStr).split(splitRegex).map(p => p.trim()).filter(Boolean) : [];
+    let sizes = sizeStr ? String(sizeStr).split(splitRegex).map(p => p.trim()).filter(Boolean) : [];
     
-    let fHtml = formats.length ? formats.map(f => `<span style="color:${getFileColor(f)}">${esc(f)}</span>`).join(' <span style="color:var(--dim)">/</span> ') : '-';
-    let sHtml = sizes.length ? sizes.map((s, i) => `<span style="color:${formats[i] ? getFileColor(formats[i]) : 'var(--soft)'}">${esc(s)}</span>`).join(' <span style="color:var(--dim)">/</span> ') : '-';
+    const separator = ' <span style="color:var(--dim)">/</span> ';
+    
+    let fHtml = '-';
+    if (formats.length > 0) {
+        fHtml = formats.map(f => `<span style="color:${getFileColor(f)}">${hi(f, q)}</span>`).join(separator);
+    }
+    
+    let sHtml = '-';
+    if (sizes.length > 0) {
+        sHtml = sizes.map((s, i) => {
+            // Match the size color to the corresponding format color
+            const color = formats[i] ? getFileColor(formats[i]) : 'var(--soft)';
+            return `<span style="color:${color}">${hi(s, q)}</span>`;
+        }).join(separator);
+    }
     
     return { formats: fHtml, sizes: sHtml };
 }
@@ -456,12 +472,10 @@ function getNftStatusHtml(status) {
 
 function record(r, index, q, inGroup) {
     let req = isRequested(r);
-    // If in a group, replace the title line with the Date so we don't duplicate the show name
     let titleText = inGroup ? fmtDate(r.date, r.date_precision, r.master_sequence_num) : (r.title || '-');
-    // If in a group, hide the standalone date block since it's now the title
     let dateHtml = inGroup ? '' : `<div class="summary-meta">${ICONS.calendar}<span>${hi(fmtDate(r.date, r.date_precision, r.master_sequence_num), q)}</span></div>`;
     
-    let { formats, sizes } = getColoredFormatsAndSizes(r.format_type, r.file_size_original_text);
+    let { formats, sizes } = getColoredFormatsAndSizes(r.format_type, r.file_size_original_text, q);
     let nftHtml = getNftStatusHtml(r.trading_status);
     
     return `
@@ -555,6 +569,19 @@ function render() {
     $('statusText').textContent = q ? `${rows.length} of ${allData.length} recordings` : `${allData.length} recordings`;
 }
 
+// Event delegation for both request buttons and expand/collapse tools
+document.querySelector('.tools').addEventListener('click', e => {
+    // Handle Expand/Collapse buttons
+    const actionBtn = e.target.closest('button.tool[data-action]');
+    if (actionBtn) {
+        const action = actionBtn.dataset.action === 'expand';
+        const target = actionBtn.dataset.target;
+        let selector = target === 'shows' ? '.group-details' : '.record details';
+        document.querySelectorAll(`#archiveContainer ${selector}`).forEach(d => d.open = action);
+        return;
+    }
+});
+
  $('archiveContainer').addEventListener('click', e => {
     let b = e.target.closest('[data-request]');
     if (!b) return;
@@ -606,8 +633,6 @@ document.addEventListener('keydown', e => {
 });
 
  $('sortSelect').addEventListener('change', e => { sortMode = e.target.value; render(); });
- $('expandAll').addEventListener('click', () => document.querySelectorAll('#archiveContainer details').forEach(d => d.open = true));
- $('collapseAll').addEventListener('click', () => document.querySelectorAll('#archiveContainer details').forEach(d => d.open = false));
 
  $('preambleHead').addEventListener('click', () => {
     let s = $('preambleShell'), open = s.classList.toggle('open');

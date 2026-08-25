@@ -392,7 +392,7 @@ function hi(v, q) { let s = esc(v); if (!q) return s; let r = q.replace(/[.*+?^$
 function dateValue(v) { if (!v) return 0; let p = String(v).split('/'); if (p.length !== 3) return 0; return new Date(+p[2], +p[1] - 1, +p[0]).getTime() || 0; }
 function fmtDate(v, precision, seq) { if (!v) return '-'; let p = String(v).split('/'); if (p.length !== 3) return v; let d = new Date(+p[2], +p[1] - 1, +p[0]), s = seq ? ' (' + seq + ')' : ''; if (precision === 'day') return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + s; if (precision === 'month') return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) + s; if (precision === 'year') return p[2] + s; return v + s; }
 function leads(cast) { if (!cast) return ''; return String(cast).split(/\s*[;,|]\s*/).filter(Boolean).slice(0, 2).join(' · '); }
-function searchable(r) { return [r.title, r.venue_production, r.master, r.performance_type, r.format_type, r.quality_resolution, r.file_size_original_text, r.cast, r.notes, r.date, r.trading_status].filter(Boolean).join(' ').toLowerCase(); }
+function searchable(r) { return [r.title, r.venue_production, r.master, r.performance_type, r.format_type, r.quality_resolution, r.file_size_original_text, r.cast, r.notes, r.date, r.trade_status].filter(Boolean).join(' ').toLowerCase(); }
 
 function stripArticles(title) { return String(title).replace(/^(the|a|an)\s+/i, '').toLowerCase(); }
 
@@ -474,7 +474,7 @@ function record(r, index, q, inGroup) {
     let dateHtml = inGroup ? '' : `<div class="summary-meta">${ICONS.calendar}<span>${hi(fmtDate(r.date, r.date_precision, r.master_sequence_num), q)}</span></div>`;
     
     let { formats, sizes } = getColoredFormatsAndSizes(r.format_type, r.file_size_original_text, q);
-    let nftHtml = getNftStatusHtml(r.trading_status);
+    let nftHtml = getNftStatusHtml(r.trade_status);
     
     return `
     <article class="record" data-index="${index}">

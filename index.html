@@ -1,449 +1,757 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
 <title>Musical Theater Archive</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
 <style>
-:root{
-  --bg: #0b110d;
-  --paper: #121c15;
-  --paper2: #18251c;
-  --paper3: #223327;
-  --line: #293e31;
-  --text: #e2ede5;
-  --soft: #a8bdbc;
-  --muted: #789083;
-  --dim: #4b5f54;
-  --accent: #6ee7b7; /* Mellow green accent */
-  --accent2: #34d399;
-  --accent-soft: rgba(110, 231, 183, 0.12);
-  --mono: #8a9f93;
-  --mark: #fcd34d;
-  --marktext: #064e3b;
-  --sans: 'Inter', system-ui, sans-serif;
-  --mono-font: 'JetBrains Mono', monospace;
-  --ease: cubic-bezier(.22,1,.36,1);
+:root {
+    --bg: #0d1310;
+    --paper: #141a17;
+    --paper2: #1a2420;
+    --paper3: #232e29;
+    --line: #2c3a33;
+    --text: #e2e8e0;
+    --soft: #b0b9b3;
+    --muted: #7a8a82;
+    --dim: #5a6660;
+    
+    /* Mellow green accent */
+    --accent: #6bb083;
+    --accent2: #7cc593;
+    --accent-soft: rgba(107, 176, 131, 0.12);
+    
+    /* Dichotomy: Clean sans for headers, Mono for data */
+    --sans: 'Inter', system-ui, sans-serif;
+    --mono-font: 'JetBrains Mono', monospace;
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    
+    /* Amber for search highlights */
+    --mark: #d9b765;
+    --marktext: #211a10;
 }
-*{box-sizing:border-box}
-html{background:var(--bg);scroll-behavior:smooth}
-body{margin:0;min-height:100vh;color:var(--text);font-family:var(--sans);line-height:1.55;background:linear-gradient(#111a14,var(--bg) 420px)}
-button,input,select{font:inherit}
-.site-header{padding:48px 20px 24px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#152018 0%,#0f1712 100%)}
-.header-inner,.page{max-width:1080px;margin:auto}
 
-.eyebrow{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--accent);font:600 11px var(--mono-font);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
-.site-title{margin:0;text-align:center;font:700 clamp(30px,5vw,46px)/1.1 var(--sans);letter-spacing:-.03em;color:#f0f7f2}
-.last-updated{text-align:center;color:var(--muted);font:12px var(--mono-font);margin:12px 0 28px}
-.last-updated .date{color:var(--accent2)}
-
-.search-row{display:flex;max-width:820px;margin:auto;gap:8px}
-.search-box{position:relative;flex:1}
-.search-box .icon-search{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;width:18px;height:18px}
-.search-box input{width:100%;height:52px;padding:0 48px 0 45px;color:var(--text);background:#0d140f;border:1px solid var(--line);border-radius:9px;outline:0;font-size:15px;transition:border-color .2s}
-.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.key{position:absolute;right:12px;top:50%;transform:translateY(-50%);font:11px var(--mono-font);color:var(--dim);border:1px solid var(--line);padding:3px 6px;border-radius:5px}
-.clear{display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);border:0;background:var(--paper3);color:var(--text);cursor:pointer;border-radius:5px;padding:4px;display:none;align-items:center;justify-content:center}
-.header-tools{max-width:820px;margin:12px auto 0;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.status{color:var(--muted);font:12px var(--mono-font)}
-.tools{display:flex;gap:6px;align-items:center}
-.tool,.sort{height:34px;color:var(--soft);background:transparent;border:1px solid var(--line);border-radius:6px;padding:0 12px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-.tool:hover,.sort:hover{background:var(--paper2);color:var(--text)}
-
-.page{padding:24px 20px 80px}
-.preamble-shell{display:none;margin-bottom:30px;border:1px solid var(--accent-soft);background:var(--paper);border-radius:9px;overflow:hidden}
-.preamble-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:var(--paper2);border-bottom:1px solid transparent;cursor:pointer}
-.preamble-shell.open .preamble-head{border-bottom-color:var(--line)}
-.preamble-label{display:flex;align-items:center;gap:8px;font:600 12px var(--mono-font);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
-.preamble-toggle{display:flex;align-items:center;gap:4px;color:var(--muted);font:12px var(--mono-font)}
-.preamble-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
-.preamble-shell.open .preamble-body{grid-template-rows:1fr}
-.preamble-content{min-height:0;overflow:hidden}
-.preamble-markdown{padding:20px 24px;color:var(--soft);font-size:15px;line-height:1.6}
-.preamble-markdown>*:first-child{margin-top:0}.preamble-markdown>*:last-child{margin-bottom:0}
-.preamble-markdown h1,.preamble-markdown h2,.preamble-markdown h3{font-family:var(--sans);color:var(--text);font-weight:600}
-.preamble-markdown h2{font-size:20px}
-.preamble-markdown a{color:var(--accent2);text-decoration:none}.preamble-markdown a:hover{text-decoration:underline}
-.preamble-markdown blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--muted);background:var(--accent-soft);padding:12px 16px;border-radius:0 6px 6px 0;margin:16px 0}
-.preamble-markdown code{font-family:var(--mono-font);font-size:.85em;background:var(--paper3);padding:3px 6px;border-radius:4px}
-
-.archive-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:12px}
-.archive-heading{font:600 24px var(--sans);margin:0;color:#f0f7f2}
-.view-controls{display:flex;gap:4px}
-.view-btn{display:inline-flex;align-items:center;gap:6px;font:500 12px var(--mono-font);padding:8px 12px;background:none;color:var(--muted);border:1px solid var(--line);cursor:pointer;border-radius:6px}
-.view-btn.active{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
-
-.group{margin-bottom:28px}
-.group summary::-webkit-details-marker{display:none}
-.group-heading{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--paper);border:1px solid var(--line);border-radius:8px;margin-bottom:8px;cursor:pointer;list-style:none}
-.group-heading:hover{background:var(--paper2)}
-.group-heading-left{display:flex;align-items:center;gap:12px}
-.group-title{margin:0;font:600 18px var(--sans);color:var(--text)}
-.group-heading-right{display:flex;align-items:center;gap:12px}
-.group-count{font:12px var(--mono-font);color:var(--muted)}
-.group-chevron{color:var(--muted);transition:transform .2s;width:18px;height:18px}
-details.group[open] > .group-heading .group-chevron{transform:rotate(180deg);color:var(--accent2)}
-.group-content{padding-left:12px;border-left:2px solid var(--line);margin-left:16px}
-
-.record{border-bottom:1px solid var(--line);background:transparent}
-.group-content .record:last-child{border-bottom:none}
-.record details{margin:0}
-.record summary{display:grid;grid-template-columns:minmax(0,1fr) 180px 140px 30px;align-items:center;gap:20px;padding:16px 12px;list-style:none;cursor:pointer}
-.record summary::-webkit-details-marker{display:none}
-.record summary:hover{background:rgba(255,255,255,.02)}
-.record summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-.summary-title{min-width:0;display:flex;flex-direction:column;gap:4px}
-.title-line{font-size:15px;font-weight:600;color:var(--text)}
-.lead-line{display:flex;align-items:center;gap:6px;color:var(--muted);font:13px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.summary-master{display:flex;align-items:center;gap:8px;min-width:0;color:var(--soft);font:13px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.summary-date{display:flex;align-items:center;gap:8px;font:13px var(--mono-font);color:var(--mono);white-space:nowrap}
-.chevron{width:18px;height:18px;justify-self:end;color:var(--muted);transform:rotate(0);transition:transform .25s var(--ease)}
-details[open] > summary .chevron{transform:rotate(180deg);color:var(--accent2)}
-
-.record-body{padding:0 12px 20px 12px}
-.record-body-inner{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
-.detail-label{display:flex;align-items:center;gap:6px;color:var(--muted);font:600 11px var(--mono-font);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px}
-.detail-value{color:var(--text);font-size:14px;word-break:break-word}
-.detail.full{grid-column:1/-1}
-.request-btn{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:8px 12px;border:1px solid var(--accent);border-radius:6px;background:transparent;color:var(--accent);font:600 12px var(--mono-font);cursor:pointer;transition:all .2s}
-.request-btn:hover{background:var(--accent-soft)}
-.request-btn.requested{color:#0b110d;background:var(--accent);border-color:var(--accent)}
-
-.highlight{background:var(--mark);color:var(--marktext);padding:0 3px;border-radius:3px;font-weight:600}
-.no-results{display:none;text-align:center;padding:70px;color:var(--muted);font-size:15px}
-.skeleton{height:60px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,transparent,var(--paper2),transparent);background-size:200% 100%;animation:shine 1.3s linear infinite}
-@keyframes shine{to{background-position:-200% 0}}
-
-.request-pill{position:fixed;right:24px;bottom:24px;display:none;align-items:center;gap:10px;padding:14px 20px;background:var(--accent);color:#082015;border:0;border-radius:999px;box-shadow:0 8px 25px rgba(0,0,0,0.4);font:600 14px var(--sans);cursor:pointer;z-index:90;transition:transform .2s}
-.request-pill:hover{transform:translateY(-2px)}
-.request-pill.show{display:flex}
-.request-count{background:#082015;color:var(--accent);border-radius:999px;padding:2px 8px;font:700 12px var(--mono-font)}
-.back-top{position:fixed;left:24px;bottom:24px;display:none;padding:10px 14px;background:var(--paper2);border:1px solid var(--line);color:var(--text);font:500 12px var(--mono-font);cursor:pointer;border-radius:8px}
-.back-top:hover{background:var(--paper3)}
-.back-top.show{display:flex;align-items:center;gap:6px}
-
-@media(max-width:800px){
-  .record summary{grid-template-columns:minmax(0,1fr) 140px 30px}
-  .summary-date{display:none}
-  .record-body-inner{grid-template-columns:repeat(2,minmax(0,1fr))}
+* { box-sizing: border-box; }
+html { background: var(--bg); scroll-behavior: smooth; }
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.55;
+    background: linear-gradient(180deg, #121815 0%, var(--bg) 420px);
+    -webkit-font-smoothing: antialiased;
 }
-@media(max-width:600px){
-  .site-header{padding:32px 16px 20px}
-  .page{padding:20px 16px 60px}
-  .search-row{display:block}
-  .search-box{margin-bottom:12px}
-  .header-tools{align-items:flex-start}
-  .tools{flex-wrap:wrap;justify-content:flex-end}
-  .archive-head{display:block}
-  .view-controls{margin-top:12px}
-  .record summary{grid-template-columns:minmax(0,1fr) 30px;gap:12px;padding:16px 4px}
-  .summary-master{display:none}
-  .record-body-inner{grid-template-columns:1fr;padding:12px}
-  .detail.full{grid-column:auto}
-  .group-title{font-size:16px}
-  .back-top{display:none!important}
-  .request-pill{right:16px;bottom:16px;padding:12px 16px}
+button, input, select { font: inherit; color: inherit; }
+
+/* --- Header --- */
+.site-header {
+    padding: 48px 20px 24px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #121815 0%, #0d1310 100%);
 }
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.001ms!important;animation-duration:.001ms!important;scroll-behavior:auto!important}}
+.header-inner, .page { max-width: 1080px; margin: 0 auto; }
+.eyebrow {
+    text-align: center;
+    color: var(--accent);
+    font: 600 11px var(--mono-font);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+.site-title {
+    margin: 0;
+    text-align: center;
+    font: 600 clamp(32px, 5vw, 48px)/1.1 var(--sans);
+    letter-spacing: -0.03em;
+    color: #f4f7f2;
+}
+.last-updated {
+    text-align: center;
+    color: var(--muted);
+    font: 11px var(--mono-font);
+    margin: 12px 0 28px;
+}
+.last-updated .date { color: var(--accent2); }
+
+/* --- Search & Tools --- */
+.search-row { display: flex; max-width: 820px; margin: 0 auto; gap: 8px; }
+.search-box { position: relative; flex: 1; }
+.search-box svg {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+}
+.search-box input {
+    width: 100%;
+    height: 48px;
+    padding: 0 48px 0 45px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    outline: 0;
+    font-family: var(--mono-font);
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-box input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.key {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font: 10px var(--mono-font);
+    color: var(--dim);
+    border: 1px solid var(--line);
+    padding: 3px 6px;
+    border-radius: 4px;
+}
+.clear {
+    display: none;
+    position: absolute;
+    right: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+}
+.header-tools {
+    max-width: 820px;
+    margin: 9px auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.status { color: var(--muted); font: 11px var(--mono-font); }
+.tools { display: flex; gap: 6px; align-items: center; }
+.tool, .sort {
+    height: 30px;
+    color: var(--soft);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0 10px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono-font);
+}
+.tool:hover, .sort:hover { border-color: var(--paper3); color: var(--text); }
+.tool svg { width: 12px; height: 12px; stroke-width: 2; }
+
+/* --- Layout & Preamble --- */
+.page { padding: 24px 20px 80px; }
+.preamble-shell {
+    margin-bottom: 32px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    border-radius: 8px;
+    overflow: hidden;
+    display: none;
+}
+.preamble-shell.open { display: block; }
+.preamble-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--paper2);
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.preamble-shell.open .preamble-head { border-bottom-color: var(--line); }
+.preamble-head:hover { background: var(--paper3); }
+.preamble-label {
+    font: 600 11px var(--mono-font);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.preamble-toggle { color: var(--muted); font: 11px var(--mono-font); display: flex; align-items: center; gap: 4px; }
+.preamble-toggle svg { transition: transform 0.25s var(--ease); }
+.preamble-shell.open .preamble-toggle svg { transform: rotate(180deg); }
+.preamble-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.35s var(--ease); }
+.preamble-shell.open .preamble-body { grid-template-rows: 1fr; }
+.preamble-content { min-height: 0; overflow: hidden; }
+.preamble-markdown { padding: 22px 24px; color: var(--soft); font-size: 14px; }
+.preamble-markdown > *:first-child { margin-top: 0; }
+.preamble-markdown > *:last-child { margin-bottom: 0; }
+.preamble-markdown h1, .preamble-markdown h2, .preamble-markdown h3 { font-family: var(--sans); color: var(--text); font-weight: 600; }
+.preamble-markdown a { color: var(--accent2); text-decoration: none; border-bottom: 1px solid transparent; }
+.preamble-markdown a:hover { border-bottom-color: var(--accent2); }
+.preamble-markdown code { font-family: var(--mono-font); font-size: 0.85em; background: var(--bg); padding: 2px 5px; border-radius: 4px; }
+
+/* --- Archive Head --- */
+.archive-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+}
+.archive-heading { font: 600 24px var(--sans); margin: 0; color: #f0f7f2; }
+
+/* --- Collapsible Groups (Shows) --- */
+.group-details {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    background: var(--paper);
+}
+.group-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    cursor: pointer;
+    list-style: none;
+    background: var(--paper2);
+    border-bottom: 1px solid transparent;
+    transition: background 0.2s;
+}
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary:hover { background: var(--paper3); }
+.group-title { margin: 0; font: 600 18px var(--sans); flex: 1; color: var(--text); }
+.group-count {
+    font: 10px var(--mono-font);
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 4px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.group-chevron { width: 18px; height: 18px; color: var(--muted); transition: transform 0.25s var(--ease); }
+.group-details[open] .group-summary { border-bottom-color: var(--line); }
+.group-details[open] .group-chevron { transform: rotate(180deg); color: var(--accent2); }
+.group-content { background: var(--bg); }
+
+/* --- Records (Cards) --- */
+.record { border-bottom: 1px solid var(--line); }
+.record:last-child { border-bottom: none; }
+.record details { margin: 0; }
+.record summary {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 18px;
+    list-style: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+.record summary::-webkit-details-marker { display: none; }
+.record summary:hover { background: rgba(255, 255, 255, 0.02); }
+.record summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 4px; }
+
+.summary-title { flex: 1; min-width: 0; }
+.title-line { font-size: 15px; font-weight: 600; color: #f1f7f3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lead-line {
+    margin-top: 4px;
+    color: var(--accent2);
+    font: 11px var(--mono-font);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.summary-meta {
+    width: 180px;
+    min-width: 0;
+    color: var(--soft);
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.summary-meta svg { width: 14px; height: 14px; opacity: 0.6; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+.chevron-icon { width: 16px; height: 16px; justify-self: end; color: var(--muted); transform: rotate(0deg); transition: transform 0.25s var(--ease); flex-shrink: 0; }
+details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); }
+
+/* Expanded Details */
+.record-body { padding: 0 18px 18px 18px; }
+.record-body-inner {
+    border-top: 1px solid var(--line);
+    margin-top: 0;
+    padding: 16px 0 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+.detail { display: flex; flex-direction: column; min-width: 0; }
+.detail-label {
+    color: var(--dim);
+    font: 600 10px var(--mono-font);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.detail-label svg { width: 12px; height: 12px; opacity: 0.8; stroke: currentColor; fill: none; stroke-width: 2; }
+.detail-value { color: var(--soft); font-size: 13px; word-break: break-word; line-height: 1.5; }
+.detail.full { grid-column: 1 / -1; }
+
+/* Request Button */
+.request-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 7px 14px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--accent2);
+    font: 600 11px var(--mono-font);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.request-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+.request-btn.requested {
+    color: var(--bg);
+    background: var(--accent);
+    border-color: var(--accent);
+}
+.request-btn svg { width: 12px; height: 12px; stroke-width: 3; }
+
+/* Search Highlight */
+.highlight { background: var(--mark); color: var(--marktext); padding: 1px 3px; border-radius: 3px; font-weight: 600; }
+
+/* No Results & Skeleton */
+.no-results { display: none; text-align: center; padding: 70px; color: var(--muted); font-family: var(--mono-font); }
+.skeleton {
+    height: 52px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(90deg, transparent, var(--paper2), transparent);
+    background-size: 200% 100%;
+    animation: shine 1.3s linear infinite;
+}
+@keyframes shine { to { background-position: -200% 0; } }
+
+/* Floating UI Elements */
+.request-pill {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    background: var(--accent);
+    color: #0d1310;
+    border: 0;
+    border-radius: 999px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    font: 700 12px var(--mono-font);
+    cursor: pointer;
+    z-index: 90;
+    transition: transform 0.2s;
+}
+.request-pill:hover { transform: scale(1.05); }
+.request-pill.show { display: flex; }
+.request-count { background: #0d1310; color: var(--accent2); border-radius: 999px; padding: 3px 8px; font-size: 11px; }
+
+.back-top {
+    position: fixed;
+    left: 24px;
+    bottom: 24px;
+    display: none;
+    padding: 10px 12px;
+    background: var(--paper2);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 8px;
+    z-index: 90;
+}
+.back-top.show { display: block; }
+.back-top:hover { color: var(--text); border-color: var(--paper3); }
+
+/* Responsive */
+@media (max-width: 800px) {
+    .record summary { flex-wrap: wrap; gap: 8px 12px; }
+    .summary-title { flex-basis: 100%; }
+    .summary-meta { width: auto; flex: 1; font-size: 11px; }
+    .chevron-icon { margin-left: auto; }
+}
+@media (max-width: 600px) {
+    .site-header { padding: 32px 14px 18px; }
+    .page { padding: 18px 14px 60px; }
+    .tools { flex-wrap: wrap; justify-content: flex-end; }
+    .record summary { padding: 12px 14px; }
+    .record-body { padding: 0 14px 16px 14px; }
+    .summary-meta:nth-of-type(2) { display: none; } /* Hide venue on very small screens to save space */
+    .back-top { display: none !important; }
+    .request-pill { right: 16px; bottom: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition-duration: .001ms !important;
+        animation-duration: .001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
 </style>
 </head>
 <body>
-<header class="site-header"><div class="header-inner">
-<div class="eyebrow"><i data-lucide="archive" style="width:14px;height:14px;"></i> Personal Collection</div>
-<h1 class="site-title" id="siteTitle">Musical Theater Archive</h1>
-<div class="last-updated" id="lastUpdated"></div>
 
-<div class="search-row">
-  <div class="search-box">
-    <i data-lucide="search" class="icon-search"></i>
-    <input id="searchInput" type="search" autocomplete="off" spellcheck="false" placeholder="Search shows, masters, venues, cast…" aria-label="Search archive">
-    <span class="key">/</span>
-    <button class="clear" id="clearSearch" aria-label="Clear search"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
-  </div>
-</div>
-
-<div class="header-tools">
-  <div class="status" id="statusText">Loading archive…</div>
-  <div class="tools">
-    <select class="sort" id="sortSelect" aria-label="Sort">
-      <option value="title-asc">Title A–Z</option>
-      <option value="title-desc">Title Z–A</option>
-      <option value="date-desc">Newest first</option>
-      <option value="date-asc">Oldest first</option>
-      <option value="master-asc">Master A–Z</option>
-    </select>
-    <button class="tool" id="expandAll"><i data-lucide="chevrons-down" style="width:14px;height:14px;"></i> Expand all</button>
-    <button class="tool" id="collapseAll"><i data-lucide="chevrons-up" style="width:14px;height:14px;"></i> Collapse all</button>
-  </div>
-</div>
-</div></header>
+<header class="site-header">
+    <div class="header-inner">
+        <div class="eyebrow">Personal Collection · Archive</div>
+        <h1 class="site-title" id="siteTitle">Musical Theater Archive</h1>
+        <div class="last-updated" id="lastUpdated"></div>
+        <div class="search-row">
+            <div class="search-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input id="searchInput" type="search" autocomplete="off" spellcheck="false" placeholder="Search shows, masters, cast..." aria-label="Search archive">
+                <span class="key">/</span>
+                <button class="clear" id="clearSearch" aria-label="Clear search">×</button>
+            </div>
+        </div>
+        <div class="header-tools">
+            <div class="status" id="statusText">Loading archive…</div>
+            <div class="tools">
+                <select class="sort" id="sortSelect" aria-label="Sort">
+                    <option value="title-asc">Title A–Z (Grouped)</option>
+                    <option value="date-desc">Newest first</option>
+                    <option value="date-asc">Oldest first</option>
+                    <option value="master-asc">Master A–Z</option>
+                </select>
+                <button class="tool" id="expandAll">Expand all</button>
+                <button class="tool" id="collapseAll">Collapse all</button>
+            </div>
+        </div>
+    </div>
+</header>
 
 <main class="page">
-<section class="preamble-shell open" id="preambleShell">
-  <div class="preamble-head" id="preambleHead">
-    <span class="preamble-label"><i data-lucide="info" style="width:16px;height:16px;"></i> About this archive</span>
-    <span class="preamble-toggle" id="preambleToggle">Hide Intro <i data-lucide="chevron-up" id="preambleIcon" style="width:14px;height:14px;"></i></span>
-  </div>
-  <div class="preamble-body">
-    <div class="preamble-content">
-      <div class="preamble-markdown" id="preambleContent"></div>
+    <section class="preamble-shell open" id="preambleShell">
+        <div class="preamble-head" id="preambleHead">
+            <span class="preamble-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                Introduction
+            </span>
+            <span class="preamble-toggle" id="preambleToggle">
+                Hide
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
+        </div>
+        <div class="preamble-body">
+            <div class="preamble-content">
+                <div class="preamble-markdown" id="preambleContent"></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="archive-head">
+        <h2 class="archive-heading">Recordings</h2>
     </div>
-  </div>
-</section>
 
-<div class="archive-head">
-  <h2 class="archive-heading">Recordings</h2>
-  <div class="view-controls" id="viewControls">
-    <button class="view-btn active" data-view="grouped"><i data-lucide="layout-list" style="width:14px;height:14px;"></i> Grouped</button>
-    <button class="view-btn" data-view="flat"><i data-lucide="list" style="width:14px;height:14px;"></i> Flat List</button>
-  </div>
-</div>
-
-<div id="archiveContainer"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
-<div class="no-results" id="noResults">
-  <i data-lucide="ghost" style="width:48px;height:48px;margin-bottom:12px;opacity:0.5;"></i><br>
-  No matching recordings found.
-</div>
+    <div id="archiveContainer">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+    </div>
+    <div class="no-results" id="noResults">No matching recordings.</div>
 </main>
 
 <button class="request-pill" id="requestPill">
-  <i data-lucide="send" style="width:16px;height:16px;"></i> Request
-  <span class="request-count" id="requestCount">0</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+    <span>Build Trade Request</span>
+    <span class="request-count" id="requestCount">0</span>
 </button>
-<button class="back-top" id="backTop"><i data-lucide="arrow-up" style="width:14px;height:14px;"></i> Top</button>
+
+<button class="back-top" id="backTop" aria-label="Back to top">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+</button>
 
 <script>
-let allData=[], currentQuery='', sortMode='title-asc', viewMode='grouped', requestedItems=[], searchTimer;
+// --- SVG Icon Suite (Lucide style) ---
+const ICONS = {
+    pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
+    calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
+    chevron: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>',
+    user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>',
+    film: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>',
+    file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>',
+    monitor: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>',
+    users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+    hdd: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="12" x2="2" y2="12"></line><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path><line x1="6" y1="16" x2="6.01" y2="16"></line><line x1="10" y1="16" x2="10.01" y2="16"></line></svg>',
+    fileText: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>',
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+};
+
+let allData = [], currentQuery = '', sortMode = 'title-asc', requestedItems = [], searchTimer;
 const $ = id => document.getElementById(id);
-lucide.createIcons();
 
-function esc(v){ return v==null||v===''?'-':String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') }
-function hi(v,q){ let s=esc(v); if(!q) return s; let r=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); return s.replace(new RegExp('('+r+')','gi'),'<span class="highlight">$1</span>') }
-function dateValue(v){ if(!v) return 0; let p=String(v).split('/'); if(p.length!==3) return 0; return new Date(+p[2],+p[1]-1,+p[0]).getTime()||0 }
-function fmtDate(v,precision,seq){ if(!v) return '-'; let p=String(v).split('/'); if(p.length!==3) return v; let d=new Date(+p[2],+p[1]-1,+p[0]),s=seq?' ('+seq+')':''; if(precision==='day') return d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})+s; if(precision==='month') return d.toLocaleDateString('en-US',{year:'numeric',month:'short'})+s; if(precision==='year') return p[2]+s; return v+s }
-function leads(cast){ if(!cast) return ''; return String(cast).split(/\s*[;,|]\s*/).filter(Boolean).slice(0,2).join(', ') }
-function searchable(r){ return [r.title,r.venue_production,r.master,r.performance_type,r.format_type,r.quality_resolution,r.cast,r.notes,r.date].filter(Boolean).join(' ').toLowerCase() }
+function esc(v) { return v == null || v === '' ? '-' : String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+function hi(v, q) { let s = esc(v); if (!q) return s; let r = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); return s.replace(new RegExp('(' + r + ')', 'gi'), '<span class="highlight">$1</span>'); }
+function dateValue(v) { if (!v) return 0; let p = String(v).split('/'); if (p.length !== 3) return 0; return new Date(+p[2], +p[1] - 1, +p[0]).getTime() || 0; }
+function fmtDate(v, precision, seq) { if (!v) return '-'; let p = String(v).split('/'); if (p.length !== 3) return v; let d = new Date(+p[2], +p[1] - 1, +p[0]), s = seq ? ' (' + seq + ')' : ''; if (precision === 'day') return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + s; if (precision === 'month') return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) + s; if (precision === 'year') return p[2] + s; return v + s; }
+function leads(cast) { if (!cast) return ''; return String(cast).split(/\s*[;,|]\s*/).filter(Boolean).slice(0, 2).join(' · '); }
+function searchable(r) { return [r.title, r.venue_production, r.master, r.performance_type, r.format_type, r.quality_resolution, r.file_size_original_text, r.cast, r.notes, r.date].filter(Boolean).join(' ').toLowerCase(); }
 
-// Ignore "The ", "A ", "An " for alphabetizing
-function sortKeyTitle(str) {
-  let s = String(str || 'Untitled').trim().toLowerCase();
-  return s.replace(/^(the|a|an)\s+/i, '');
+// Strips articles for proper A-Z sorting
+function stripArticles(title) {
+    return String(title).replace(/^(the|a|an)\s+/i, '').toLowerCase();
 }
 
-function sortRows(rows){
-  return [...rows].sort((a,b)=>{
-    if(sortMode === 'title-asc') return sortKeyTitle(a.title).localeCompare(sortKeyTitle(b.title), undefined, {numeric: true, sensitivity: 'base'});
-    if(sortMode === 'title-desc') return sortKeyTitle(b.title).localeCompare(sortKeyTitle(a.title), undefined, {numeric: true, sensitivity: 'base'});
-    if(sortMode === 'master-asc') return String(a.master||'').localeCompare(String(b.master||''), undefined, {sensitivity: 'base'});
-    let d = dateValue(a.date) - dateValue(b.date);
-    return sortMode === 'date-asc' ? d : -d;
-  });
-}
-
-function requestKey(r){ return [r.title||'',r.date||'',r.master||''].join('|') }
-function isRequested(r){ return requestedItems.some(x=>x.key===requestKey(r)) }
-
-function record(r,index,q){
-  let req = isRequested(r);
-  let castLead = leads(r.cast);
-  
-  return `
-    <article class="record" data-index="${index}">
-      <details>
-        <summary>
-          <div class="summary-title">
-            <div class="title-line">${hi(r.title||'Untitled',q)}</div>
-            ${castLead ? `<div class="lead-line"><i data-lucide="users" style="width:13px;height:13px;"></i> ${hi(castLead,q)}</div>` : ''}
-          </div>
-          <div class="summary-master">
-            <i data-lucide="mic" style="width:14px;height:14px;"></i> ${hi(r.master||'Unknown',q)}
-          </div>
-          <div class="summary-date">
-            <i data-lucide="calendar" style="width:14px;height:14px;"></i> ${hi(fmtDate(r.date,r.date_precision,r.master_sequence_num),q)}
-          </div>
-          <i data-lucide="chevron-down" class="chevron"></i>
-        </summary>
-        <div class="record-body">
-          <div class="record-body-inner">
-            <div><span class="detail-label"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Venue / Prod</span><span class="detail-value">${hi(r.venue_production||'-',q)}</span></div>
-            <div><span class="detail-label"><i data-lucide="ticket" style="width:12px;height:12px;"></i> Performance</span><span class="detail-value">${hi(r.performance_type||'-',q)}</span></div>
-            <div><span class="detail-label"><i data-lucide="monitor-play" style="width:12px;height:12px;"></i> Format & Size</span><span class="detail-value">${hi(r.format_type||'-',q)} &middot; ${hi(r.quality_resolution||'-',q)} ${r.file_size_original_text ? `(${hi(r.file_size_original_text,q)})` : ''}</span></div>
-            <div class="detail full"><span class="detail-label"><i data-lucide="users" style="width:12px;height:12px;"></i> Full Cast</span><span class="detail-value">${hi(r.cast||'-',q)}</span></div>
-            ${r.notes ? `<div class="detail full"><span class="detail-label"><i data-lucide="file-text" style="width:12px;height:12px;"></i> Notes</span><span class="detail-value">${hi(r.notes,q)}</span></div>` : ''}
-            <div class="detail full">
-              <button class="request-btn ${req?'requested':''}" data-request="${index}">
-                <i data-lucide="${req?'check':'plus'}" style="width:14px;height:14px;"></i> ${req?'Requested':'Request Recording'}
-              </button>
-            </div>
-          </div>
-        </div>
-      </details>
-    </article>
-  `;
-}
-
-function render(){
-  currentQuery = currentQuery || '';
-  let q = currentQuery.trim().toLowerCase();
-  let rows = sortRows(allData.filter(r=>!q||searchable(r).includes(q)));
-  let html = '';
-  
-  // Force flat view if sorting by date or master
-  let activeView = viewMode;
-  if(sortMode.includes('date') || sortMode.includes('master')) {
-    activeView = 'flat';
-    $('viewControls').style.opacity = '0.5';
-    $('viewControls').style.pointerEvents = 'none';
-  } else {
-    $('viewControls').style.opacity = '1';
-    $('viewControls').style.pointerEvents = 'auto';
-  }
-
-  // Update UI toggles
-  document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === activeView));
-
-  if(activeView === 'grouped'){
-    let groups = new Map();
-    rows.forEach(r => {
-      let k = String(r.title||'Untitled').trim() || 'Untitled';
-      if(!groups.has(k)) groups.set(k,[]);
-      groups.get(k).push(r);
+function sortRows(rows) {
+    return [...rows].sort((a, b) => {
+        if (sortMode === 'title-asc') {
+            let tA = stripArticles(a.title || '');
+            let tB = stripArticles(b.title || '');
+            return tA.localeCompare(tB, undefined, { sensitivity: 'base', numeric: true });
+        }
+        if (sortMode === 'master-asc') return String(a.master || '').localeCompare(String(b.master || ''), undefined, { sensitivity: 'base' });
+        let d = dateValue(a.date) - dateValue(b.date);
+        return sortMode === 'date-asc' ? d : -d;
     });
-    
-    for(const [title, rs] of groups){
-      if(rs.length === 1){
-        html += record(rs[0], allData.indexOf(rs[0]), q);
-      } else {
-        html += `
-          <details class="group" open>
-            <summary class="group-heading">
-              <div class="group-heading-left">
-                <i data-lucide="clapperboard" class="group-icon" style="color:var(--accent);"></i>
-                <h3 class="group-title">${hi(title, q)}</h3>
-              </div>
-              <div class="group-heading-right">
-                <span class="group-count">${rs.length} recordings</span>
-                <i data-lucide="chevron-down" class="group-chevron"></i>
-              </div>
+}
+
+function requestKey(r) { return [r.title || '', r.date || '', r.master || ''].join('|'); }
+function isRequested(r) { return requestedItems.some(x => x.key === requestKey(r)); }
+
+function record(r, index, q) {
+    let req = isRequested(r);
+    return `
+    <article class="record" data-index="${index}">
+        <details>
+            <summary>
+                <div class="summary-title">
+                    <div class="title-line">${hi(r.title || '-', q)}</div>
+                    ${leads(r.cast) ? `<div class="lead-line">${hi(leads(r.cast), q)}</div>` : ''}
+                </div>
+                <div class="summary-meta">${ICONS.pin}<span>${hi(r.venue_production || '-', q)}</span></div>
+                <div class="summary-meta">${ICONS.calendar}<span>${hi(fmtDate(r.date, r.date_precision, r.master_sequence_num), q)}</span></div>
+                <div class="chevron-icon">${ICONS.chevron}</div>
             </summary>
-            <div class="group-content">
-              ${rs.map(r => record(r, allData.indexOf(r), q)).join('')}
+            <div class="record-body">
+                <div class="record-body-inner">
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.user} Master</span>
+                        <span class="detail-value">${hi(r.master || '-', q)}</span>
+                    </div>
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.film} Performance</span>
+                        <span class="detail-value">${hi(r.performance_type || '-', q)}</span>
+                    </div>
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.file} Format</span>
+                        <span class="detail-value">${hi(r.format_type || '-', q)}</span>
+                    </div>
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.monitor} Resolution</span>
+                        <span class="detail-value">${hi(r.quality_resolution || '-', q)}</span>
+                    </div>
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.hdd} File size</span>
+                        <span class="detail-value">${hi(r.file_size_original_text || '-', q)}</span>
+                    </div>
+                    <div class="detail full">
+                        <span class="detail-label">${ICONS.users} Cast</span>
+                        <span class="detail-value">${hi(r.cast || '-', q)}</span>
+                    </div>
+                    <div class="detail full">
+                        <span class="detail-label">${ICONS.fileText} Notes</span>
+                        <span class="detail-value">${hi(r.notes || '-', q)}</span>
+                    </div>
+                    <div class="detail full">
+                        <button class="request-btn ${req ? 'requested' : ''}" data-request="${index}">
+                            ${req ? `${ICONS.check} Requested` : `${ICONS.plus} Request`}
+                        </button>
+                    </div>
+                </div>
             </div>
-          </details>`;
-      }
+        </details>
+    </article>`;
+}
+
+function render() {
+    currentQuery = currentQuery || '';
+    let q = currentQuery.trim().toLowerCase();
+    let rows = sortRows(allData.filter(r => !q || searchable(r).includes(q)));
+    let html = '';
+    
+    // Only group if sorting by title A-Z. Date/Master sorts must be flat.
+    let shouldGroup = (sortMode === 'title-asc');
+    
+    if (shouldGroup && rows.length > 0) {
+        let groups = new Map();
+        rows.forEach(r => {
+            let k = String(r.title || 'Untitled').trim() || 'Untitled';
+            if (!groups.has(k)) groups.set(k, []);
+            groups.get(k).push(r);
+        });
+        
+        for (const [title, rs] of groups) {
+            html += `
+            <details class="group-details" open>
+                <summary class="group-summary">
+                    <h3 class="group-title">${hi(title, q)}</h3>
+                    <span class="group-count">${rs.length} REC</span>
+                    <span class="group-chevron">${ICONS.chevron}</span>
+                </summary>
+                <div class="group-content">
+                    ${rs.map(r => record(r, allData.indexOf(r), q)).join('')}
+                </div>
+            </details>`;
+        }
+    } else {
+        html = rows.map(r => record(r, allData.indexOf(r), q)).join('');
     }
-  } else {
-    html = rows.map(r => record(r, allData.indexOf(r), q)).join('');
-  }
-  
-  $('archiveContainer').innerHTML = html;
-  $('noResults').style.display = rows.length ? 'none' : 'block';
-  $('statusText').textContent = q ? `${rows.length} of ${allData.length} matches` : `${allData.length} recordings`;
-  
-  // Render Lucide icons for the new HTML
-  lucide.createIcons();
+    
+    $('archiveContainer').innerHTML = html;
+    $('noResults').style.display = rows.length ? 'none' : 'block';
+    $('statusText').textContent = q ? `${rows.length} of ${allData.length} recordings` : `${allData.length} recordings`;
 }
 
-$('archiveContainer').addEventListener('click', e => {
-  let b = e.target.closest('[data-request]');
-  if(!b) return;
-  e.preventDefault(); e.stopPropagation();
-  let r = allData[+b.dataset.request], key = requestKey(r);
-  let i = requestedItems.findIndex(x => x.key === key);
-  if(i >= 0) requestedItems.splice(i,1); else requestedItems.push({key, title: r.title||'', date: r.date||'', master: r.master||''});
-  updateRequests();
-  b.classList.toggle('requested', i < 0);
-  b.innerHTML = `<i data-lucide="${i < 0 ? 'check' : 'plus'}" style="width:14px;height:14px;vertical-align:middle;"></i> ${i < 0 ? 'Requested' : 'Request Recording'}`;
-  lucide.createIcons();
+// Event Listeners
+ $('archiveContainer').addEventListener('click', e => {
+    let b = e.target.closest('[data-request]');
+    if (!b) return;
+    e.preventDefault();
+    e.stopPropagation();
+    let r = allData[+b.dataset.request];
+    let key = requestKey(r);
+    let i = requestedItems.findIndex(x => x.key === key);
+    
+    if (i >= 0) {
+        requestedItems.splice(i, 1);
+        b.classList.remove('requested');
+        b.innerHTML = `${ICONS.plus} Request`;
+    } else {
+        requestedItems.push({ key, title: r.title || '', date: r.date || '', master: r.master || '' });
+        b.classList.add('requested');
+        b.innerHTML = `${ICONS.check} Requested`;
+    }
+    updateRequests();
 });
 
-function updateRequests(){
-  $('requestCount').textContent = requestedItems.length;
-  $('requestPill').classList.toggle('show', requestedItems.length > 0);
+function updateRequests() {
+    $('requestCount').textContent = requestedItems.length;
+    $('requestPill').classList.toggle('show', requestedItems.length > 0);
 }
 
-$('requestPill').addEventListener('click', () => {
-  if(!requestedItems.length) return;
-  let body = requestedItems.map((x,i) => `${i+1}. ${x.title}${x.date?' — '+x.date:''}${x.master?' — '+x.master:''}`).join('\n');
-  let subject = encodeURIComponent('Archive request');
-  window.location.href = `mailto:?subject=${subject}&body=${encodeURIComponent(body)}`;
+ $('requestPill').addEventListener('click', () => {
+    if (!requestedItems.length) return;
+    let body = requestedItems.map((x, i) => `${i + 1}. ${x.title}${x.date ? ' — ' + x.date : ''}${x.master ? ' — ' + x.master : ''}`).join('\n');
+    let subject = encodeURIComponent('Archive trade request');
+    let mail = `mailto:?subject=${subject}&body=${encodeURIComponent(body)}`;
+    window.location.href = mail;
 });
 
-$('searchInput').addEventListener('input', e => {
-  $('clearSearch').style.display = e.target.value ? 'flex' : 'none';
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => { currentQuery = e.target.value; render() }, 150);
+ $('searchInput').addEventListener('input', e => {
+    $('clearSearch').style.display = e.target.value ? 'block' : 'none';
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { currentQuery = e.target.value; render(); }, 150);
 });
 
-$('clearSearch').addEventListener('click', () => {
-  $('searchInput').value = '';
-  $('clearSearch').style.display = 'none';
-  currentQuery = ''; render(); $('searchInput').focus();
+ $('clearSearch').addEventListener('click', () => {
+    $('searchInput').value = '';
+    $('clearSearch').style.display = 'none';
+    currentQuery = '';
+    render();
+    $('searchInput').focus();
 });
 
 document.addEventListener('keydown', e => {
-  if(e.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){ e.preventDefault(); $('searchInput').focus(); }
-  if(e.key === 'Escape' && document.activeElement === $('searchInput') && $('searchInput').value){
-    $('searchInput').value = ''; $('clearSearch').style.display = 'none'; currentQuery = ''; render();
-  }
-});
-
-$('sortSelect').addEventListener('change', e => { sortMode = e.target.value; render(); });
-$('expandAll').addEventListener('click', () => document.querySelectorAll('#archiveContainer details').forEach(d => d.open = true));
-$('collapseAll').addEventListener('click', () => document.querySelectorAll('#archiveContainer details').forEach(d => d.open = false));
-
-document.querySelectorAll('.view-btn').forEach(b => b.addEventListener('click', () => {
-  if (sortMode.includes('date') || sortMode.includes('master')) return; // locked
-  viewMode = b.dataset.view;
-  render();
-}));
-
-$('preambleHead').addEventListener('click', () => {
-  let s = $('preambleShell'), open = s.classList.toggle('open');
-  $('preambleToggle').innerHTML = `${open ? 'Hide' : 'Show'} Intro <i data-lucide="chevron-${open ? 'up' : 'down'}" style="width:14px;height:14px;"></i>`;
-  lucide.createIcons();
-});
-
-window.addEventListener('scroll', () => { $('backTop').classList.toggle('show', scrollY > 600) }, {passive: true});
-$('backTop').addEventListener('click', () => scrollTo({top: 0, behavior: 'smooth'}));
-
-async function fetchLastUpdated(){
-  try{
-    let parts = location.hostname.split('.'), owner = parts[0], repo = location.pathname.split('/')[1];
-    if(!owner || !repo) return;
-    let r = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?path=data.json&per_page=1`);
-    if(!r.ok) return; let c = await r.json();
-    if(c.length){
-      let d = new Date(c[0].commit.committer.date).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-      $('lastUpdated').innerHTML = `Last updated <span class="date">${esc(d)}</span>`;
+    if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        $('searchInput').focus();
     }
-  }catch(e){}
+    if (e.key === 'Escape' && document.activeElement === $('searchInput') && $('searchInput').value) {
+        $('searchInput').value = '';
+        $('clearSearch').style.display = 'none';
+        currentQuery = '';
+        render();
+    }
+});
+
+ $('sortSelect').addEventListener('change', e => { sortMode = e.target.value; render(); });
+ $('expandAll').addEventListener('click', () => document.querySelectorAll('#archiveContainer details').forEach(d => d.open = true));
+ $('collapseAll').addEventListener('click', () => document.querySelectorAll('#archiveContainer details').forEach(d => d.open = false));
+
+ $('preambleHead').addEventListener('click', () => {
+    let s = $('preambleShell');
+    let open = s.classList.toggle('open');
+    $('preambleToggle').firstChild.textContent = open ? 'Hide ' : 'Show ';
+});
+
+window.addEventListener('scroll', () => { $('backTop').classList.toggle('show', scrollY > 600); }, { passive: true });
+ $('backTop').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+
+// Initialization
+async function fetchLastUpdated() {
+    try {
+        let parts = location.hostname.split('.'), owner = parts[0], repo = location.pathname.split('/')[1];
+        if (!owner || !repo) return;
+        let r = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?path=data.json&per_page=1`);
+        if (!r.ok) return;
+        let c = await r.json();
+        if (c.length) {
+            let d = new Date(c[0].commit.committer.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            $('lastUpdated').innerHTML = `Last updated <span class="date">${esc(d)}</span>`;
+        }
+    } catch (e) { console.log('Could not fetch last updated date.', e); }
 }
 fetchLastUpdated();
 
-fetch('README.md').then(r=>r.ok?r.text():null).then(text => {
-  if(!text) return;
-  let html = marked.parse(text), m = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
-  if(m){
-    let t = document.createElement('div'); t.innerHTML = m[1];
-    $('siteTitle').textContent = t.textContent;
-    html = html.replace(m[0], '');
-  }
-  $('preambleContent').innerHTML = html;
-  $('preambleShell').style.display = 'block';
-}).catch(()=>{});
+fetch('README.md').then(r => r.ok ? r.text() : null).then(text => {
+    if (!text) return;
+    let html = marked.parse(text), m = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
+    if (m) {
+        let t = document.createElement('div');
+        t.innerHTML = m[1];
+        $('siteTitle').textContent = t.textContent;
+        html = html.replace(m[0], '');
+    }
+    $('preambleContent').innerHTML = html;
+    $('preambleShell').style.display = 'block';
+}).catch(() => {});
 
-fetch('data.json').then(r=>{if(!r.ok) throw Error(); return r.json()}).then(d=>{
-  allData = Array.isArray(d) ? d : [];
-  render();
-}).catch(e=>{
-  $('statusText').textContent = 'Could not load archive data.';
-  $('archiveContainer').innerHTML = '';
-  $('noResults').innerHTML = '<i data-lucide="alert-circle" style="width:48px;height:48px;margin-bottom:12px;color:var(--accent);"></i><br>Failed to load data.json.';
-  $('noResults').style.display = 'block';
-  lucide.createIcons();
+fetch('data.json').then(r => { if (!r.ok) throw Error('data'); return r.json(); }).then(d => {
+    allData = Array.isArray(d) ? d : [];
+    render();
+}).catch(e => {
+    $('statusText').textContent = 'Could not load archive data.';
+    $('archiveContainer').innerHTML = '';
+    $('noResults').textContent = 'Failed to load data.json.';
+    $('noResults').style.display = 'block';
 });
-</script></body></html>
+</script>
+</body>
+</html>

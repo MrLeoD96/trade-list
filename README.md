@@ -74,6 +74,6 @@ wanna trade? let's trade :) trade w/ me
 
 * **Email:** liornd@gmail.com
 * **Tumblr:** [@imjustleo](https://www.tumblr.com/imjustleo)
-* **Reddit:** 
+* **Reddit:** [u/amdrewbarrymore](https://www.reddit.com/user/amdrewbarrymore/)
 
 *Happy Trading!*

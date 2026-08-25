@@ -382,7 +382,7 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 <div class="request-pill-group" id="requestPill">
     <button id="copyRequestBtn" class="pill-half pill-left">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-        <span>Copy</span>
+        <span id="copyBtnText">Copy</span>
         <span class="request-count" id="requestCount">0</span>
     </button>
     <button id="emailRequestBtn" class="pill-half pill-right">
@@ -418,7 +418,16 @@ const $ = id => document.getElementById(id);
 function esc(v) { return v == null || v === '' ? '-' : String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
 function hi(v, q) { let s = esc(v); if (!q) return s; let r = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); return s.replace(new RegExp('(' + r + ')', 'gi'), '<span class="highlight">$1</span>'); }
 function dateValue(v) { if (!v) return 0; let p = String(v).split('/'); if (p.length !== 3) return 0; return new Date(+p[2], +p[1] - 1, +p[0]).getTime() || 0; }
-function fmtDate(v, precision, seq) { if (!v) return '-'; let p = String(v).split('/'); if (p.length !== 3) return v; let d = new Date(+p[2], +p[1] - 1, +p[0]), s = seq ? ' (' + seq + ')' : ''; if (precision === 'day') return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + s; if (precision === 'month') return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) + s; if (precision === 'year') return p[2] + s; return v + s; }
+function fmtDate(v, precision, seq) { 
+    if (!v) return '-'; 
+    let p = String(v).split('/'); 
+    if (p.length !== 3) return v; 
+    let d = new Date(+p[2], +p[1] - 1, +p[0]), s = seq ? ' (' + seq + ')' : ''; 
+    if (precision === 'day') return d.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' }) + s; 
+    if (precision === 'month') return d.toLocaleDateString('en-GB', { year: 'numeric', month: 'long' }) + s; 
+    if (precision === 'year') return p[2] + s; 
+    return v + s; 
+}
 function leads(cast) { if (!cast) return ''; return String(cast).split(/\s*[;,|]\s*/).filter(Boolean).slice(0, 2).join(' · '); }
 function searchable(r) { return [r.title, r.venue_production, r.master, r.performance_type, r.format_type, r.quality_resolution, r.file_size_original_text, r.cast, r.notes, r.date, r.trade_status || r.trading_status].filter(Boolean).join(' ').toLowerCase(); }
 
@@ -660,7 +669,12 @@ document.getElementById('archiveContainer').addEventListener('toggle', function(
         b.classList.remove('requested');
         b.innerHTML = ICONS.plus;
     } else {
-        requestedItems.push({ key, title: r.title || '', date: r.date || '', master: r.master || '' });
+        requestedItems.push({ 
+            key, 
+            title: r.title || '', 
+            date: fmtDate(r.date, r.date_precision, r.master_sequence_num), // Use natural date format here
+            master: r.master || '' 
+        });
         b.classList.add('requested');
         b.innerHTML = ICONS.check;
     }
@@ -673,18 +687,22 @@ function updateRequests() {
 }
 
 function buildRequestBody() {
-    return requestedItems.map((x, i) => `${i + 1}. ${x.title}${x.date ? ' — ' + x.date : ''}${x.master ? ' — ' + x.master : ''}`).join('\n');
+    // Use standard hyphens instead of em dashes
+    return requestedItems.map((x, i) => 
+        `${i + 1}. ${x.title}${x.date ? ' - ' + x.date : ''}${x.master ? ' - ' + x.master : ''}`
+    ).join('\n');
 }
 
  $('copyRequestBtn').addEventListener('click', () => {
     if (!requestedItems.length) return;
     let body = buildRequestBody();
     navigator.clipboard.writeText(body).then(() => {
-        const btn = $('copyRequestBtn');
-        const span = btn.querySelector('span:first-child');
-        const originalText = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = originalText, 2000);
+        const textEl = $('copyBtnText');
+        const originalText = textEl.textContent;
+        textEl.textContent = `Copied ${requestedItems.length} items!`;
+        setTimeout(() => textEl.textContent = originalText, 2500);
+    }).catch(err => {
+        console.error('Copy failed:', err);
     });
 });
 

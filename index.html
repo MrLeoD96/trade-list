@@ -4,154 +4,419 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Musical Theater Archive</title>
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --card-bg: #252525;
+            --card-hover: #2a2a2a;
+            --border-color: #333333;
+            --text-main: #dcdcdc;
+            --text-muted: #b0b0b0;
+            --text-dim: #808080;
+            --accent: #3a506b;
+            --highlight-bg: #d6a100;
+            --highlight-text: #000000;
+        }
+
         body {
-            background-color: #1e1e1e;
-            color: #dcdcdc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            line-height: 1.5;
         }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        h1 {
+
+        .header {
+            background-color: var(--bg-color);
+            padding: 30px 20px 20px;
             text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            margin: 0 0 20px 0;
             color: #ffffff;
+            font-weight: 700;
+            font-size: 28px;
         }
-        /* Dark Mode Overrides for DataTables */
-        .dataTables_wrapper {
-            background-color: #2a2a2a;
-            padding: 20px;
+
+        .search-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 16px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            border: 1px solid #3a3a3a;
+            color: var(--text-main);
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        table.dataTable {
-            background-color: #1e1e1e !important;
-            color: #dcdcdc !important;
-            border-collapse: collapse;
-            width: 100% !important;
+
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(58, 80, 107, 0.3);
         }
-        table.dataTable thead th {
-            border-bottom: 2px solid #3a3a3a !important;
-            background-color: #252525;
+
+        #statusText {
+            margin-top: 10px;
+            color: var(--text-dim);
+            font-size: 14px;
         }
-        table.dataTable tbody td {
-            border-bottom: 1px solid #333333 !important;
-            padding: 10px 8px;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 16px 60px;
         }
-        table.dataTable tbody tr:nth-child(even) {
-            background-color: #242424 !important;
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: border-color 0.2s, transform 0.1s;
         }
-        table.dataTable tbody tr:hover {
-            background-color: #303030 !important;
+
+        .card:hover {
+            border-color: #4a4a4a;
         }
-        .dataTables_filter input, .dataTables_length select {
-            background-color: #1e1e1e !important;
-            color: #dcdcdc !important;
-            border: 1px solid #3a3a3a !important;
-            padding: 5px !important;
-            border-radius: 4px;
+
+        .card-header {
+            padding: 20px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .dataTables_info, .dataTables_paginate {
-            color: #b0b0b0 !important;
+
+        .card-info {
+            flex: 1;
+            padding-right: 16px;
         }
-        .paginate_button {
-            color: #dcdcdc !important;
-            background-color: #2a2a2a !important;
-            border: 1px solid #3a3a3a !important;
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0 0 8px 0;
         }
-        .paginate_button.current {
-            background-color: #3a506b !important;
-            border-color: #3a506b !important;
-            color: #fff !important;
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .meta-icon {
+            margin-right: 6px;
+            opacity: 0.6;
+        }
+
+        .card-body {
+            display: none;
+            padding: 0 24px 24px;
+            border-top: 1px solid var(--border-color);
+            margin-top: -1px;
+        }
+
+        .card.expanded .card-body {
+            display: block;
+            animation: slideDown 0.2s ease-in;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .expand-icon {
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: transform 0.2s, background-color 0.2s;
+            font-size: 14px;
+        }
+
+        .card.expanded .expand-icon {
+            transform: rotate(180deg);
+            background-color: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            padding-top: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            color: var(--text-dim);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            color: var(--text-main);
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+            margin-top: 8px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        /* Search Highlighting */
+        .highlight {
+            background-color: var(--highlight-bg);
+            color: var(--highlight-text);
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-dim);
+            font-size: 18px;
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 600px) {
+            .card-header {
+                padding: 16px;
+            }
+            .card-body {
+                padding: 0 16px 16px;
+            }
+            .card-title {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+
+    <div class="header">
         <h1>Musical Theater Archive</h1>
-        <table id="archiveTable" class="display" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Venue / Production</th>
-                    <th>Date</th>
-                    <th>Master</th>
-                    <th>Type</th>
-                    <th>Formats</th>
-                    <th>Resolutions</th>
-                    <th>File Sizes</th>
-                    <th>Cast</th>
-                    <th>Notes</th>
-                </tr>
-            </thead>
-        </table>
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" placeholder="Search shows, masters, venues, cast members...">
+            <div id="statusText">Loading data...</div>
+        </div>
     </div>
 
-    <!-- jQuery and DataTables JS -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <div class="container">
+        <div id="archiveContainer"></div>
+        <div id="noResults" class="no-results" style="display: none;">No matching records found.</div>
+    </div>
 
     <script>
-        $(document).ready(function() {
-            fetch('data.json')
-                .then(response => response.json())
-                .then(data => {
-                    const tableData = data.map(row => {
-                        
-                        // Format Date
-                        let formattedDate = row.date || "-";
-                        if (row.date) {
-                            let parts = row.date.split('/');
-                            if (parts.length === 3) {
-                                let dt = new Date(parts[2], parts[1] - 1, parts[0]);
-                                let seq = row.master_sequence_num ? ` (${row.master_sequence_num})` : "";
-                                
-                                if (row.date_precision === 'day') {
-                                    formattedDate = dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + seq;
-                                } else if (row.date_precision === 'month') {
-                                    formattedDate = dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) + seq;
-                                } else if (row.date_precision === 'year') {
-                                    formattedDate = parts[2] + seq;
-                                } else {
-                                    formattedDate = row.date + seq;
-                                }
-                            }
-                        }
+        let allData = [];
+        let cardsHtml = '';
+        let currentQuery = '';
 
-                        // REMOVED Mega Link column entirely
-                        return [
-                            row.title || "-",
-                            row.venue_production || "-",
-                            formattedDate,
-                            row.master || "-",
-                            row.performance_type || "-",
-                            row.format_type || "-",
-                            row.quality_resolution || "-",
-                            row.file_size_original_text || "-",
-                            row.cast || "-",
-                            row.notes || "-"
-                        ];
-                    });
+        // --- Helper Functions ---
 
-                    $('#archiveTable').DataTable({
-                        data: tableData,
-                        pageLength: 25,
-                        order: [[ 0, "asc" ]],
-                        columnDefs: [
-                            { className: "dt-center", targets: [4, 5, 6, 7] }
-                        ]
-                    });
-                })
-                .catch(error => {
-                    console.error('Error loading data.json:', error);
-                    alert("Failed to load data.json. Make sure you ran export_db.py and uploaded data.json to your GitHub repo!");
-                });
+        function escapeHtml(text) {
+            if (!text) return "-";
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function highlightText(text, query) {
+            let safeText = escapeHtml(text);
+            if (!query) return safeText;
+            
+            // Escape regex special characters in the search query
+            let safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            let regex = new RegExp(`(${safeQuery})`, 'gi');
+            return safeText.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        function formatDate(dateStr, precision, seqNum) {
+            if (!dateStr) return "-";
+            let parts = dateStr.split('/');
+            if (parts.length !== 3) return dateStr;
+
+            let dt = new Date(parts[2], parts[1] - 1, parts[0]);
+            let seq = seqNum ? ` (${seqNum})` : "";
+            
+            if (precision === 'day') return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + seq;
+            if (precision === 'month') return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) + seq;
+            if (precision === 'year') return parts[2] + seq;
+            return dateStr + seq;
+        }
+
+        function formatCast(cast, query) {
+            if (!cast) return "-";
+            let castStr = String(cast);
+            
+            if (query) {
+                let lowerCast = castStr.toLowerCase();
+                let lowerQuery = query.toLowerCase();
+                
+                if (lowerCast.includes(lowerQuery)) {
+                    let segments = castStr.split(',').map(s => s.trim());
+                    let matchIdx = segments.findIndex(seg => seg.toLowerCase().includes(lowerQuery));
+                    
+                    // If the match is not the first segment, prepend "..."
+                    if (matchIdx > 0) {
+                        castStr = "... " + segments.slice(matchIdx).join(", ");
+                    }
+                }
+            }
+            return castStr;
+        }
+
+        // --- Rendering ---
+
+        function renderCards(query) {
+            currentQuery = query;
+            let visibleCount = 0;
+            let html = '';
+
+            allData.forEach(row => {
+                // Create a combined search string
+                let searchPool = [
+                    row.title, row.venue_production, row.master, 
+                    row.performance_type, row.format_type, row.quality_resolution, 
+                    row.cast, row.notes
+                ].filter(Boolean).join(' ').toLowerCase();
+
+                // Filter
+                if (query && !searchPool.toLowerCase().includes(query.toLowerCase())) {
+                    return; // Skip this card
+                }
+                visibleCount++;
+
+                // Prepare display values
+                let formattedDate = formatDate(row.date, row.date_precision, row.master_sequence_num);
+                let displayCast = formatCast(row.cast, query);
+
+                // Build HTML with highlighting applied
+                html += `
+                <div class="card" onclick="toggleCard(this)">
+                    <div class="card-header">
+                        <div class="card-info">
+                            <div class="card-title">${highlightText(row.title || "-", query)}</div>
+                            <div class="card-meta">
+                                <span class="meta-item">📅 ${highlightText(formattedDate, query)}</span>
+                                <span class="meta-item">🎭 ${highlightText(row.venue_production || "-", query)}</span>
+                                <span class="meta-item">🎤 ${highlightText(row.master || "-", query)}</span>
+                                <span class="meta-item">🎬 ${highlightText(row.performance_type || "-", query)}</span>
+                            </div>
+                        </div>
+                        <div class="expand-icon">▼</div>
+                    </div>
+                    <div class="card-body" onclick="event.stopPropagation()">
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Format</span>
+                                <span class="detail-value">${highlightText(row.format_type || "-", query)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Resolution</span>
+                                <span class="detail-value">${highlightText(row.quality_resolution || "-", query)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">File Size</span>
+                                <span class="detail-value">${highlightText(row.file_size_original_text || "-", query)}</span>
+                            </div>
+                            <div class="detail-item full-width">
+                                <span class="detail-label">Cast</span>
+                                <span class="detail-value">${highlightText(displayCast, query)}</span>
+                            </div>
+                            <div class="detail-item full-width">
+                                <span class="detail-label">Notes</span>
+                                <span class="detail-value">${highlightText(row.notes || "-", query)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+
+            document.getElementById('archiveContainer').innerHTML = html;
+            
+            // Update status
+            let statusEl = document.getElementById('statusText');
+            if (query) {
+                statusEl.innerText = `Showing ${visibleCount} matching record(s).`;
+            } else {
+                statusEl.innerText = `Showing ${visibleCount} total records.`;
+            }
+
+            // Show/hide no results message
+            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        function toggleCard(cardEl) {
+            cardEl.classList.toggle('expanded');
+        }
+
+        // --- Initialization ---
+
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            renderCards(e.target.value);
         });
+
+        fetch('data.json')
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                allData = data;
+                renderCards(''); // Render all initially
+            })
+            .catch(error => {
+                console.error('Error loading data.json:', error);
+                document.getElementById('statusText').innerText = "Error loading data. Make sure data.json exists.";
+                document.getElementById('noResults').innerText = "Failed to load data.";
+                document.getElementById('noResults').style.display = 'block';
+            });
     </script>
 </body>
 </html>

@@ -189,7 +189,7 @@ button, input, select { font: inherit; color: inherit; }
 .record:last-child { border-bottom: none; }
 .record details { margin: 0; }
 .record summary {
-    display: flex; align-items: center; gap: 20px;
+    display: flex; align-items: center; gap: 16px;
     padding: 14px 18px; list-style: none; cursor: pointer; transition: background 0.15s ease;
 }
 .record summary::-webkit-details-marker { display: none; }
@@ -210,6 +210,28 @@ button, input, select { font: inherit; color: inherit; }
     display: flex; align-items: center; gap: 8px;
 }
 .summary-meta svg { width: 14px; height: 14px; opacity: 0.6; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+
+/* NFT Pill in Summary */
+.nft-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 8px; border-radius: 4px;
+    font: 600 10px var(--mono-font); text-transform: uppercase;
+    border: 1px solid var(--line); color: var(--soft);
+    white-space: nowrap; flex-shrink: 0;
+}
+.nft-pill svg { width: 10px; height: 10px; }
+.nft-pill.nft-red {
+    color: var(--red); border-color: var(--red);
+    background: rgba(248, 113, 113, 0.1);
+}
+
+/* Summary Request Button */
+.request-btn.summary-req {
+    margin: 0; padding: 0; width: 30px; height: 30px;
+    border-radius: 6px; justify-content: center; flex-shrink: 0;
+}
+.request-btn.summary-req svg { width: 14px; height: 14px; }
+
 .chevron-icon { width: 16px; height: 16px; justify-self: end; color: var(--muted); transform: rotate(0deg); transition: transform 0.25s var(--ease); flex-shrink: 0; }
 details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); }
 
@@ -228,17 +250,6 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 .detail-value { color: var(--soft); font-size: 13px; word-break: break-word; line-height: 1.5; }
 .detail.full { grid-column: 1 / -1; }
 
-/* NFT Status Badges */
-.nft-status {
-    display: inline-block; padding: 4px 8px; border-radius: 4px;
-    font: 600 11px var(--mono-font); margin-top: 4px;
-    border: 1px solid var(--line); color: var(--soft);
-}
-.nft-status.nft-red {
-    color: var(--red); border-color: var(--red);
-    background: rgba(248, 113, 113, 0.1);
-}
-
 .request-btn {
     display: inline-flex; align-items: center; gap: 6px;
     margin-top: 8px; padding: 7px 14px; border: 1px solid var(--line);
@@ -248,7 +259,6 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 }
 .request-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
 .request-btn.requested { color: var(--bg); background: var(--accent); border-color: var(--accent); }
-.request-btn svg { width: 12px; height: 12px; stroke-width: 3; }
 
 .highlight { background: var(--amber); color: #211a10; padding: 1px 3px; border-radius: 3px; font-weight: 600; }
 .no-results { display: none; text-align: center; padding: 70px; color: var(--muted); font-family: var(--mono-font); }
@@ -258,16 +268,26 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 }
 @keyframes shine { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
-.request-pill {
+/* Split Trade Request Pill */
+.request-pill-group {
     position: fixed; right: 24px; bottom: 24px; display: none;
-    align-items: center; gap: 10px; padding: 12px 18px;
-    background: var(--accent); color: var(--bg); border: 0;
-    border-radius: 999px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-    font: 700 12px var(--mono-font); cursor: pointer; z-index: 90; transition: transform 0.2s;
+    border-radius: 999px; box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    overflow: hidden; z-index: 90;
 }
-.request-pill:hover { transform: scale(1.05); }
-.request-pill.show { display: flex; }
-.request-count { background: var(--bg); color: var(--accent); border-radius: 999px; padding: 3px 8px; font-size: 11px; }
+.request-pill-group.show { display: flex; }
+.pill-half {
+    background: var(--accent); color: var(--bg);
+    border: 0; padding: 12px 18px;
+    font: 700 12px var(--mono-font); cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    transition: background 0.2s;
+}
+.pill-left { border-right: 1px solid rgba(0,0,0,0.2); }
+.pill-half:hover { background: var(--accent2); }
+.request-count {
+    background: rgba(0,0,0,0.2); color: var(--bg);
+    border-radius: 999px; padding: 2px 6px; font-size: 11px;
+}
 
 .back-top {
     position: fixed; left: 24px; bottom: 24px; display: none;
@@ -281,7 +301,9 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
     .record summary { flex-wrap: wrap; gap: 8px 12px; }
     .summary-title { flex-basis: 100%; }
     .summary-meta { flex: 1; font-size: 11px; }
-    .chevron-icon { margin-left: auto; }
+    .nft-pill { order: 4; flex-basis: 100%; margin-top: 4px; }
+    .request-btn.summary-req { margin-left: auto; order: 5; }
+    .chevron-icon { order: 6; }
 }
 @media (max-width: 600px) {
     .site-header { padding: 32px 14px 18px; }
@@ -290,7 +312,7 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
     .record-body { padding: 0 14px 16px 14px; }
     .summary-meta:nth-of-type(2) { display: none; }
     .back-top { display: none !important; }
-    .request-pill { right: 16px; bottom: 16px; }
+    .request-pill-group { right: 16px; bottom: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition-duration: .001ms !important; animation-duration: .001ms !important; scroll-behavior: auto !important; }
@@ -357,11 +379,17 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
     <div class="no-results" id="noResults">No matching recordings.</div>
 </main>
 
-<button class="request-pill" id="requestPill">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-    <span>Build Trade Request</span>
-    <span class="request-count" id="requestCount">0</span>
-</button>
+<div class="request-pill-group" id="requestPill">
+    <button id="copyRequestBtn" class="pill-half pill-left">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <span>Copy</span>
+        <span class="request-count" id="requestCount">0</span>
+    </button>
+    <button id="emailRequestBtn" class="pill-half pill-right">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        <span>Email</span>
+    </button>
+</div>
 
 <button class="back-top" id="backTop" aria-label="Back to top">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
@@ -392,7 +420,7 @@ function hi(v, q) { let s = esc(v); if (!q) return s; let r = q.replace(/[.*+?^$
 function dateValue(v) { if (!v) return 0; let p = String(v).split('/'); if (p.length !== 3) return 0; return new Date(+p[2], +p[1] - 1, +p[0]).getTime() || 0; }
 function fmtDate(v, precision, seq) { if (!v) return '-'; let p = String(v).split('/'); if (p.length !== 3) return v; let d = new Date(+p[2], +p[1] - 1, +p[0]), s = seq ? ' (' + seq + ')' : ''; if (precision === 'day') return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + s; if (precision === 'month') return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) + s; if (precision === 'year') return p[2] + s; return v + s; }
 function leads(cast) { if (!cast) return ''; return String(cast).split(/\s*[;,|]\s*/).filter(Boolean).slice(0, 2).join(' · '); }
-function searchable(r) { return [r.title, r.venue_production, r.master, r.performance_type, r.format_type, r.quality_resolution, r.file_size_original_text, r.cast, r.notes, r.date, r.trade_status].filter(Boolean).join(' ').toLowerCase(); }
+function searchable(r) { return [r.title, r.venue_production, r.master, r.performance_type, r.format_type, r.quality_resolution, r.file_size_original_text, r.cast, r.notes, r.date, r.trade_status || r.trading_status].filter(Boolean).join(' ').toLowerCase(); }
 
 function stripArticles(title) { return String(title).replace(/^(the|a|an)\s+/i, '').toLowerCase(); }
 
@@ -451,21 +479,29 @@ function getColoredFormatsAndSizes(formatStr, sizeStr, q) {
     return { formats: fHtml, sizes: sHtml };
 }
 
-// Logic for NFT / Trading Status highlighting
-function getNftStatusHtml(status) {
+// Logic for NFT / Trading Status highlighting (Pill in Summary)
+function getNftPillHtml(status) {
     if (!status) return '';
+    const statusStr = String(status).trim();
     let isRed = false;
-    let yearMatch = String(status).match(/\b(19|20)\d{2}\b/);
     
-    if (yearMatch) {
-        let year = parseInt(yearMatch[0]);
-        if (year > new Date().getFullYear()) isRed = true;
+    // Check for ALL CAPS (ignoring numbers/punctuation/spaces)
+    const hasLetters = /[a-zA-Z]/.test(statusStr);
+    const isAllCaps = hasLetters && statusStr === statusStr.toUpperCase();
+    
+    if (isAllCaps) {
+        isRed = true;
     } else {
-        // If no year is found, check if it explicitly says NFT/Never
-        if (/nft|never|forever|not for trade/i.test(status)) isRed = true;
+        let yearMatch = statusStr.match(/\b(19|20)\d{2}\b/);
+        if (yearMatch) {
+            let year = parseInt(yearMatch[0]);
+            if (year > new Date().getFullYear()) isRed = true;
+        } else {
+            if (/nft|never|forever|not for trade/i.test(statusStr)) isRed = true;
+        }
     }
     
-    return `<div class="detail full"><span class="detail-label">${ICONS.alert} Trading Status</span><span class="nft-status ${isRed ? 'nft-red' : ''}">${esc(status)}</span></div>`;
+    return `<span class="nft-pill ${isRed ? 'nft-red' : ''}">${ICONS.alert} ${esc(statusStr)}</span>`;
 }
 
 function record(r, index, q, inGroup) {
@@ -474,7 +510,7 @@ function record(r, index, q, inGroup) {
     let dateHtml = inGroup ? '' : `<div class="summary-meta">${ICONS.calendar}<span>${hi(fmtDate(r.date, r.date_precision, r.master_sequence_num), q)}</span></div>`;
     
     let { formats, sizes } = getColoredFormatsAndSizes(r.format_type, r.file_size_original_text, q);
-    let nftHtml = getNftStatusHtml(r.trade_status);
+    let nftPillHtml = getNftPillHtml(r.trade_status || r.trading_status);
     
     return `
     <article class="record" data-index="${index}">
@@ -486,6 +522,10 @@ function record(r, index, q, inGroup) {
                 </div>
                 <div class="summary-meta">${ICONS.pin}<span>${hi(r.venue_production || '-', q)}</span></div>
                 ${dateHtml}
+                ${nftPillHtml}
+                <button class="request-btn summary-req ${req ? 'requested' : ''}" data-request="${index}" title="Add to trade request">
+                    ${req ? ICONS.check : ICONS.plus}
+                </button>
                 <div class="chevron-icon">${ICONS.chevron}</div>
             </summary>
             <div class="record-body">
@@ -510,7 +550,6 @@ function record(r, index, q, inGroup) {
                         <span class="detail-label">${ICONS.hdd} File size</span>
                         <span class="detail-value">${sizes}</span>
                     </div>
-                    ${nftHtml}
                     <div class="detail full">
                         <span class="detail-label">${ICONS.users} Cast</span>
                         <span class="detail-value">${hi(r.cast || '-', q)}</span>
@@ -518,11 +557,6 @@ function record(r, index, q, inGroup) {
                     <div class="detail full">
                         <span class="detail-label">${ICONS.fileText} Notes</span>
                         <span class="detail-value">${hi(r.notes || '-', q)}</span>
-                    </div>
-                    <div class="detail full">
-                        <button class="request-btn ${req ? 'requested' : ''}" data-request="${index}">
-                            ${req ? `${ICONS.check} Requested` : `${ICONS.plus} Request`}
-                        </button>
                     </div>
                 </div>
             </div>
@@ -624,11 +658,11 @@ document.getElementById('archiveContainer').addEventListener('toggle', function(
     if (i >= 0) {
         requestedItems.splice(i, 1);
         b.classList.remove('requested');
-        b.innerHTML = `${ICONS.plus} Request`;
+        b.innerHTML = ICONS.plus;
     } else {
         requestedItems.push({ key, title: r.title || '', date: r.date || '', master: r.master || '' });
         b.classList.add('requested');
-        b.innerHTML = `${ICONS.check} Requested`;
+        b.innerHTML = ICONS.check;
     }
     updateRequests();
 });
@@ -638,11 +672,27 @@ function updateRequests() {
     $('requestPill').classList.toggle('show', requestedItems.length > 0);
 }
 
- $('requestPill').addEventListener('click', () => {
+function buildRequestBody() {
+    return requestedItems.map((x, i) => `${i + 1}. ${x.title}${x.date ? ' — ' + x.date : ''}${x.master ? ' — ' + x.master : ''}`).join('\n');
+}
+
+ $('copyRequestBtn').addEventListener('click', () => {
     if (!requestedItems.length) return;
-    let body = requestedItems.map((x, i) => `${i + 1}. ${x.title}${x.date ? ' — ' + x.date : ''}${x.master ? ' — ' + x.master : ''}`).join('\n');
+    let body = buildRequestBody();
+    navigator.clipboard.writeText(body).then(() => {
+        const btn = $('copyRequestBtn');
+        const span = btn.querySelector('span:first-child');
+        const originalText = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = originalText, 2000);
+    });
+});
+
+ $('emailRequestBtn').addEventListener('click', () => {
+    if (!requestedItems.length) return;
+    let body = buildRequestBody();
     let subject = encodeURIComponent('Archive trade request');
-    window.location.href = `mailto:?subject=${subject}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:liornd96@gmail.com?subject=${subject}&body=${encodeURIComponent(body)}`;
 });
 
  $('searchInput').addEventListener('input', e => {

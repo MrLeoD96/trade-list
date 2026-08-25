@@ -5,18 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Musical Theater Archive</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Marked.js for parsing Markdown Preamble -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            --bg-color: #1e1e1e;
-            --card-bg: #252525;
-            --card-hover: #2a2a2a;
-            --border-color: #333333;
-            --text-main: #dcdcdc;
-            --text-muted: #b0b0b0;
-            --text-dim: #808080;
-            --accent: #3a506b;
-            --highlight-bg: #d6a100;
-            --highlight-text: #000000;
+            --bg-color: #0f0f11; /* Darker background for more contrast */
+            --card-bg: #1a1a1e;
+            --card-hover: #222227;
+            --border-color: #333338;
+            --text-main: #f0f0f5;
+            --text-muted: #a0a0b0;
+            --text-dim: #60606e;
+            --accent: #6366f1; /* Vibrant Indigo accent */
+            --accent-hover: #818cf8;
+            --highlight-bg: #fbbf24; /* Amber for search highlights */
+            --highlight-text: #1a1a1e;
         }
 
         body {
@@ -29,14 +32,14 @@
         }
 
         .header {
-            background-color: var(--bg-color);
+            background-color: rgba(15, 15, 17, 0.8);
             padding: 30px 20px 20px;
             text-align: center;
             border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
         }
 
         h1 {
@@ -67,7 +70,7 @@
         #searchInput:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(58, 80, 107, 0.3);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
         }
 
         #statusText {
@@ -77,11 +80,33 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 24px 16px 60px;
         }
 
+        /* Preamble Styling */
+        #preamble-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        #preamble-container h1, #preamble-container h2, #preamble-container h3 {
+            color: var(--accent-hover);
+            margin-top: 0;
+        }
+        #preamble-container a {
+            color: var(--accent-hover);
+        }
+        #preamble-container ul {
+            padding-left: 20px;
+        }
+
+        /* Card Styling */
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -92,7 +117,7 @@
         }
 
         .card:hover {
-            border-color: #4a4a4a;
+            border-color: #4a4a52;
         }
 
         .card-header {
@@ -151,15 +176,15 @@
         }
 
         .expand-icon {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border: 1px solid var(--border-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-muted);
-            transition: transform 0.2s, background-color 0.2s;
+            transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
             font-size: 14px;
         }
 
@@ -231,6 +256,9 @@
             .card-title {
                 font-size: 18px;
             }
+            #preamble-container {
+                padding: 16px;
+            }
         }
     </style>
 </head>
@@ -245,13 +273,15 @@
     </div>
 
     <div class="container">
+        <!-- Preamble will be injected here if preamble.md exists -->
+        <div id="preamble-container" style="display: none;"></div>
+        
         <div id="archiveContainer"></div>
         <div id="noResults" class="no-results" style="display: none;">No matching records found.</div>
     </div>
 
     <script>
         let allData = [];
-        let cardsHtml = '';
         let currentQuery = '';
 
         // --- Helper Functions ---
@@ -290,27 +320,6 @@
             return dateStr + seq;
         }
 
-        function formatCast(cast, query) {
-            if (!cast) return "-";
-            let castStr = String(cast);
-            
-            if (query) {
-                let lowerCast = castStr.toLowerCase();
-                let lowerQuery = query.toLowerCase();
-                
-                if (lowerCast.includes(lowerQuery)) {
-                    let segments = castStr.split(',').map(s => s.trim());
-                    let matchIdx = segments.findIndex(seg => seg.toLowerCase().includes(lowerQuery));
-                    
-                    // If the match is not the first segment, prepend "..."
-                    if (matchIdx > 0) {
-                        castStr = "... " + segments.slice(matchIdx).join(", ");
-                    }
-                }
-            }
-            return castStr;
-        }
-
         // --- Rendering ---
 
         function renderCards(query) {
@@ -334,9 +343,8 @@
 
                 // Prepare display values
                 let formattedDate = formatDate(row.date, row.date_precision, row.master_sequence_num);
-                let displayCast = formatCast(row.cast, query);
 
-                // Build HTML with highlighting applied
+                // Build HTML with highlighting applied directly to the full cast
                 html += `
                 <div class="card" onclick="toggleCard(this)">
                     <div class="card-header">
@@ -367,7 +375,7 @@
                             </div>
                             <div class="detail-item full-width">
                                 <span class="detail-label">Cast</span>
-                                <span class="detail-value">${highlightText(displayCast, query)}</span>
+                                <span class="detail-value">${highlightText(row.cast || "-", query)}</span>
                             </div>
                             <div class="detail-item full-width">
                                 <span class="detail-label">Notes</span>
@@ -402,6 +410,25 @@
             renderCards(e.target.value);
         });
 
+        // 1. Try to load the Preamble
+        fetch('preamble.md')
+            .then(response => {
+                if (!response.ok) return null;
+                return response.text();
+            })
+            .then(text => {
+                if (text) {
+                    // Parse markdown to HTML and inject
+                    document.getElementById('preamble-container').innerHTML = marked.parse(text);
+                    document.getElementById('preamble-container').style.display = 'block';
+                }
+            })
+            .catch(() => {
+                // Silently fail if preamble.md doesn't exist
+                console.log("No preamble.md found. Skipping...");
+            });
+
+        // 2. Load the Archive Data
         fetch('data.json')
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');

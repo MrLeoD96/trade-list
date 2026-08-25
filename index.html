@@ -42,11 +42,23 @@
             backdrop-filter: blur(12px);
         }
 
-        h1 {
-            margin: 0 0 20px 0;
+        h1#siteTitle {
+            margin: 0 0 8px 0;
             color: #ffffff;
             font-weight: 700;
             font-size: 28px;
+        }
+
+        #lastUpdated {
+            margin: 0 0 20px 0;
+            color: var(--text-dim);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        #lastUpdated .date {
+            color: var(--accent-hover);
+            font-weight: 600;
         }
 
         .search-wrapper {
@@ -98,6 +110,9 @@
         #preamble-container h1, #preamble-container h2, #preamble-container h3 {
             color: var(--accent-hover);
             margin-top: 0;
+        }
+        #preamble-container h1:first-child {
+            display: none; /* Hides the title inside the box since it's used at the top of the page */
         }
         #preamble-container a {
             color: var(--accent-hover);
@@ -265,7 +280,8 @@
 <body>
 
     <div class="header">
-        <h1>Musical Theater Archive</h1>
+        <h1 id="siteTitle">Musical Theater Archive</h1>
+        <div id="lastUpdated"></div>
         <div class="search-wrapper">
             <input type="text" id="searchInput" placeholder="Search shows, masters, venues, cast members...">
             <div id="statusText">Loading data...</div>
@@ -273,7 +289,7 @@
     </div>
 
     <div class="container">
-        <!-- Preamble will be injected here if preamble.md exists -->
+        <!-- Preamble will be injected here -->
         <div id="preamble-container" style="display: none;"></div>
         
         <div id="archiveContainer"></div>
@@ -300,7 +316,6 @@
             let safeText = escapeHtml(text);
             if (!query) return safeText;
             
-            // Escape regex special characters in the search query
             let safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             let regex = new RegExp(`(${safeQuery})`, 'gi');
             return safeText.replace(regex, '<span class="highlight">$1</span>');
@@ -328,23 +343,19 @@
             let html = '';
 
             allData.forEach(row => {
-                // Create a combined search string
                 let searchPool = [
                     row.title, row.venue_production, row.master, 
                     row.performance_type, row.format_type, row.quality_resolution, 
                     row.cast, row.notes
                 ].filter(Boolean).join(' ').toLowerCase();
 
-                // Filter
                 if (query && !searchPool.toLowerCase().includes(query.toLowerCase())) {
-                    return; // Skip this card
+                    return;
                 }
                 visibleCount++;
 
-                // Prepare display values
                 let formattedDate = formatDate(row.date, row.date_precision, row.master_sequence_num);
 
-                // Build HTML with highlighting applied directly to the full cast
                 html += `
                 <div class="card" onclick="toggleCard(this)">
                     <div class="card-header">
@@ -388,7 +399,6 @@
 
             document.getElementById('archiveContainer').innerHTML = html;
             
-            // Update status
             let statusEl = document.getElementById('statusText');
             if (query) {
                 statusEl.innerText = `Showing ${visibleCount} matching record(s).`;
@@ -396,7 +406,6 @@
                 statusEl.innerText = `Showing ${visibleCount} total records.`;
             }
 
-            // Show/hide no results message
             document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
         }
 
@@ -410,25 +419,62 @@
             renderCards(e.target.value);
         });
 
-        // 1. Try to load the Preamble
-        fetch('preamble.md')
+        // 1. Fetch the Last Updated Date from GitHub API
+        async function fetchLastUpdated() {
+            try {
+                // Extracts username and repo name from the URL (e.g., username.github.io/repo)
+                const hostParts = window.location.hostname.split('.');
+                const owner = hostParts[0];
+                const repo = window.location.pathname.split('/')[1];
+                
+                if (!owner || !repo) return; // Failsafe for local testing
+
+                const apiUrl = `https://api.github.com/repos/${owner}/${repo}/commits?path=data.json&per_page=1`;
+                const response = await fetch(apiUrl);
+                if (!response.ok) return;
+                
+                const commits = await response.json();
+                if (commits.length > 0) {
+                    const dateStr = commits[0].commit.committer.date;
+                    const formattedDate = new Date(dateStr).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'long', day: 'numeric'
+                    });
+                    document.getElementById('lastUpdated').innerHTML = `Last updated: <span class="date">${formattedDate}</span>`;
+                }
+            } catch (e) {
+                console.log("Could not fetch last updated date.", e);
+            }
+        }
+        fetchLastUpdated();
+
+        // 2. Load the Preamble (README.md)
+        fetch('README.md')
             .then(response => {
                 if (!response.ok) return null;
                 return response.text();
             })
             .then(text => {
                 if (text) {
-                    // Parse markdown to HTML and inject
-                    document.getElementById('preamble-container').innerHTML = marked.parse(text);
+                    // Parse markdown to HTML
+                    let htmlContent = marked.parse(text);
+                    
+                    // Extract the first H1 title to use as the site title
+                    let titleMatch = htmlContent.match(/<h1[^>]*>(.*?)<\/h1>/i);
+                    if (titleMatch && titleMatch[1]) {
+                        document.getElementById('siteTitle').innerText = titleMatch[1];
+                        // Remove that first H1 from the preamble box so it doesn't show twice
+                        htmlContent = htmlContent.replace(titleMatch[0], '');
+                    }
+                    
+                    document.getElementById('preamble-container').innerHTML = htmlContent;
                     document.getElementById('preamble-container').style.display = 'block';
                 }
             })
             .catch(() => {
-                // Silently fail if preamble.md doesn't exist
-                console.log("No preamble.md found. Skipping...");
+                console.log("No README.md found. Skipping preamble.");
             });
 
-        // 2. Load the Archive Data
+        // 3. Load the Archive Data
         fetch('data.json')
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
@@ -436,7 +482,7 @@
             })
             .then(data => {
                 allData = data;
-                renderCards(''); // Render all initially
+                renderCards('');
             })
             .catch(error => {
                 console.error('Error loading data.json:', error);

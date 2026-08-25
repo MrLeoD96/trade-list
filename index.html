@@ -321,10 +321,8 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
                     <option value="date-asc">Oldest first</option>
                     <option value="master-asc">Master A–Z</option>
                 </select>
-                <button class="tool" data-action="expand" data-target="shows">+ Shows</button>
-                <button class="tool" data-action="collapse" data-target="shows">- Shows</button>
-                <button class="tool" data-action="expand" data-target="recs">+ Recs</button>
-                <button class="tool" data-action="collapse" data-target="recs">- Recs</button>
+                <button class="tool" id="toggleShowsBtn">Collapse Shows</button>
+                <button class="tool" id="toggleRecsBtn">Collapse Recs</button>
             </div>
         </div>
     </div>
@@ -567,18 +565,53 @@ function render() {
     $('archiveContainer').innerHTML = html;
     $('noResults').style.display = rows.length ? 'none' : 'block';
     $('statusText').textContent = q ? `${rows.length} of ${allData.length} recordings` : `${allData.length} recordings`;
+    updateToggleStates(); // Update buttons after render
 }
 
-// Event delegation for both request buttons and expand/collapse tools
-document.querySelector('.tools').addEventListener('click', e => {
-    // Handle Expand/Collapse buttons
-    const actionBtn = e.target.closest('button.tool[data-action]');
-    if (actionBtn) {
-        const action = actionBtn.dataset.action === 'expand';
-        const target = actionBtn.dataset.target;
-        let selector = target === 'shows' ? '.group-details' : '.record details';
-        document.querySelectorAll(`#archiveContainer ${selector}`).forEach(d => d.open = action);
-        return;
+// Smart Toggle Logic
+function updateToggleStates() {
+    const shows = document.querySelectorAll('#archiveContainer .group-details');
+    const recs = document.querySelectorAll('#archiveContainer .record details');
+    
+    const showsBtn = document.getElementById('toggleShowsBtn');
+    const recsBtn = document.getElementById('toggleRecsBtn');
+    
+    // Hide shows button if in flat mode
+    showsBtn.style.display = shows.length > 0 ? '' : 'none';
+    recsBtn.style.display = recs.length > 0 ? '' : 'none';
+    
+    if (shows.length > 0) {
+        const allShowsOpen = Array.from(shows).every(s => s.open);
+        showsBtn.textContent = allShowsOpen ? 'Collapse Shows' : 'Expand Shows';
+    }
+    
+    if (recs.length > 0) {
+        const allRecsOpen = Array.from(recs).every(r => r.open);
+        recsBtn.textContent = allRecsOpen ? 'Collapse Recs' : 'Expand Recs';
+    }
+}
+
+document.getElementById('toggleShowsBtn').addEventListener('click', function() {
+    const shows = document.querySelectorAll('#archiveContainer .group-details');
+    if (shows.length === 0) return;
+    const allOpen = Array.from(shows).every(s => s.open);
+    shows.forEach(s => s.open = !allOpen);
+    updateToggleStates();
+});
+
+document.getElementById('toggleRecsBtn').addEventListener('click', function() {
+    const recs = document.querySelectorAll('#archiveContainer .record details');
+    if (recs.length === 0) return;
+    const allOpen = Array.from(recs).every(r => r.open);
+    recs.forEach(r => r.open = !allOpen);
+    updateToggleStates();
+});
+
+// Listen for manual toggles to update button text intelligently
+document.getElementById('archiveContainer').addEventListener('toggle', function(e) {
+    // Check if the target is a details element we care about
+    if (e.target.classList.contains('group-details') || e.target.closest('.record')) {
+        updateToggleStates();
     }
 });
 

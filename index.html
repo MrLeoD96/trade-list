@@ -62,14 +62,6 @@ button, input, select { font: inherit; color: inherit; }
     background: var(--paper);
 }
 .header-inner, .page { max-width: 1080px; margin: 0 auto; }
-.eyebrow {
-    text-align: center;
-    color: var(--accent);
-    font: 600 11px var(--mono-font);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-}
 .site-title {
     margin: 0;
     text-align: center;
@@ -77,27 +69,33 @@ button, input, select { font: inherit; color: inherit; }
     letter-spacing: -0.03em;
     color: #f4f7f2;
 }
-.last-updated {
-    text-align: center;
-    color: var(--muted);
-    font: 11px var(--mono-font);
-    margin: 12px 0 6px;
-}
-.last-updated .date { color: var(--accent2); }
 
-/* Collection stats - deliberately placed in the header, above the fold and
-   before the (often long, default-open) Introduction section, so it's
-   visible immediately rather than requiring a scroll past the preamble. */
+/* Collection stats, then last-updated, sit close under the title as one
+   quiet identity block - above the fold and before the (often long,
+   default-open) Introduction section, so they're seen immediately rather
+   than after scrolling past the preamble. */
 .stats-line {
     text-align: center;
     color: var(--soft);
     font: 600 12px var(--mono-font);
     letter-spacing: 0.02em;
-    margin-bottom: 22px;
+    margin: 14px 0 4px;
 }
 .stats-line strong { color: var(--accent2); font-weight: 700; }
+.last-updated {
+    text-align: center;
+    color: var(--muted);
+    font: 11px var(--mono-font);
+    margin: 0 0 26px;
+}
+.last-updated .date { color: var(--accent2); }
 
-.search-row { display: flex; max-width: 820px; margin: 0 auto; gap: 8px; }
+/* One control row: search (primary, takes remaining space), sort, and a
+   single Filters toggle - replaces three previously separate rows
+   (search / status+sort+toggles / filter chips). */
+.control-row {
+    display: flex; max-width: 820px; margin: 0 auto; gap: 8px; align-items: stretch;
+}
 .search-box { position: relative; flex: 1; }
 .search-box svg {
     position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
@@ -134,32 +132,53 @@ button, input, select { font: inherit; color: inherit; }
 }
 .suggestion-item:hover, .suggestion-item.active { background: var(--accent-soft); color: var(--text); }
 .suggestion-item .highlight { background: var(--amber); color: #211a10; }
-.header-tools {
-    max-width: 820px; margin: 9px auto 0;
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-}
-.status { color: var(--muted); font: 11px var(--mono-font); }
-.tools { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-.tool, .sort {
-    height: 30px; color: var(--soft); background: transparent;
-    border: 1px solid var(--line); border-radius: 6px;
-    padding: 0 10px; font-size: 11px; cursor: pointer;
-    transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
-    font-family: var(--mono-font);
-}
-.tool:hover, .sort:hover { border-color: var(--paper3); color: var(--text); }
-.tool svg { width: 12px; height: 12px; stroke-width: 2; }
 
-/* Faceted filter bar (new) */
-.filter-bar {
-    max-width: 820px; margin: 10px auto 0; display: none;
-    flex-wrap: wrap; align-items: center; gap: 6px;
+.control-row .sort {
+    height: 48px; flex-shrink: 0; color: var(--soft); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 0 12px; font-size: 12px; cursor: pointer;
+    transition: all 0.2s; font-family: var(--mono-font);
+}
+.control-row .sort:hover { border-color: var(--paper3); color: var(--text); }
+
+.filters-toggle {
+    height: 48px; flex-shrink: 0; position: relative;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0 16px; white-space: nowrap;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+    color: var(--soft); font: 12px var(--mono-font);
+    cursor: pointer; transition: all 0.2s;
+}
+.filters-toggle:hover { border-color: var(--paper3); color: var(--text); }
+.filters-toggle[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+.filters-chevron { transition: transform 0.25s var(--ease); }
+.filters-toggle[aria-expanded="true"] .filters-chevron { transform: rotate(180deg); }
+.filters-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: none;
+}
+.filters-dot.show { display: inline-block; }
+
+/* Filter panel - closed by default, opened via the Filters toggle above.
+   Same grid-template-rows collapse technique as the Introduction section
+   below, reusing the site's one existing motion pattern rather than
+   inventing a second one. */
+.filter-panel-wrap {
+    max-width: 820px; margin: 0 auto;
+    display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s var(--ease);
+}
+.filter-panel-wrap.open { grid-template-rows: 1fr; }
+.filter-panel-inner { min-height: 0; overflow: hidden; }
+.filter-panel {
+    margin-top: 10px; padding: 14px 16px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
 }
 .filter-group { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip {
     height: 26px; padding: 0 10px; border-radius: 999px;
     border: 1px solid var(--line); background: transparent; color: var(--soft);
-    font: 600 10px var(--mono-font); letter-spacing: 0.03em; text-transform: uppercase;
+    font: 500 11px var(--mono-font);
     cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; gap: 4px;
 }
 .chip:hover { border-color: var(--paper3); color: var(--text); }
@@ -176,8 +195,8 @@ button, input, select { font: inherit; color: inherit; }
     height: 26px; padding: 0 4px;
 }
 .year-range-label {
-    font: 600 10px var(--mono-font); color: var(--soft);
-    white-space: nowrap; min-width: 88px;
+    font: 500 11px var(--mono-font); color: var(--soft);
+    white-space: nowrap; min-width: 82px;
 }
 .year-range-slider { position: relative; width: 140px; height: 26px; }
 .range-track {
@@ -250,16 +269,28 @@ button, input, select { font: inherit; color: inherit; }
 .preamble-markdown code { font-family: var(--mono-font); font-size: 0.85em; background: var(--bg); padding: 2px 5px; border-radius: 4px; }
 
 .archive-head {
-    display: flex; align-items: flex-end; justify-content: space-between;
     margin-bottom: 16px; border-bottom: 1px solid var(--line); padding-bottom: 12px;
-    flex-wrap: wrap; gap: 6px 16px;
+}
+.archive-head-row {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px 16px;
 }
 .archive-heading { font: 600 24px var(--sans); margin: 0; color: #f0f7f2; }
+.archive-head-controls { display: flex; align-items: center; gap: 10px; }
+.status { color: var(--muted); font: 11px var(--mono-font); }
+.tool {
+    height: 28px; color: var(--soft); background: transparent;
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: 0 10px; font-size: 11px; cursor: pointer;
+    transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono-font);
+}
+.tool:hover { border-color: var(--paper3); color: var(--text); }
 
 /* Banner shown when a #show-name link has filtered the page to one show */
 .slug-filter-banner {
     display: none; align-items: center; gap: 8px;
-    color: var(--soft); font: 11px var(--mono-font);
+    color: var(--soft); font: 11px var(--mono-font); margin-top: 10px;
 }
 .slug-filter-banner.show { display: flex; }
 .slug-filter-banner button {
@@ -445,6 +476,9 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 @media (max-width: 600px) {
     .site-header { padding: 32px 14px 18px; }
     .page { padding: 18px 14px 60px; }
+    .control-row { flex-wrap: wrap; }
+    .search-box { flex-basis: 100%; }
+    .control-row .sort, .filters-toggle { flex: 1; justify-content: center; }
     .record summary { padding: 12px 14px; }
     .record-body { padding: 0 14px 16px 14px; }
     .summary-meta:nth-of-type(2) { display: none; }
@@ -460,11 +494,10 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 
 <header class="site-header">
     <div class="header-inner">
-        <div class="eyebrow">Personal Collection · Archive</div>
         <h1 class="site-title" id="siteTitle">Musical Theater Archive</h1>
-        <div class="last-updated" id="lastUpdated"></div>
         <div class="stats-line" id="statsLine"></div>
-        <div class="search-row">
+        <div class="last-updated" id="lastUpdated"></div>
+        <div class="control-row">
             <div class="search-box">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <input id="searchInput" type="search" autocomplete="off" spellcheck="false" placeholder="Search shows, masters, cast..." aria-label="Search archive">
@@ -472,33 +505,36 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
                 <button class="clear" id="clearSearch" aria-label="Clear search">×</button>
                 <div class="search-suggestions" id="searchSuggestions" role="listbox"></div>
             </div>
+            <select class="sort" id="sortSelect" aria-label="Sort">
+                <option value="title-asc">Title A–Z (Grouped)</option>
+                <option value="date-desc">Newest first</option>
+                <option value="date-asc">Oldest first</option>
+                <option value="master-asc">Master A–Z (Grouped)</option>
+            </select>
+            <button type="button" class="filters-toggle" id="filtersToggle" aria-expanded="false" aria-controls="filterPanel">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                Filters
+                <span class="filters-dot" id="filtersDot"></span>
+                <svg class="filters-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
         </div>
-        <div class="header-tools">
-            <div class="status" id="statusText">Loading archive…</div>
-            <div class="tools">
-                <select class="sort" id="sortSelect" aria-label="Sort">
-                    <option value="title-asc">Title A–Z (Grouped)</option>
-                    <option value="date-desc">Newest first</option>
-                    <option value="date-asc">Oldest first</option>
-                    <option value="master-asc">Master A–Z (Grouped)</option>
-                </select>
-                <button class="tool" id="toggleShowsBtn">Collapse Shows</button>
-                <button class="tool" id="toggleRecsBtn">Collapse Recs</button>
-            </div>
-        </div>
-        <div class="filter-bar" id="filterBar">
-            <div class="filter-group" id="resolutionChips"></div>
-            <div class="year-range" id="yearRange">
-                <span class="year-range-label" id="yearRangeLabel">All years</span>
-                <div class="year-range-slider">
-                    <div class="range-track"></div>
-                    <div class="range-track-active" id="yearRangeActiveTrack"></div>
-                    <input type="range" id="yearMin" class="range-input range-min" aria-label="Earliest year">
-                    <input type="range" id="yearMax" class="range-input range-max" aria-label="Latest year">
+        <div class="filter-panel-wrap" id="filterPanelWrap">
+            <div class="filter-panel-inner">
+                <div class="filter-panel">
+                    <div class="filter-group" id="resolutionChips"></div>
+                    <div class="year-range" id="yearRange">
+                        <span class="year-range-label" id="yearRangeLabel">All years</span>
+                        <div class="year-range-slider">
+                            <div class="range-track"></div>
+                            <div class="range-track-active" id="yearRangeActiveTrack"></div>
+                            <input type="range" id="yearMin" class="range-input range-min" aria-label="Earliest year">
+                            <input type="range" id="yearMax" class="range-input range-max" aria-label="Latest year">
+                        </div>
+                    </div>
+                    <button type="button" class="chip" id="proshotChip" data-proshot="1" aria-pressed="false">Proshot only</button>
+                    <button type="button" class="chip chip-clear" id="clearFiltersBtn" style="display:none;">Clear filters</button>
                 </div>
             </div>
-            <button type="button" class="chip" id="proshotChip" data-proshot="1" aria-pressed="false">Proshot Only</button>
-            <button type="button" class="chip chip-clear" id="clearFiltersBtn" style="display:none;">Clear filters</button>
         </div>
     </div>
 </header>
@@ -523,7 +559,14 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
     </section>
 
     <div class="archive-head">
-        <h2 class="archive-heading">Recordings</h2>
+        <div class="archive-head-row">
+            <h2 class="archive-heading">Recordings</h2>
+            <div class="archive-head-controls">
+                <span class="status" id="statusText">Loading archive…</span>
+                <button class="tool" id="toggleShowsBtn">Collapse shows</button>
+                <button class="tool" id="toggleRecsBtn">Collapse recs</button>
+            </div>
+        </div>
         <div class="slug-filter-banner" id="slugFilterBanner">
             Showing <strong id="slugFilterName"></strong> only ·
             <button type="button" id="clearSlugFilter">view full archive</button>
@@ -638,8 +681,6 @@ function buildFilterChips() {
     } else {
         $('yearRange').style.display = 'none';
     }
-
-    $('filterBar').style.display = 'flex';
 }
 
 function updateYearRangeVisual() {
@@ -669,10 +710,18 @@ $('yearMax').addEventListener('input', () => {
     render();
 });
 
+// -- Filters toggle (panel is closed by default; a dot on the toggle
+// button shows whether anything is actually filtering the list) ---------
+$('filtersToggle').addEventListener('click', () => {
+    const open = $('filterPanelWrap').classList.toggle('open');
+    $('filtersToggle').setAttribute('aria-expanded', String(open));
+});
+
 function updateClearFiltersVisibility() {
     const yearFilterActive = yearBounds && (yearRange.min !== yearBounds.min || yearRange.max !== yearBounds.max);
     const anyActive = activeResolutions.size > 0 || yearFilterActive || proshotOnly;
     $('clearFiltersBtn').style.display = anyActive ? '' : 'none';
+    $('filtersDot').classList.toggle('show', anyActive);
 }
 
 // -- Smart Toggle Logic ------------------------------------------------
@@ -688,12 +737,12 @@ function updateToggleStates() {
 
     if (shows.length > 0) {
         const allShowsOpen = Array.from(shows).every(s => s.open);
-        const noun = sortMode === 'master-asc' ? 'Masters' : 'Shows';
+        const noun = sortMode === 'master-asc' ? 'masters' : 'shows';
         showsBtn.textContent = allShowsOpen ? `Collapse ${noun}` : `Expand ${noun}`;
     }
     if (recs.length > 0) {
         const allRecsOpen = Array.from(recs).every(r => r.open);
-        recsBtn.textContent = allRecsOpen ? 'Collapse Recs' : 'Expand Recs';
+        recsBtn.textContent = allRecsOpen ? 'Collapse recs' : 'Expand recs';
     }
 }
 
@@ -720,7 +769,7 @@ document.getElementById('archiveContainer').addEventListener('toggle', function 
 }, true);
 
 // -- Faceted filter chips ------------------------------------------------
-$('filterBar').addEventListener('click', e => {
+$('filterPanelWrap').addEventListener('click', e => {
     const chip = e.target.closest('.chip');
     if (!chip || chip.id === 'clearFiltersBtn') return;
     const nowActive = chip.classList.toggle('active');
@@ -742,7 +791,7 @@ $('clearFiltersBtn').addEventListener('click', () => {
         yearRange = { min: yearBounds.min, max: yearBounds.max };
         updateYearRangeVisual();
     }
-    document.querySelectorAll('#filterBar .chip.active').forEach(c => {
+    document.querySelectorAll('#filterPanelWrap .chip.active').forEach(c => {
         c.classList.remove('active');
         c.setAttribute('aria-pressed', 'false');
     });

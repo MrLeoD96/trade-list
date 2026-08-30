@@ -1,6 +1,6 @@
 # LeoD's Trading List :)
 
-hiya i'm LeoD/LD. i started trading not too long ago (3 months or so) but i thought i'd do my own website for trading since those are always fun
+hiya i'm MrLeoD96/LD. i started trading not too long ago (3 months or so) but i thought i'd do my own website for trading since those are always fun
 
 please have a readthrough of my wants/rules xx
 
@@ -72,8 +72,8 @@ in general, i pretty much trade for anything i do not yet have, so feel free to 
 
 wanna trade? let's trade :) trade w/ me
 
-* **Email:** liornd@gmail.com
-* **Tumblr:** [@imjustleo](https://www.tumblr.com/imjustleo)
-* **Reddit:** [u/amdrewbarrymore](https://www.reddit.com/user/amdrewbarrymore/)
+* **Email:** MrLeoD96@gmail.com
+* **Tumblr:** [@MrLeoD96](https://www.tumblr.com/MrLeoD96)
+* **Reddit:** [u/MrLeoD96](https://www.reddit.com/user/MrLeoD96/)
 
 *Happy Trading!*

@@ -130,6 +130,7 @@
         opts = opts || {};
         const q = (opts.query || "").trim().toLowerCase();
         const resolutions = opts.resolutions;
+        const years = opts.years;
         const proshotOnly = !!opts.proshotOnly;
         const titleSlug = (opts.titleSlug || "").trim();
 
@@ -138,6 +139,10 @@
             if (proshotOnly && !r.is_proshot) return false;
             if (resolutions && resolutions.size > 0) {
                 if (!r.quality_resolution || !resolutions.has(r.quality_resolution)) return false;
+            }
+            if (years && years.size > 0) {
+                const y = getYear(r.date);
+                if (!y || !years.has(y)) return false;
             }
             if (titleSlug && !slugify(r.title).includes(titleSlug)) return false;
             return true;
@@ -152,10 +157,33 @@
     // filter chip options - an "Unknown" chip isn't a facet anyone would
     // filter BY, it's just an unfilled field. Rows with no resolution still
     // show up normally when no resolution filter is active.
+    // Blank/missing resolution values are deliberately excluded from the
+    // filter chip options - an "Unknown" chip isn't a facet anyone would
+    // filter BY, it's just an unfilled field. Also excludes a literal
+    // "Unknown"/"unknown" text value, in case that's what's actually
+    // stored rather than a blank field. Rows with no usable resolution
+    // still show up normally when no resolution filter is active.
     function distinctResolutions(shows) {
         const set = new Set();
-        (shows || []).forEach(r => { if (r.quality_resolution) set.add(r.quality_resolution); });
+        (shows || []).forEach(r => {
+            const val = String(r.quality_resolution || "").trim();
+            if (val && val.toLowerCase() !== "unknown") set.add(val);
+        });
         return Array.from(set).sort();
+    }
+
+    // -- year filter --------------------------------------------------------
+    function getYear(dateStr) {
+        if (!dateStr) return null;
+        const parts = String(dateStr).split("/");
+        return parts.length === 3 && parts[2] ? parts[2] : null;
+    }
+
+    function distinctYears(shows) {
+        const set = new Set();
+        (shows || []).forEach(r => { const y = getYear(r.date); if (y) set.add(y); });
+        // Newest first - more useful than alphabetical for browsing by year.
+        return Array.from(set).sort((a, b) => b - a);
     }
 
     // Turns a title into a URL-friendly slug ("Sweeney Todd: The Demon
@@ -364,6 +392,7 @@
         leads, stripArticles, searchable,
         sortRows, groupByTitle,
         filterRows, splitMultiValue, distinctResolutions, slugify,
+        getYear, distinctYears,
         parseSizeString, formatBytes, computeStats,
         classifyStatus, renderStatusPill,
         requestKey,

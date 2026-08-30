@@ -398,7 +398,7 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
             <div class="search-box">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <input id="searchInput" type="search" autocomplete="off" spellcheck="false" placeholder="Search shows, masters, cast..." aria-label="Search archive">
-                <span class="key">/</span>
+                <span class="key" id="searchKeyHint">/</span>
                 <button class="clear" id="clearSearch" aria-label="Clear search">×</button>
             </div>
         </div>
@@ -417,6 +417,7 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
         </div>
         <div class="filter-bar" id="filterBar">
             <div class="filter-group" id="resolutionChips"></div>
+            <div class="filter-group" id="yearChips"></div>
             <button type="button" class="chip" id="proshotChip" data-proshot="1" aria-pressed="false">Proshot Only</button>
             <button type="button" class="chip chip-clear" id="clearFiltersBtn" style="display:none;">Clear filters</button>
         </div>
@@ -483,7 +484,7 @@ const $ = id => document.getElementById(id);
 
 let allData = [], dataById = new Map();
 let currentQuery = '', sortMode = 'title-asc', requestedItems = [], searchTimer;
-let activeResolutions = new Set(), proshotOnly = false, titleSlugFilter = '';
+let activeResolutions = new Set(), activeYears = new Set(), proshotOnly = false, titleSlugFilter = '';
 
 function isRequested(r) { return requestedItems.some(x => x.key === App.requestKey(r)); }
 
@@ -491,7 +492,7 @@ function render() {
     currentQuery = currentQuery || '';
     let q = currentQuery.trim().toLowerCase();
     let filtered = App.filterRows(allData, {
-        query: q, resolutions: activeResolutions, proshotOnly, titleSlug: titleSlugFilter,
+        query: q, resolutions: activeResolutions, years: activeYears, proshotOnly, titleSlug: titleSlugFilter,
     });
     let rows = App.sortRows(filtered, sortMode);
     let html = '';
@@ -518,7 +519,7 @@ function render() {
 
     $('archiveContainer').innerHTML = html;
     $('noResults').style.display = rows.length ? 'none' : 'block';
-    let anyFilterActive = q || activeResolutions.size || proshotOnly || titleSlugFilter;
+    let anyFilterActive = q || activeResolutions.size || activeYears.size || proshotOnly || titleSlugFilter;
     $('statusText').textContent = anyFilterActive
         ? `${rows.length} of ${allData.length} recordings`
         : `${allData.length} recordings`;
@@ -534,13 +535,16 @@ function renderStats() {
 
 function buildFilterChips() {
     const resolutions = App.distinctResolutions(allData);
+    const years = App.distinctYears(allData);
     $('resolutionChips').innerHTML = resolutions.map(r =>
         `<button type="button" class="chip" data-res="${App.esc(r)}" aria-pressed="false">${App.esc(r)}</button>`).join('');
+    $('yearChips').innerHTML = years.map(y =>
+        `<button type="button" class="chip" data-year="${App.esc(y)}" aria-pressed="false">${App.esc(y)}</button>`).join('');
     $('filterBar').style.display = 'flex';
 }
 
 function updateClearFiltersVisibility() {
-    const anyActive = activeResolutions.size > 0 || proshotOnly;
+    const anyActive = activeResolutions.size > 0 || activeYears.size > 0 || proshotOnly;
     $('clearFiltersBtn').style.display = anyActive ? '' : 'none';
 }
 
@@ -595,6 +599,8 @@ $('filterBar').addEventListener('click', e => {
     chip.setAttribute('aria-pressed', String(nowActive));
     if (chip.dataset.res) {
         nowActive ? activeResolutions.add(chip.dataset.res) : activeResolutions.delete(chip.dataset.res);
+    } else if (chip.dataset.year) {
+        nowActive ? activeYears.add(chip.dataset.year) : activeYears.delete(chip.dataset.year);
     } else if (chip.dataset.proshot) {
         proshotOnly = nowActive;
     }
@@ -603,7 +609,7 @@ $('filterBar').addEventListener('click', e => {
 });
 
 $('clearFiltersBtn').addEventListener('click', () => {
-    activeResolutions.clear(); proshotOnly = false;
+    activeResolutions.clear(); activeYears.clear(); proshotOnly = false;
     document.querySelectorAll('#filterBar .chip.active').forEach(c => {
         c.classList.remove('active');
         c.setAttribute('aria-pressed', 'false');
@@ -668,14 +674,23 @@ $('emailRequestBtn').addEventListener('click', () => {
 });
 
 // -- Search -----------------------------------------------------------
+function setSearchValue(value) {
+    $('searchInput').value = value;
+    const hasValue = !!value;
+    $('clearSearch').style.display = hasValue ? 'block' : 'none';
+    $('searchKeyHint').style.display = hasValue ? 'none' : 'block';
+}
+
 $('searchInput').addEventListener('input', e => {
-    $('clearSearch').style.display = e.target.value ? 'block' : 'none';
+    const hasValue = !!e.target.value;
+    $('clearSearch').style.display = hasValue ? 'block' : 'none';
+    $('searchKeyHint').style.display = hasValue ? 'none' : 'block';
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => { currentQuery = e.target.value; render(); }, 150);
 });
 
 $('clearSearch').addEventListener('click', () => {
-    $('searchInput').value = ''; $('clearSearch').style.display = 'none';
+    setSearchValue('');
     currentQuery = ''; render(); $('searchInput').focus();
 });
 
@@ -684,7 +699,7 @@ document.addEventListener('keydown', e => {
         e.preventDefault(); $('searchInput').focus();
     }
     if (e.key === 'Escape' && document.activeElement === $('searchInput') && $('searchInput').value) {
-        $('searchInput').value = ''; $('clearSearch').style.display = 'none';
+        setSearchValue('');
         currentQuery = ''; render();
     }
 });
@@ -782,6 +797,7 @@ fetch('data.json').then(r => { if (!r.ok) throw Error('data'); return r.json(); 
     render();
     renderLastUpdated(generatedAt);
 }).catch(e => {
+    console.error('Failed to load data.json:', e);
     $('statusText').textContent = 'Could not load archive data.';
     $('archiveContainer').innerHTML = '';
     $('noResults').textContent = 'Failed to load data.json.';

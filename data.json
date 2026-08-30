@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-08-30T22:41:42Z",
+    "generated_at": "2026-08-30T22:43:14Z",
     "shows": [
         {
             "id": 1,
@@ -1129,7 +1129,7 @@
             "date": "10/04/2009",
             "date_precision": "day",
             "master_sequence_num": "",
-            "master": "SubsetBlvd79",
+            "master": "SunsetBlvd79",
             "performance_type": "Preview",
             "performance_time": "",
             "is_proshot": false,

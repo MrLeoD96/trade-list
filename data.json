@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-08-30T22:35:29Z",
+    "generated_at": "2026-08-30T22:41:42Z",
     "shows": [
         {
             "id": 1,
@@ -427,13 +427,13 @@
             "date_precision": "day",
             "master_sequence_num": "",
             "master": "Proshot",
-            "performance_type": "Opening Night",
+            "performance_type": "DVD",
             "performance_time": "",
             "is_proshot": true,
             "format_type": "VOB + smalls; MKV",
             "quality_resolution": "SD",
             "file_size_original_text": "7.24 GB; 6.96 GB",
-            "subtitle_type": "DVD Embedded; MKV Embedded",
+            "subtitle_type": "MKV Embedded",
             "cast": "Josh Groban (Anatoly Sergievsky), Idina Menzel (Florence Vassy), Adam Pascal (Freddie Trumper), Kerry Ellis (Svetlana Sergievskaya), Marti Pellow (Arbiter), David Bedella (Molokov), Clarke Peters (Walter de Courcey)",
             "notes": "Pro-shot concert. Includes subtitles and a trailer. MKV Muxed from DVD video includes embedded vobsubs+srt. There is a higher quality WEB-DL encode of this proshot.",
             "trading_status": ""
@@ -1453,7 +1453,7 @@
             "date_precision": "day",
             "master_sequence_num": "",
             "master": "Proshot",
-            "performance_type": "Opening Night",
+            "performance_type": "WEB-DL",
             "performance_time": "",
             "is_proshot": true,
             "format_type": "MKV",

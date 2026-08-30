@@ -90,47 +90,79 @@
     // dead code covering for a naming split that's now resolved on the
     // export side. There is exactly one field name from here on.
     function searchable(r) {
-        return [r.title, r.venue_production, r.master, r.performance_type,
+        return [r.title, r.venue_production, r.master, r.performance_type, r.performance_time,
             r.format_type, r.quality_resolution, r.file_size_original_text,
             r.subtitle_type, r.cast, r.notes, r.date, r.trading_status]
             .filter(Boolean).join(" ").toLowerCase();
     }
 
     // -- sorting / grouping ----------------------------------------------
+    // Ranks a performance_time string for chronological ordering within a
+    // single date (matinee before evening); unspecified sits in between
+    // rather than arbitrarily first or last.
+    function timeOfDayRank(performanceTime) {
+        const t = String(performanceTime || "").toLowerCase();
+        if (t.includes("mat")) return 0;
+        if (t.includes("eve")) return 1;
+        return 0.5;
+    }
+
     function sortRows(rows, sortMode) {
         return [...rows].sort((a, b) => {
             if (sortMode === "title-asc") {
                 let tA = stripArticles(a.title || ""), tB = stripArticles(b.title || "");
-                return tA.localeCompare(tB, undefined, { sensitivity: "base", numeric: true });
+                let cmp = tA.localeCompare(tB, undefined, { sensitivity: "base", numeric: true });
+                if (cmp !== 0) return cmp;
+                // Same show: order its recordings chronologically, then
+                // matinee before evening when they share a date.
+                let dateCmp = dateValue(a.date) - dateValue(b.date);
+                if (dateCmp !== 0) return dateCmp;
+                return timeOfDayRank(a.performance_time) - timeOfDayRank(b.performance_time);
             }
             if (sortMode === "master-asc") {
-                return String(a.master || "").localeCompare(String(b.master || ""), undefined, { sensitivity: "base" });
+                let masterCmp = String(a.master || "").localeCompare(String(b.master || ""), undefined, { sensitivity: "base" });
+                if (masterCmp !== 0) return masterCmp;
+                // Same taper: order their recordings chronologically too.
+                return dateValue(a.date) - dateValue(b.date);
             }
             let d = dateValue(a.date) - dateValue(b.date);
             return sortMode === "date-asc" ? d : -d;
         });
     }
 
-    function groupByTitle(rows) {
+    // Generic grouping by any field-derived key. groupByTitle/groupByMaster
+    // are the two groupings the UI actually offers (title-asc and
+    // master-asc sort modes respectively).
+    function groupByField(rows, keyFn) {
         const groups = new Map();
         rows.forEach(r => {
-            const k = String(r.title || "Untitled").trim() || "Untitled";
+            const k = String(keyFn(r) || "Untitled").trim() || "Untitled";
             if (!groups.has(k)) groups.set(k, []);
             groups.get(k).push(r);
         });
         return groups;
     }
 
+    function groupByTitle(rows) {
+        return groupByField(rows, r => r.title);
+    }
+
+    function groupByMaster(rows) {
+        return groupByField(rows, r => r.master);
+    }
+
     // -- faceted filtering ------------------------------------------------
     // `resolutions` is a Set of allowed exact values; empty/undefined means
-    // "no filter on this facet". `titleSlug`, if set, restricts to shows
-    // whose slugified title contains it (see slugify() below - this is what
-    // backs the #show-name deep link, not a per-recording link).
+    // "no filter on this facet". `yearRange` is {min, max} (inclusive,
+    // either bound optional) rather than a Set of individual years - the UI
+    // is a range slider, not one chip per year. `titleSlug`, if set,
+    // restricts to shows whose slugified title contains it (see slugify()
+    // below - this is what backs the #show-name deep link).
     function filterRows(rows, opts) {
         opts = opts || {};
         const q = (opts.query || "").trim().toLowerCase();
         const resolutions = opts.resolutions;
-        const years = opts.years;
+        const yearRange = opts.yearRange;
         const proshotOnly = !!opts.proshotOnly;
         const titleSlug = (opts.titleSlug || "").trim();
 
@@ -140,9 +172,12 @@
             if (resolutions && resolutions.size > 0) {
                 if (!r.quality_resolution || !resolutions.has(r.quality_resolution)) return false;
             }
-            if (years && years.size > 0) {
+            if (yearRange && (yearRange.min != null || yearRange.max != null)) {
                 const y = getYear(r.date);
-                if (!y || !years.has(y)) return false;
+                const yNum = y ? parseInt(y, 10) : null;
+                if (yNum == null) return false;
+                if (yearRange.min != null && yNum < yearRange.min) return false;
+                if (yearRange.max != null && yNum > yearRange.max) return false;
             }
             if (titleSlug && !slugify(r.title).includes(titleSlug)) return false;
             return true;
@@ -153,10 +188,6 @@
         return str ? String(str).split(/\s*[;,|/]\s*/).map(s => s.trim()).filter(Boolean) : [];
     }
 
-    // Blank/missing resolution values are deliberately excluded from the
-    // filter chip options - an "Unknown" chip isn't a facet anyone would
-    // filter BY, it's just an unfilled field. Rows with no resolution still
-    // show up normally when no resolution filter is active.
     // Blank/missing resolution values are deliberately excluded from the
     // filter chip options - an "Unknown" chip isn't a facet anyone would
     // filter BY, it's just an unfilled field. Also excludes a literal
@@ -172,7 +203,7 @@
         return Array.from(set).sort();
     }
 
-    // -- year filter --------------------------------------------------------
+    // -- year range ----------------------------------------------------------
     function getYear(dateStr) {
         if (!dateStr) return null;
         const parts = String(dateStr).split("/");
@@ -186,6 +217,14 @@
         return Array.from(set).sort((a, b) => b - a);
     }
 
+    // Numeric {min, max} bounds for the year range slider - null if no
+    // record has a usable date at all.
+    function getYearBounds(shows) {
+        const years = distinctYears(shows).map(y => parseInt(y, 10)).filter(y => !isNaN(y));
+        if (!years.length) return null;
+        return { min: Math.min(...years), max: Math.max(...years) };
+    }
+
     // Turns a title into a URL-friendly slug ("Sweeney Todd: The Demon
     // Barber" -> "sweeney-todd-the-demon-barber"), used for #show-name deep
     // links: visiting .../#cabaret filters the page to shows whose slug
@@ -196,7 +235,52 @@
             .replace(/^-+|-+$/g, "");
     }
 
-    // -- size math (new) ---------------------------------------------------
+    // -- disambiguation bubble ------------------------------------------------
+    // Within a group, two recordings can look identical in the collapsed
+    // summary row (e.g. grouped by title, both showing the same date - a
+    // matinee and an evening performance of the same show on the same day).
+    // If performance_type or performance_time actually differs between the
+    // colliding recordings, surface that difference as a small bubble so
+    // they're distinguishable without expanding either one. Deliberately
+    // generic - whatever text is in those fields ("Matinee"/"Evening",
+    // "Preview", "censored"/"uncensored", anything) is used as-is, nothing
+    // is hardcoded to a specific vocabulary.
+    //
+    // `summaryKeyFn` is whatever the group's own collapsed identifier is:
+    // the formatted date when grouped by title, the title itself when
+    // grouped by master.
+    function computeDisambiguationLabels(groupRows, summaryKeyFn) {
+        const byKey = new Map();
+        groupRows.forEach(r => {
+            const key = summaryKeyFn(r);
+            if (!byKey.has(key)) byKey.set(key, []);
+            byKey.get(key).push(r);
+        });
+
+        const labels = new Map();
+        byKey.forEach(collidingRows => {
+            if (collidingRows.length < 2) return; // no collision, nothing to disambiguate
+            const types = new Set(collidingRows.map(r => String(r.performance_type || "").trim()));
+            const times = new Set(collidingRows.map(r => String(r.performance_time || "").trim()));
+            const typeVaries = types.size > 1;
+            const timeVaries = times.size > 1;
+            if (!typeVaries && !timeVaries) return; // still indistinguishable, nothing to add
+
+            collidingRows.forEach(r => {
+                const parts = [];
+                if (typeVaries && r.performance_type && String(r.performance_type).trim()) {
+                    parts.push(String(r.performance_type).trim());
+                }
+                if (timeVaries && r.performance_time && String(r.performance_time).trim()) {
+                    parts.push(String(r.performance_time).trim());
+                }
+                if (parts.length) labels.set(r, parts.join(" · "));
+            });
+        });
+        return labels;
+    }
+
+    // -- size math ---------------------------------------------------
     const SIZE_UNITS = { B: 1, KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3, TB: 1024 ** 4, PB: 1024 ** 5 };
 
     function parseSizeString(str) {
@@ -319,14 +403,25 @@
     // -- record card -----------------------------------------------------
     // Pure: given a row + view state, returns the HTML string for one
     // record. Callers own the DOM; this just decides what markup to write.
-    function record(r, q, inGroup, requested) {
+    function record(r, q, groupMode, requested, disambigLabel) {
         const id = r.id != null ? r.id : "";
-        let titleText = inGroup ? fmtDate(r.date, r.date_precision, r.master_sequence_num) : (r.title || "-");
-        let dateHtml = inGroup ? "" : `<div class="summary-meta">${ICONS.calendar}<span>${hi(fmtDate(r.date, r.date_precision, r.master_sequence_num), q)}</span></div>`;
+        // groupMode: 'none' (ungrouped), 'title' (grouped by show - title is
+        // the group header, so the record's own line shows its date
+        // instead), or 'master' (grouped by taper - master is the group
+        // header, so the record's own line shows its show title, same as
+        // ungrouped).
+        let titleText = groupMode === "title"
+            ? fmtDate(r.date, r.date_precision, r.master_sequence_num)
+            : (r.title || "-");
+        let dateHtml = groupMode === "title" ? "" :
+            `<div class="summary-meta">${ICONS.calendar}<span>${hi(fmtDate(r.date, r.date_precision, r.master_sequence_num), q)}</span></div>`;
 
         let { formats, sizes } = getColoredFormatsAndSizes(r.format_type, r.file_size_original_text, q);
         let statusPillHtml = renderStatusPill(r.trading_status);
         let proshotPillHtml = r.is_proshot ? `<span class="proshot-pill">${ICONS.star} Proshot</span>` : "";
+        // Shown when a sibling in the same group would otherwise look
+        // identical in this collapsed view (see computeDisambiguationLabels).
+        let disambigHtml = disambigLabel ? `<span class="disambig-pill">${hi(disambigLabel, q)}</span>` : "";
 
         return `
     <article class="record" data-id="${esc(id)}">
@@ -338,6 +433,7 @@
                 </div>
                 <div class="summary-meta">${ICONS.pin}<span>${hi(r.venue_production || "-", q)}</span></div>
                 ${dateHtml}
+                ${disambigHtml}
                 ${proshotPillHtml}
                 ${statusPillHtml}
                 <button class="request-btn summary-req ${requested ? "requested" : ""}" data-request="${esc(id)}" title="Add to trade request">
@@ -353,7 +449,7 @@
                     </div>
                     <div class="detail">
                         <span class="detail-label">${ICONS.film} Performance</span>
-                        <span class="detail-value">${hi(r.performance_type || "-", q)}</span>
+                        <span class="detail-value">${hi([r.performance_type, r.performance_time].filter(Boolean).join(" · ") || "-", q)}</span>
                     </div>
                     <div class="detail">
                         <span class="detail-label">${ICONS.file} Format</span>
@@ -390,9 +486,10 @@
         esc, hi,
         dateValue, fmtDate,
         leads, stripArticles, searchable,
-        sortRows, groupByTitle,
+        sortRows, timeOfDayRank, groupByField, groupByTitle, groupByMaster,
         filterRows, splitMultiValue, distinctResolutions, slugify,
-        getYear, distinctYears,
+        getYear, distinctYears, getYearBounds,
+        computeDisambiguationLabels,
         parseSizeString, formatBytes, computeStats,
         classifyStatus, renderStatusPill,
         requestKey,

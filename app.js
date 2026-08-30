@@ -3,8 +3,7 @@
  * ======
  * Pure logic for the trade-list site: escaping/highlighting, date
  * formatting, sorting, searching/filtering, grouping, size math, status
- * classification, deep-link query parsing, and the HTML-string builders
- * for a single record card.
+ * classification, and the HTML-string builder for a single record card.
  *
  * Nothing in this file touches `document`, `window`, `fetch`, or any other
  * browser global - on purpose. index.html's inline script owns the DOM
@@ -39,7 +38,6 @@
         info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
         plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>',
         check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-        link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>',
         star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>'
     };
 
@@ -123,28 +121,25 @@
         return groups;
     }
 
-    // -- faceted filtering (new) ------------------------------------------
-    // `resolutions`/`formats` are Sets of allowed values; empty/undefined
-    // Sets mean "no filter on this facet". A row's format_type can list
-    // several formats ("VOB + smalls; MKV") - it passes the format filter
-    // if ANY of them is selected.
+    // -- faceted filtering ------------------------------------------------
+    // `resolutions` is a Set of allowed exact values; empty/undefined means
+    // "no filter on this facet". `titleSlug`, if set, restricts to shows
+    // whose slugified title contains it (see slugify() below - this is what
+    // backs the #show-name deep link, not a per-recording link).
     function filterRows(rows, opts) {
         opts = opts || {};
         const q = (opts.query || "").trim().toLowerCase();
         const resolutions = opts.resolutions;
-        const formats = opts.formats;
         const proshotOnly = !!opts.proshotOnly;
+        const titleSlug = (opts.titleSlug || "").trim();
 
         return rows.filter(r => {
             if (q && !searchable(r).includes(q)) return false;
             if (proshotOnly && !r.is_proshot) return false;
             if (resolutions && resolutions.size > 0) {
-                if (!resolutions.has(r.quality_resolution || "Unknown")) return false;
+                if (!r.quality_resolution || !resolutions.has(r.quality_resolution)) return false;
             }
-            if (formats && formats.size > 0) {
-                const rowFormats = splitMultiValue(r.format_type);
-                if (!rowFormats.some(f => formats.has(f))) return false;
-            }
+            if (titleSlug && !slugify(r.title).includes(titleSlug)) return false;
             return true;
         });
     }
@@ -153,16 +148,24 @@
         return str ? String(str).split(/\s*[;,|/]\s*/).map(s => s.trim()).filter(Boolean) : [];
     }
 
+    // Blank/missing resolution values are deliberately excluded from the
+    // filter chip options - an "Unknown" chip isn't a facet anyone would
+    // filter BY, it's just an unfilled field. Rows with no resolution still
+    // show up normally when no resolution filter is active.
     function distinctResolutions(shows) {
         const set = new Set();
-        (shows || []).forEach(r => set.add(r.quality_resolution || "Unknown"));
+        (shows || []).forEach(r => { if (r.quality_resolution) set.add(r.quality_resolution); });
         return Array.from(set).sort();
     }
 
-    function distinctFormats(shows) {
-        const set = new Set();
-        (shows || []).forEach(r => splitMultiValue(r.format_type).forEach(f => set.add(f)));
-        return Array.from(set).sort();
+    // Turns a title into a URL-friendly slug ("Sweeney Todd: The Demon
+    // Barber" -> "sweeney-todd-the-demon-barber"), used for #show-name deep
+    // links: visiting .../#cabaret filters the page to shows whose slug
+    // contains "cabaret", instead of linking to one specific recording.
+    function slugify(text) {
+        return String(text || "").toLowerCase().trim()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
     }
 
     // -- size math (new) ---------------------------------------------------
@@ -285,23 +288,6 @@
         return { formats: fHtml, sizes: sHtml };
     }
 
-    // -- deep links (new) ----------------------------------------------------
-    function parseQueryParams(search) {
-        const params = new URLSearchParams(search || "");
-        const obj = {};
-        for (const [k, v] of params.entries()) obj[k] = v;
-        return obj;
-    }
-
-    function buildQueryString(obj) {
-        const params = new URLSearchParams();
-        Object.keys(obj || {}).forEach(k => {
-            if (obj[k]) params.set(k, obj[k]);
-        });
-        const s = params.toString();
-        return s ? "?" + s : "";
-    }
-
     // -- record card -----------------------------------------------------
     // Pure: given a row + view state, returns the HTML string for one
     // record. Callers own the DOM; this just decides what markup to write.
@@ -328,9 +314,6 @@
                 ${statusPillHtml}
                 <button class="request-btn summary-req ${requested ? "requested" : ""}" data-request="${esc(id)}" title="Add to trade request">
                     ${requested ? ICONS.check : ICONS.plus}
-                </button>
-                <button class="request-btn summary-share" data-share="${esc(id)}" title="Copy a direct link to this recording">
-                    ${ICONS.link}
                 </button>
                 <div class="chevron-icon">${ICONS.chevron}</div>
             </summary>
@@ -380,12 +363,11 @@
         dateValue, fmtDate,
         leads, stripArticles, searchable,
         sortRows, groupByTitle,
-        filterRows, splitMultiValue, distinctResolutions, distinctFormats,
+        filterRows, splitMultiValue, distinctResolutions, slugify,
         parseSizeString, formatBytes, computeStats,
         classifyStatus, renderStatusPill,
         requestKey,
         getFileColor, getColoredFormatsAndSizes,
-        parseQueryParams, buildQueryString,
         record,
     };
 });

@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-08-30T16:25:36Z",
+    "generated_at": "2026-08-30T16:35:08Z",
     "shows": [
         {
             "id": 1,
@@ -837,14 +837,14 @@
             "date_precision": "month",
             "master_sequence_num": "",
             "master": "Proshot",
-            "performance_type": "",
+            "performance_type": "censored",
             "is_proshot": true,
-            "format_type": "MKV (censored); MKV (uncensored);",
+            "format_type": "MKV",
             "quality_resolution": "HD",
-            "file_size_original_text": "3.35GB, 4.04GB",
-            "subtitle_type": "MKV Embedded; None",
+            "file_size_original_text": "3.36 GB",
+            "subtitle_type": "MKV Embedded",
             "cast": "Caissie Levy (Diana), Jamie Parker (Dan), Jack Wolfe (Gabe), Eleanor Worthington-Cox (Natalie), Jack Ofrecio (Henry), Trevor Dion Nicholas (Dr. Fine/Dr. Madden)",
-            "notes": "Filmed at Wyndham's Theatre in September 2024 during the show's West End transfer from its original run at the Donmar Warehouse. Released by PBS's Great Performances (with censored audio) on May 9th, 2025. An uncensored version with a hardcoded timestamp in the top-left corner of the video leaked online two days later.",
+            "notes": "Filmed at Wyndham's Theatre in September 2024 during the show's West End transfer from its original run at the Donmar Warehouse. Released by PBS's Great Performances (with censored audio) on May 9th, 2025. Includes embedded subtitles.",
             "trading_status": ""
         },
         {
@@ -1385,6 +1385,24 @@
             "subtitle_type": "MKV Embedded",
             "cast": "Josh Groban (Anatoly Sergievsky), Idina Menzel (Florence Vassy), Adam Pascal (Freddie Trumper), Kerry Ellis (Svetlana Sergievskaya), Marti Pellow (Arbiter), David Bedella (Molokov), Clarke Peters (Walter de Courcey)",
             "notes": "Pro-shot concert. This is a WEB-DL encode with proper AAC stereo sound and embedded SRT subtitles manually synced by LD.",
+            "trading_status": ""
+        },
+        {
+            "id": 81,
+            "title": "Next to Normal",
+            "venue_production": "West End",
+            "date": "01/09/2024",
+            "date_precision": "month",
+            "master_sequence_num": "",
+            "master": "Proshot",
+            "performance_type": "uncensored",
+            "is_proshot": true,
+            "format_type": "MKV",
+            "quality_resolution": "HD",
+            "file_size_original_text": "4.05 GB",
+            "subtitle_type": "",
+            "cast": "Caissie Levy (Diana), Jamie Parker (Dan), Jack Wolfe (Gabe), Eleanor Worthington-Cox (Natalie), Jack Ofrecio (Henry), Trevor Dion Nicholas (Dr. Fine/Dr. Madden)",
+            "notes": "Filmed at Wyndham's Theatre in September 2024 during the show's West End transfer from its original run at the Donmar Warehouse. Released by PBS's Great Performances (with censored audio) on May 9th, 2025. An uncensored version with a hardcoded timestamp in the top-left corner of the video leaked online two days later.",
             "trading_status": ""
         }
     ]

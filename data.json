@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-08-31T12:15:25Z",
+    "generated_at": "2026-08-31T17:25:10Z",
     "shows": [
         {
             "id": 1,
@@ -1481,6 +1481,44 @@
             "subtitle_type": "",
             "cast": "Caissie Levy (Diana), Jamie Parker (Dan), Jack Wolfe (Gabe), Eleanor Worthington-Cox (Natalie), Jack Ofrecio (Henry), Trevor Dion Nicholas (Dr. Fine/Dr. Madden)",
             "notes": "Filmed at Wyndham's Theatre in September 2024 during the show's West End transfer from its original run at the Donmar Warehouse. Released by PBS's Great Performances (with censored audio) on May 9th, 2025. An uncensored version with a hardcoded timestamp in the top-left corner of the video leaked online two days later.",
+            "trading_status": ""
+        },
+        {
+            "id": 82,
+            "title": "The Rocky Horror Show",
+            "venue_production": "Second Broadway Revival",
+            "date": "01/06/2026",
+            "date_precision": "month",
+            "master_sequence_num": "",
+            "master": "MTTZ",
+            "performance_type": "",
+            "performance_time": "",
+            "is_proshot": false,
+            "format_type": "MP4",
+            "quality_resolution": "4K",
+            "file_size_original_text": "6.70 GB",
+            "subtitle_type": "",
+            "cast": "Luke Evans (Dr. Frank-N-Furter), Stephanie Hsu (Janet Weiss), Andrew Durand (Brad Majors), Anania (t/r Magenta/Usherette), Michaela Jaé Rodriguez (Columbia), Amber Gray (Riff Raff), Harvey Guillén (Eddie/Dr. Scott), Josh Rivera (Rocky), Rachel Dratch (The Narrator), Tassy Kirbas (s/w Phantom), Boy Radio (Phantom), Larkin Reilly (Phantom), Paul Soileau (Phantom)",
+            "notes": "Great capture of this much-hyped revival! Shot in a great mix of wides, mediums, and close-ups. Increased wandering, shaking, and re-adjusting throughout. Audio is patched in from an external source; some scraping and rustling might be heard during adjustment periods. Obstruction on the bottom and far left that blocks a few lines/bits of action, but is worked around well. Overall a great capture, albeit a little messy.\nSuch a fun cast! Loved it!",
+            "trading_status": "NFT Until 5/12/2026"
+        },
+        {
+            "id": 83,
+            "title": "Anastasia",
+            "venue_production": "Broadway",
+            "date": "17/09/2017",
+            "date_precision": "day",
+            "master_sequence_num": "",
+            "master": "NYCG8R",
+            "performance_type": "",
+            "performance_time": "",
+            "is_proshot": false,
+            "format_type": "VOB + smalls; MKV",
+            "quality_resolution": "SD",
+            "file_size_original_text": "4.22 GB; 4.13 GB",
+            "subtitle_type": "",
+            "cast": "Christy Altomare (Anya), Derek Klena (Dmitry), Ramin Karimloo (Gleb Vaganov), John Bolton (Vlad Popov), Caroline O’Connor (Countess Lily Malevsky-Malevitch), Mary Beth Peil (Dowager Empress Maria Feodorovna), Nicole Scimeca (Little Anastasia / Prince Alexei Romanov), Lauren Blackman (Tsarina Alexandra), Constantine Germanacos (Tsar Nicholas II / Count Ipolitov), Allison Walsh (Olga Romanov), Shina Ann Morris (Tatiana Romanov / Dunya), Sissy Bell (Maria Romanov / Marfa), Molly Rushing (Young Anastasia / Paulina), Ken Krugman (Gorlinsky), Ken Krugman (Count Leopold), Allison Walsh (Odette in Swan Lake), Kyle Brown (Prince Siegfried in Swan Lake), James A Pierce III (Von Rothbart in Swan Lake), Wes Hart (Russian Doorman), Janet Dickinson (Countess Gregory), Zach Adkins (Ensemble)",
+            "notes": "Actor's Benefit Performance. Includes post-show speeches.",
             "trading_status": ""
         }
     ]

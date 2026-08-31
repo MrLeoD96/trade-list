@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-08-31T07:06:52Z",
+    "generated_at": "2026-08-31T12:15:25Z",
     "shows": [
         {
             "id": 1,
@@ -45,18 +45,18 @@
             "venue_production": "Long Island",
             "date": "01/09/2005",
             "date_precision": "month",
-            "master_sequence_num": null,
+            "master_sequence_num": "",
             "master": "Proshot",
-            "performance_type": null,
-            "performance_time": null,
+            "performance_type": "",
+            "performance_time": "",
             "is_proshot": true,
             "format_type": "VOB + smalls; MKV",
             "quality_resolution": "SD",
-            "file_size_original_text": "3.08GB; 3.01GB",
-            "subtitle_type": null,
-            "cast": "Jason Trigger, Jeremy Hudson, Patrick Finn, Stephen Wangner, Frank Danko, Malorie Charak, Susan Hall, Jerry Maggio, Ron Menin, Bernard Macias, Brian Smith, Donna Maggio, Amanda Taraska,Tara Danko, Stephen LeFayt, Dylan Perlman, Ben Salers",
+            "file_size_original_text": "3.08 GB; 3.01 GB",
+            "subtitle_type": "",
+            "cast": "Jason Trigger (John Wilkes Booth), Patrick Finn (Charles Guiteau), Stephen Wangner (Leon Czolgosz), Frank Danko (Samuel Byck), Jerry Maggio (Giuseppe Zangara), Malorie Charak (Lynette \"Squeaky\" Fromme), Jeremy Hudson (Lee Harvey Oswald), Susan Hall (Sara Jane Moore), Bernard Macias (The Proprietor), Ron Menin (John Hinckley Jr.), Donna Maggio (Emma Goldman), Brian Smith (James Blaine/President Gerald Ford)",
             "notes": "Nice varied multi-cam proshot for a presentation of Cultural Arts Playhouse. Very lovely production overall.",
-            "trading_status": null
+            "trading_status": ""
         },
         {
             "id": 4,

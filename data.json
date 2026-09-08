@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-09-08T23:14:10Z",
+    "generated_at": "2026-09-08T23:23:18Z",
     "shows": [
         {
             "id": 1,
@@ -77,8 +77,8 @@
             "format": "VOB + smalls; MKV",
             "resolution": "SD",
             "subtitles": "",
-            "file_size_bytes": "6548605608",
-            "file_size": "6.10 GB",
+            "file_size_bytes": "3312332800; 3236272808",
+            "file_size": "3.08 GB; 3.01 GB",
             "nft_date": "",
             "trading_status": "",
             "cast": "Jason Trigger (John Wilkes Booth), Patrick Finn (Charles Guiteau), Stephen Wangner (Leon Czolgosz), Frank Danko (Samuel Byck), Jerry Maggio (Giuseppe Zangara), Malorie Charak (Lynette \"Squeaky\" Fromme), Jeremy Hudson (Lee Harvey Oswald), Susan Hall (Sara Jane Moore), Bernard Macias (The Proprietor), Ron Menin (John Hinckley Jr.), Donna Maggio (Emma Goldman), Brian Smith (James Blaine/President Gerald Ford)",
@@ -86,7 +86,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "31/08/2026",
-            "last_modified": "31/08/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 4,
@@ -135,8 +135,8 @@
             "format": "VOB + smalls; MKV",
             "resolution": "SD",
             "subtitles": "MKV Embedded",
-            "file_size_bytes": "7661211600",
-            "file_size": "7.14 GB",
+            "file_size_bytes": "3930214400; 3730997200",
+            "file_size": "3.66 GB; 3.47 GB",
             "nft_date": "",
             "trading_status": "",
             "cast": "Andrew Rannells (Elder Price), Josh Gad (Elder Cunningham), Nikki M James (Nabulungi), Rory O’Malley (Elder McKinley), Michael Potts (Mafala Hatimbi), Lewis Cleale (Mission President)",
@@ -144,7 +144,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "03/09/2026",
-            "last_modified": "03/09/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 6,
@@ -164,8 +164,8 @@
             "format": "VOB + smalls; MKV",
             "resolution": "SD",
             "subtitles": "",
-            "file_size_bytes": "8506130709",
-            "file_size": "7.92 GB",
+            "file_size_bytes": "4309780480; 4196350229",
+            "file_size": "4.01 GB; 3.91 GB",
             "nft_date": "",
             "trading_status": "",
             "cast": "Neil Patrick Harris (Emcee), Deborah Gibson (Sally Bowles), Marriette Hartley (Fräulein Schneider), Tom Bosley (Herr Schultz), Jane Summerhays (Fräulein Kost)",
@@ -173,7 +173,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "03/09/2026",
-            "last_modified": "03/09/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 7,
@@ -248,8 +248,8 @@
             "recording_type": "Bootleg",
             "completeness": "Full Show",
             "master": "Jagweed",
-            "format": "",
-            "resolution": "",
+            "format": "M4V",
+            "resolution": "HD",
             "subtitles": "",
             "file_size_bytes": "10483433198",
             "file_size": "9.76 GB",
@@ -260,7 +260,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 10,
@@ -657,8 +657,8 @@
             "format": "VOB + smalls; MKV",
             "resolution": "SD",
             "subtitles": "MKV Embedded",
-            "file_size_bytes": "15242863959",
-            "file_size": "14.20 GB",
+            "file_size_bytes": "7771219968; 7471643991",
+            "file_size": "7.24 GB; 6.96 GB",
             "nft_date": "",
             "trading_status": "",
             "cast": "Josh Groban (Anatoly Sergievsky), Idina Menzel (Florence Vassy), Adam Pascal (Freddie Trumper), Kerry Ellis (Svetlana Sergievskaya), Marti Pellow (Arbiter), David Bedella (Molokov), Clarke Peters (Walter de Courcey)",
@@ -666,7 +666,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "31/08/2026",
-            "last_modified": "31/08/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 24,
@@ -1237,8 +1237,8 @@
             "format": "MKV; MTS",
             "resolution": "HD",
             "subtitles": "MKV Embedded",
-            "file_size_bytes": "23787894565",
-            "file_size": "22.15 GB",
+            "file_size_bytes": "11563503397; 12224391168",
+            "file_size": "10.77 GB; 11.38 GB",
             "nft_date": "",
             "trading_status": "",
             "cast": "Jenna Innes (Veronica Sawyer), Keelan McAuley (Jason \"J.D.\" Dean), Esme Bowdler (Heather Chandler), Sedona Sky (Heather Duke), Daisy Twells (Heather McNamara), Jason Battersby (Ram Sweeney), Iván Fernández González (Kurt Kelly), Amy Miles (Martha Dunnstock), Lucy Sinclair (Ms. Fleming/Veronica's Mom), Conor McFarlane (Ram's Dad/Big Bud Dean/Coach Ripper), Alexander Service (Kurt's Dad/Veronica's Dad/Principal Gowan)",
@@ -1246,7 +1246,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "02/09/2026",
-            "last_modified": "02/09/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 45,
@@ -1730,8 +1730,8 @@
             "format": "VOB + smalls; MKV",
             "resolution": "SD",
             "subtitles": "",
-            "file_size_bytes": "8236056063",
-            "file_size": "7.67 GB",
+            "file_size_bytes": "4186245120; 4049810943",
+            "file_size": "3.90 GB; 3.77 GB",
             "nft_date": "",
             "trading_status": "",
             "cast": "Alice Ripley (Diana), J. Robert Spencer (Dan), Aaron Tveit (Gabe), Jennifer Damiano (Natalie), Adam Chanler-Berat (Henry), Louis Hobson (Dr. Fine/Dr. Madden)",
@@ -1739,7 +1739,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "31/08/2026",
-            "last_modified": "31/08/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 63,
@@ -2309,9 +2309,9 @@
             "master": "NYCG8R",
             "format": "VOB + smalls; MKV",
             "resolution": "SD",
-            "subtitles": "",
-            "file_size_bytes": "8966825930",
-            "file_size": "8.35 GB",
+            "subtitles": "MKV Embedded, External SRT",
+            "file_size_bytes": "4530741585; 4433377515",
+            "file_size": "4.22 GB; 4.13 GB",
             "nft_date": "",
             "trading_status": "",
             "cast": "Christy Altomare (Anya), Derek Klena (Dmitry), Ramin Karimloo (Gleb Vaganov), John Bolton (Vlad Popov), Caroline O’Connor (Countess Lily Malevsky-Malevitch), Mary Beth Peil (Dowager Empress Maria Feodorovna), Nicole Scimeca (Little Anastasia / Prince Alexei Romanov), Lauren Blackman (Tsarina Alexandra), Constantine Germanacos (Tsar Nicholas II / Count Ipolitov), Allison Walsh (Olga Romanov), Shina Ann Morris (Tatiana Romanov / Dunya), Sissy Bell (Maria Romanov / Marfa), Molly Rushing (Young Anastasia / Paulina), Ken Krugman (Gorlinsky), Ken Krugman (Count Leopold), Allison Walsh (Odette in Swan Lake), Kyle Brown (Prince Siegfried in Swan Lake), James A Pierce III (Von Rothbart in Swan Lake), Wes Hart (Russian Doorman), Janet Dickinson (Countess Gregory), Zach Adkins (Ensemble)",
@@ -2319,7 +2319,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "31/08/2026",
-            "last_modified": "31/08/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 84,
@@ -2426,8 +2426,8 @@
             "format": "VOB + smalls; MKV",
             "resolution": "SD",
             "subtitles": "",
-            "file_size_bytes": "9014097349",
-            "file_size": "8.40 GB",
+            "file_size_bytes": "4555685888; 4458411461",
+            "file_size": "4.24 GB; 4.15 GB",
             "nft_date": "",
             "trading_status": "",
             "cast": "Alan Cumming (Emcee), Mary McCormack (Sally Bowles), Natasha Richardson (Sally Bowles), Blair Brown (Fräulein Schneider), Mary Louise Wilson (Fräulein Schneider), Ron Rifkin (Herr Schultz), John Benjamin Hickey (Clifford Bradshaw), Michele Pawk (Fräulein Kost)",
@@ -2435,7 +2435,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "01/09/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 88,
@@ -2455,8 +2455,8 @@
             "format": "VOB + smalls; MKV",
             "resolution": "SD",
             "subtitles": "",
-            "file_size_bytes": "8751655806",
-            "file_size": "8.15 GB",
+            "file_size_bytes": "4421062656; 4330593150",
+            "file_size": "4.12 GB; 4.03 GB",
             "nft_date": "",
             "trading_status": "",
             "cast": "Laura Bell Bundy (Elle Woods), Christian Borle (Emmett Forrest), Richard H Blake (Warner Huntington III), Orfeh (Paulette), Kate Shindle (Vivienne Kensington), Nikki Snelson (Brooke Wyndham/Shandi), Michael Rupert (Professor Callahan), Annaleigh Ashford (Margot), Leslie Kritzer (Serena), DeQuina Moore (Pilar), Andy Karl (Kyle/Grandmaster Chad/Dewey), Natalie Joy Johnson (Veronica/Enid), Kate Wetherhead (Kate/Chutney), Tracy Jai Edwards (Gabby/Stenographer)",
@@ -2464,7 +2464,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "02/09/2026",
-            "last_modified": "02/09/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 89,
@@ -2484,8 +2484,8 @@
             "format": "VOB + smalls; MKV",
             "resolution": "SD",
             "subtitles": "",
-            "file_size_bytes": "8529947677",
-            "file_size": "7.94 GB",
+            "file_size_bytes": "4326301696; 4203645981",
+            "file_size": "4.03 GB; 3.91 GB",
             "nft_date": "",
             "trading_status": "",
             "cast": "Tom Hewitt (Dr. Frank-N-Furter), Jarrod Emick (Brad Majors), Kristen Lee Kelly (u/s Janet Weiss), Raúl Esparza (Riff Raff), Daphne Rubin-Vega (Magenta/Usherette), Joan Jett (Columbia), Lea DeLaria (Eddie/Dr Scott), Dick Cavett (The Narrator)",
@@ -2493,7 +2493,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "02/09/2026",
-            "last_modified": "02/09/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 90,
@@ -2513,8 +2513,8 @@
             "format": "VOB + smalls; MKV",
             "resolution": "SD",
             "subtitles": "",
-            "file_size_bytes": "8886785189",
-            "file_size": "8.28 GB",
+            "file_size_bytes": "4526880768; 4359904421",
+            "file_size": "4.22 GB; 4.06 GB",
             "nft_date": "",
             "trading_status": "",
             "cast": "Christian Borle (Willy Wonka), Jake Ryan Flynn (Charlie Bucket), John Rubinstein (Grandpa Joe), F Michael Haynie (Augustus Gloop), Kathy Fitzgerald (Mrs Gloop), Emma Pfaeffle (Veruca Salt), Ben Crawford (Mr Salt), Trista Dollison (Violet Beauregarde), Michael Wartella (Mike Teavee), Jackie Hoffman (Mrs Teavee), Emily Padgett (Mrs Bucket",
@@ -2522,7 +2522,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "02/09/2026",
-            "last_modified": "02/09/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 91,

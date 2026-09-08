@@ -627,7 +627,7 @@ function render() {
     if (groupMode !== 'none' && rows.length > 0) {
         let groups = groupMode === 'title' ? App.groupByTitle(rows) : App.groupByMaster(rows);
         let summaryKeyFn = groupMode === 'title'
-            ? (r => App.fmtDate(r.date, r.date_precision, r.master_sequence_num))
+            ? (r => App.fmtDate(r.date, r.sequence_number))
             : (r => r.title);
         for (const [groupName, rs] of groups) {
             let disambigLabels = App.computeDisambiguationLabels(rs, summaryKeyFn);
@@ -816,7 +816,7 @@ $('archiveContainer').addEventListener('click', e => {
         requestedItems.push({
             key,
             title: r.title || '',
-            date: App.fmtDate(r.date, r.date_precision, r.master_sequence_num),
+            date: App.fmtDate(r.date, r.sequence_number),
             master: r.master || '',
         });
         b.classList.add('requested');

@@ -2,7 +2,7 @@
 
 hiya i'm MrLeoD96/LD. i started trading not too long ago (3 months or so) but i thought i'd do my own website for trading since those are always fun
 
-please have a readthrough of my wants/rules xx
+please have a readthrough of my wants/rules xxx
 
 ---
 

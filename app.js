@@ -56,22 +56,40 @@
     }
 
     // -- dates -----------------------------------------------------------
+    // Schema v3 collapsed the old two-field {date: "DD/MM/YYYY", precision}
+    // into one canonical "DD-MM-YYYY" string, "00" standing in for an
+    // unknown day and/or month (e.g. "00-12-2025" is "December 2025",
+    // "00-00-2025" is just "2025") - see archive_app.py's parse_stored_date.
+    // Month names are spelled out explicitly rather than via
+    // toLocaleDateString so display doesn't depend on the visitor's browser
+    // locale.
+    const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+
     function dateValue(v) {
         if (!v) return 0;
-        let p = String(v).split("/");
+        let p = String(v).split("-");
         if (p.length !== 3) return 0;
-        return new Date(+p[2], +p[1] - 1, +p[0]).getTime() || 0;
+        let d = +p[0], mo = +p[1], y = +p[2];
+        if (!y) return 0;
+        // Missing day/month fall back to the 1st/January so a year- or
+        // month-only date still sorts chronologically among exact ones.
+        return new Date(y, (mo || 1) - 1, d || 1).getTime() || 0;
     }
 
-    function fmtDate(v, precision, seq) {
+    function fmtDate(v, seq) {
         if (!v) return "-";
-        let p = String(v).split("/");
-        if (p.length !== 3) return v;
-        let d = new Date(+p[2], +p[1] - 1, +p[0]), s = seq ? " (" + seq + ")" : "";
-        if (precision === "day") return d.toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" }) + s;
-        if (precision === "month") return d.toLocaleDateString("en-GB", { year: "numeric", month: "long" }) + s;
-        if (precision === "year") return p[2] + s;
-        return v + s;
+        let s = seq ? " (" + seq + ")" : "";
+        let p = String(v).split("-");
+        // Not a recognized DD-MM-YYYY form - shown as-is. This is also used
+        // for nft_date, which may hold free text like "FOREVER EXCEPT
+        // THROUGH MASTER" rather than a date at all.
+        if (p.length !== 3) return v + s;
+        let d = +p[0], mo = +p[1], y = +p[2];
+        if (!y) return v + s;
+        if (d && mo) return `${MONTH_NAMES[mo - 1]} ${String(d).padStart(2, "0")}, ${y}${s}`;
+        if (mo) return `${MONTH_NAMES[mo - 1]} ${y}${s}`;
+        return `${y}${s}`;
     }
 
     // -- text helpers --------------------------------------------------
@@ -89,10 +107,17 @@
     // but this file still checked `r.trade_status || r.trading_status` -
     // dead code covering for a naming split that's now resolved on the
     // export side. There is exactly one field name from here on.
+    //
+    // Schema v3 split the old single free-text `venue_production` into
+    // tour/production/venue/city, `notes` into master_notes/trader_notes,
+    // and renamed format_type/quality_resolution/file_size_original_text/
+    // subtitle_type to format/resolution/file_size/subtitles. All of it is
+    // searchable, same as the old fields were.
     function searchable(r) {
-        return [r.title, r.venue_production, r.master, r.performance_type, r.performance_time,
-            r.format_type, r.quality_resolution, r.file_size_original_text,
-            r.subtitle_type, r.cast, r.notes, r.date, r.trading_status]
+        return [r.title, r.tour, r.production, r.venue, r.city, r.master,
+            r.performance_type, r.performance_time, r.media_type, r.recording_type, r.completeness,
+            r.format, r.resolution, r.file_size, r.subtitles,
+            r.cast, r.master_notes, r.trader_notes, r.flags, r.date, r.nft_date, r.trading_status]
             .filter(Boolean).join(" ").toLowerCase();
     }
 
@@ -168,9 +193,12 @@
 
         return rows.filter(r => {
             if (q && !searchable(r).includes(q)) return false;
-            if (proshotOnly && !r.is_proshot) return false;
+            // is_proshot (bool) -> recording_type (Bootleg/Pro-Shot/House
+            // Cam/Press Reel/Demo/Soundboard) in schema v3; "Proshot only"
+            // keeps its old meaning of "exactly Pro-Shot" for now.
+            if (proshotOnly && r.recording_type !== "Pro-Shot") return false;
             if (resolutions && resolutions.size > 0) {
-                if (!r.quality_resolution || !resolutions.has(r.quality_resolution)) return false;
+                if (!r.resolution || !resolutions.has(r.resolution)) return false;
             }
             if (yearRange && (yearRange.min != null || yearRange.max != null)) {
                 const y = getYear(r.date);
@@ -197,7 +225,7 @@
     function distinctResolutions(shows) {
         const set = new Set();
         (shows || []).forEach(r => {
-            const val = String(r.quality_resolution || "").trim();
+            const val = String(r.resolution || "").trim();
             if (val && val.toLowerCase() !== "unknown") set.add(val);
         });
         return Array.from(set).sort();
@@ -312,8 +340,8 @@
         let proshotCount = 0;
         shows.forEach(r => {
             titles.add(String(r.title || "Untitled").trim() || "Untitled");
-            totalBytes += parseSizeString(r.file_size_original_text);
-            if (r.is_proshot) proshotCount++;
+            totalBytes += parseSizeString(r.file_size);
+            if (r.recording_type === "Pro-Shot") proshotCount++;
         });
         return {
             showCount: titles.size,
@@ -411,17 +439,60 @@
         // header, so the record's own line shows its show title, same as
         // ungrouped).
         let titleText = groupMode === "title"
-            ? fmtDate(r.date, r.date_precision, r.master_sequence_num)
+            ? fmtDate(r.date, r.sequence_number)
             : (r.title || "-");
         let dateHtml = groupMode === "title" ? "" :
-            `<div class="summary-meta">${ICONS.calendar}<span>${hi(fmtDate(r.date, r.date_precision, r.master_sequence_num), q)}</span></div>`;
+            `<div class="summary-meta">${ICONS.calendar}<span>${hi(fmtDate(r.date, r.sequence_number), q)}</span></div>`;
 
-        let { formats, sizes } = getColoredFormatsAndSizes(r.format_type, r.file_size_original_text, q);
+        let { formats, sizes } = getColoredFormatsAndSizes(r.format, r.file_size, q);
         let statusPillHtml = renderStatusPill(r.trading_status);
-        let proshotPillHtml = r.is_proshot ? `<span class="proshot-pill">${ICONS.star} Proshot</span>` : "";
+        // is_proshot (bool) -> recording_type (schema v3) can be Pro-Shot,
+        // House Cam, Press Reel, Demo, or Soundboard - anything other than
+        // the Bootleg default gets the same pill, now labeled with its
+        // actual type instead of a fixed "Proshot".
+        let recTypePillHtml = (r.recording_type && r.recording_type !== "Bootleg")
+            ? `<span class="proshot-pill">${ICONS.star} ${esc(r.recording_type)}</span>` : "";
         // Shown when a sibling in the same group would otherwise look
         // identical in this collapsed view (see computeDisambiguationLabels).
         let disambigHtml = disambigLabel ? `<span class="disambig-pill">${hi(disambigLabel, q)}</span>` : "";
+
+        // "Where" used to be one free-text field (venue_production) filled
+        // in with whatever was most specific at the time - schema v3 split
+        // that into tour/production/venue/city. Same fallback order the
+        // desktop app itself uses for its filename convention.
+        let whereText = r.production || r.venue || r.tour || "-";
+
+        // Audio-only masters (media_type) don't have a resolution.
+        let isAudio = String(r.media_type || "").toLowerCase() === "audio";
+        let resolutionHtml = isAudio ? "" : `
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.monitor} Resolution</span>
+                        <span class="detail-value">${hi(r.resolution || "-", q)}</span>
+                    </div>`;
+
+        // These four are new in schema v3 and often blank, so - unlike the
+        // always-shown details above - they only render when there's
+        // actually something to say.
+        let completenessHtml = (r.completeness && r.completeness !== "Full Show") ? `
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.check} Completeness</span>
+                        <span class="detail-value">${hi(r.completeness, q)}</span>
+                    </div>` : "";
+        let nftHtml = r.nft_date ? `
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.calendar} NFT Until</span>
+                        <span class="detail-value">${hi(fmtDate(r.nft_date), q)}</span>
+                    </div>` : "";
+        let flagsHtml = r.flags ? `
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.alert} Flags</span>
+                        <span class="detail-value">${hi(r.flags, q)}</span>
+                    </div>` : "";
+        let traderNotesHtml = r.trader_notes ? `
+                    <div class="detail full">
+                        <span class="detail-label">${ICONS.info} Trader Notes</span>
+                        <span class="detail-value">${hi(r.trader_notes, q)}</span>
+                    </div>` : "";
 
         return `
     <article class="record" data-id="${esc(id)}">
@@ -431,10 +502,10 @@
                     <div class="title-line">${hi(titleText, q)}</div>
                     ${leads(r.cast) ? `<div class="lead-line">${hi(leads(r.cast), q)}</div>` : ""}
                 </div>
-                <div class="summary-meta">${ICONS.pin}<span>${hi(r.venue_production || "-", q)}</span></div>
+                <div class="summary-meta">${ICONS.pin}<span>${hi(whereText, q)}</span></div>
                 ${dateHtml}
                 ${disambigHtml}
-                ${proshotPillHtml}
+                ${recTypePillHtml}
                 ${statusPillHtml}
                 <button class="request-btn summary-req ${requested ? "requested" : ""}" data-request="${esc(id)}" title="Add to trade request">
                     ${requested ? ICONS.check : ICONS.plus}
@@ -454,27 +525,23 @@
                     <div class="detail">
                         <span class="detail-label">${ICONS.file} Format</span>
                         <span class="detail-value">${formats}</span>
-                    </div>
-                    <div class="detail">
-                        <span class="detail-label">${ICONS.monitor} Resolution</span>
-                        <span class="detail-value">${hi(r.quality_resolution || "-", q)}</span>
-                    </div>
+                    </div>${resolutionHtml}
                     <div class="detail">
                         <span class="detail-label">${ICONS.hdd} File size</span>
                         <span class="detail-value">${sizes}</span>
                     </div>
                     <div class="detail">
                         <span class="detail-label">${ICONS.captions} Subtitles</span>
-                        <span class="detail-value">${hi(r.subtitle_type || "-", q)}</span>
-                    </div>
+                        <span class="detail-value">${hi(r.subtitles || "-", q)}</span>
+                    </div>${completenessHtml}${nftHtml}${flagsHtml}
                     <div class="detail full">
                         <span class="detail-label">${ICONS.users} Cast</span>
                         <span class="detail-value">${hi(r.cast || "-", q)}</span>
                     </div>
                     <div class="detail full">
-                        <span class="detail-label">${ICONS.fileText} Notes</span>
-                        <span class="detail-value">${hi(r.notes || "-", q)}</span>
-                    </div>
+                        <span class="detail-label">${ICONS.fileText} Master Notes</span>
+                        <span class="detail-value">${hi(r.master_notes || "-", q)}</span>
+                    </div>${traderNotesHtml}
                 </div>
             </div>
         </details>

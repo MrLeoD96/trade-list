@@ -56,39 +56,75 @@ body {
 }
 button, input, select { font: inherit; color: inherit; }
 
-.site-header {
-    padding: 48px 20px 24px;
+.site-nav {
     border-bottom: 1px solid var(--line);
     background: var(--paper);
+    position: sticky; top: 0; z-index: 60;
 }
-.header-inner, .page { max-width: 1080px; margin: 0 auto; }
-.site-title {
-    margin: 0;
-    text-align: center;
-    font: 600 clamp(32px, 5vw, 48px)/1.1 var(--sans);
-    letter-spacing: -0.03em;
-    color: #f4f7f2;
+.nav-inner {
+    max-width: 1080px; margin: 0 auto; padding: 0 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+}
+.nav-brand {
+    padding: 18px 0;
+    font: 700 19px var(--sans); color: var(--accent);
+    text-decoration: none; letter-spacing: -0.01em; white-space: nowrap;
+    transition: color 0.15s ease;
+}
+.nav-brand:hover { color: var(--accent2); }
+.nav-links { display: flex; align-items: stretch; gap: 2px; flex-wrap: wrap; }
+.nav-link {
+    display: flex; align-items: center; position: relative;
+    height: 60px; padding: 0 14px;
+    font: 500 14px var(--sans); color: var(--soft);
+    text-decoration: none; transition: color 0.15s ease;
+}
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--text); }
+.nav-link.active::after {
+    content: ''; position: absolute; left: 14px; right: 14px; bottom: 0;
+    height: 2px; background: var(--accent);
+}
+.nav-link-cta {
+    align-self: center; height: 38px; margin: 0 0 0 4px;
+    border: 1px solid var(--line); border-radius: 6px;
+}
+.nav-link-cta:hover { border-color: var(--paper3); background: var(--paper2); }
+.nav-link-cta.active { border-color: var(--accent); color: var(--accent); }
+.nav-link-cta.active::after { display: none; }
+
+.page { max-width: 1080px; margin: 0 auto; padding: 24px 20px 80px; }
+.page-section { display: none; }
+.page-section.active { display: block; }
+.page-markdown {
+    max-width: 760px; margin: 0 auto; padding: 44px 4px;
+    color: var(--soft); font-size: 17px; line-height: 1.75;
+}
+.page-markdown > *:first-child { margin-top: 0; }
+.page-markdown > *:last-child { margin-bottom: 0; }
+.page-markdown p { margin: 0 0 1em; }
+.page-empty { color: var(--dim); font-style: italic; }
+.page-plaintext {
+    white-space: pre-wrap; word-break: break-word;
+    font-family: inherit; color: var(--soft); margin: 0;
 }
 
-/* Collection stats, then last-updated, sit close under the title as one
-   quiet identity block - above the fold and before the (often long,
-   default-open) Introduction section, so they're seen immediately rather
-   than after scrolling past the preamble. */
-.stats-line {
-    text-align: center;
-    color: var(--soft);
-    font: 600 12px var(--mono-font);
-    letter-spacing: 0.02em;
-    margin: 14px 0 4px;
+/* Stat cards - fills in a {site status} placeholder anywhere in a page's
+   README.md content with a live snapshot of the collection. */
+.stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px; margin: 28px 0;
 }
-.stats-line strong { color: var(--accent2); font-weight: 700; }
-.last-updated {
-    text-align: center;
-    color: var(--muted);
-    font: 11px var(--mono-font);
-    margin: 0 0 26px;
+.stat-card {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
+    padding: 20px; text-align: center;
 }
-.last-updated .date { color: var(--accent2); }
+.stat-value { font: 800 26px var(--sans); color: var(--text); margin-bottom: 4px; }
+.stat-label {
+    font: 600 11px var(--mono-font); color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+}
 
 /* One control row: search (primary, takes remaining space), sort, and a
    single Filters toggle - replaces three previously separate rows
@@ -132,6 +168,12 @@ button, input, select { font: inherit; color: inherit; }
 }
 .suggestion-item:hover, .suggestion-item.active { background: var(--accent-soft); color: var(--text); }
 .suggestion-item .highlight { background: var(--amber); color: #211a10; }
+.suggestion-type {
+    display: inline-block; min-width: 38px;
+    font: 600 9px var(--mono-font); text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--dim); margin-right: 8px;
+}
+.suggestion-item.active .suggestion-type, .suggestion-item:hover .suggestion-type { color: var(--muted); }
 
 .control-row .sort {
     height: 48px; flex-shrink: 0; color: var(--soft); background: var(--bg);
@@ -228,48 +270,40 @@ button, input, select { font: inherit; color: inherit; }
 .range-input.range-min { z-index: 3; }
 .range-input.range-max { z-index: 4; }
 
-.page { padding: 24px 20px 80px; }
-.preamble-shell {
-    margin-bottom: 32px; border: 1px solid var(--line);
-    background: var(--paper); border-radius: 8px; overflow: hidden; display: none;
-}
-.preamble-shell.open { display: block; }
-.preamble-head {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; padding: 14px 18px; background: var(--paper2);
-    border-bottom: 1px solid transparent; cursor: pointer; transition: background 0.2s;
-}
-.preamble-shell.open .preamble-head { border-bottom-color: var(--line); }
-.preamble-head:hover { background: var(--paper3); }
-.preamble-label {
-    font: 600 11px var(--mono-font); letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--accent);
-    display: flex; align-items: center; gap: 8px;
-}
-.preamble-toggle { color: var(--muted); font: 11px var(--mono-font); display: flex; align-items: center; gap: 4px; }
-.preamble-toggle svg { transition: transform 0.25s var(--ease); }
-.preamble-shell.open .preamble-toggle svg { transform: rotate(180deg); }
-.preamble-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.35s var(--ease); }
-.preamble-shell.open .preamble-body { grid-template-rows: 1fr; }
-.preamble-content { min-height: 0; overflow: hidden; }
-.preamble-markdown { padding: 22px 24px; color: var(--soft); font-size: 14px; }
-.preamble-markdown > *:first-child { margin-top: 0; }
-.preamble-markdown > *:last-child { margin-bottom: 0; }
-
 /* Markdown Styling with Nested Colors */
-.preamble-markdown h1, .preamble-markdown h2, .preamble-markdown h3 { font-family: var(--sans); font-weight: 600; }
-.preamble-markdown h1 { color: var(--text); font-size: 24px; }
-.preamble-markdown h2 { color: var(--accent2); font-size: 20px; }
-.preamble-markdown h3 { color: var(--purple); font-size: 18px; }
-.preamble-markdown strong { color: var(--accent); font-weight: 700; }
-.preamble-markdown em { color: var(--purple); font-style: italic; }
-.preamble-markdown strong em, .preamble-markdown em strong { color: var(--amber); font-weight: 700; font-style: italic; }
-.preamble-markdown a { color: var(--accent2); text-decoration: none; border-bottom: 1px solid transparent; }
-.preamble-markdown a:hover { border-bottom-color: var(--accent2); }
-.preamble-markdown code { font-family: var(--mono-font); font-size: 0.85em; background: var(--bg); padding: 2px 5px; border-radius: 4px; }
+.page-markdown h1, .page-markdown h2, .page-markdown h3 { font-family: var(--sans); font-weight: 600; }
+.page-markdown h1 { color: var(--text); font-size: 28px; }
+/* H2 is the biggest heading on these pages on purpose: README.md's own
+   "# Home"/"# Wants"/etc. top-level headings are structural (they pick
+   which page a section becomes, see splitMarkdownSections) and never
+   render as visible text, so whatever "##" heading opens a section's
+   actual content is the first, biggest thing a visitor sees there - a
+   hero title, not a mid-level subheading. */
+.page-markdown h2 { color: var(--accent2); font-size: 46px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.page-markdown h3 { color: var(--purple); font-size: 21px; }
+.page-markdown h4, .page-markdown h5, .page-markdown h6 {
+    font-family: var(--sans); font-weight: 500; color: var(--muted);
+}
+.page-markdown h5 { font-size: 14px; letter-spacing: 0.02em; }
+.page-markdown strong { color: var(--accent); font-weight: 700; }
+.page-markdown em { color: var(--purple); font-style: italic; }
+.page-markdown strong em, .page-markdown em strong { color: var(--amber); font-weight: 700; font-style: italic; }
+.page-markdown a { color: var(--accent2); text-decoration: none; border-bottom: 1px solid transparent; }
+.page-markdown a:hover { border-bottom-color: var(--accent2); }
+.page-markdown code { font-family: var(--mono-font); font-size: 0.85em; background: var(--bg); padding: 2px 5px; border-radius: 4px; }
+.page-markdown ul, .page-markdown ol { padding-left: 22px; }
+.page-markdown li { margin: 4px 0; }
+
+/* Opening title/subtitle pair: when a page's content starts with two
+   headings back-to-back (nothing in between - e.g. "## My Rules" directly
+   followed by "##### buy me a dinner first, won't ya?"), they're a title
+   and its subtitle, so both get centered and pulled close together
+   instead of sitting left-aligned like ordinary body headings. */
+.page-markdown .md-open-title { text-align: center; margin: 0 0 2px; }
+.page-markdown .md-open-subtitle { text-align: center; margin: -2px 0 30px; }
 
 .archive-head {
-    margin-bottom: 16px; border-bottom: 1px solid var(--line); padding-bottom: 12px;
+    margin: 28px 0 16px; border-bottom: 1px solid var(--line); padding-bottom: 12px;
 }
 .archive-head-row {
     display: flex; align-items: center; justify-content: space-between;
@@ -391,6 +425,19 @@ button, input, select { font: inherit; color: inherit; }
     white-space: nowrap; flex-shrink: 0;
 }
 
+/* Informational flag bubble (Censored/Uncensored, ...) - same shape as the
+   pills above but neutral, since not every flag is a problem; a flag that
+   IS a data-quality issue (corrupt/damaged/etc, see classifyFlagText in
+   app.js) gets the amber .nft-pill.nft-amber treatment instead. */
+.flag-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 8px; border-radius: 4px;
+    font: 600 10px var(--mono-font); text-transform: uppercase;
+    border: 1px solid var(--line); color: var(--muted);
+    white-space: nowrap; flex-shrink: 0;
+}
+.flag-pill svg { width: 10px; height: 10px; }
+
 /* Summary Request Button */
 .request-btn.summary-req {
     margin: 0; padding: 0; width: 30px; height: 30px;
@@ -415,6 +462,14 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 .detail-label svg { width: 12px; height: 12px; opacity: 0.8; stroke: currentColor; fill: none; stroke-width: 2; }
 .detail-value { color: var(--soft); font-size: 13px; word-break: break-word; line-height: 1.5; }
 .detail.full { grid-column: 1 / -1; }
+
+/* Cast names are deep links to that actor's own filtered page - see
+   #videos/cast/<name> routing - styled to read as text first, link
+   second, matching the rest of the card rather than looking like a
+   generic web link. */
+.cast-link { color: inherit; text-decoration: none; border-bottom: 1px dashed var(--dim); transition: color 0.15s ease, border-color 0.15s ease; }
+.cast-link:hover { color: var(--accent2); border-bottom-color: var(--accent2); }
+.lead-line .cast-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
 .request-btn {
     display: inline-flex; align-items: center; gap: 6px;
@@ -469,12 +524,16 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
     .summary-meta { flex: 1; font-size: 11px; }
     .proshot-pill { order: 4; }
     .disambig-pill { order: 4; }
+    .flag-pill { order: 4; }
     .nft-pill { order: 4; flex-basis: 100%; margin-top: 4px; }
     .request-btn.summary-req { margin-left: auto; order: 5; }
     .chevron-icon { order: 6; }
 }
 @media (max-width: 600px) {
-    .site-header { padding: 32px 14px 18px; }
+    .nav-inner { padding: 0 14px; }
+    .nav-brand { padding: 14px 0; font-size: 17px; }
+    .nav-link { height: 44px; padding: 0 10px; font-size: 13px; }
+    .nav-link-cta { height: 32px; }
     .page { padding: 18px 14px 60px; }
     .control-row { flex-wrap: wrap; }
     .search-box { flex-basis: 100%; }
@@ -492,11 +551,37 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 </head>
 <body>
 
-<header class="site-header">
-    <div class="header-inner">
-        <h1 class="site-title" id="siteTitle">LeoD's Trading List :)</h1>
-        <div class="stats-line" id="statsLine"></div>
-        <div class="last-updated" id="lastUpdated"></div>
+<nav class="site-nav">
+    <div class="nav-inner">
+        <a href="#home" class="nav-brand" id="navBrand">LeoD's Trading List :)</a>
+        <div class="nav-links">
+            <a href="#home" class="nav-link active" data-page="home">Home</a>
+            <a href="#videos" class="nav-link" data-page="videos">Videos</a>
+            <a href="#wants" class="nav-link" data-page="wants">Wants</a>
+            <a href="#rules" class="nav-link" data-page="rules">Rules</a>
+            <a href="#contact" class="nav-link nav-link-cta" data-page="contact">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<main class="page">
+    <section class="page-section active" id="page-home" data-page="home">
+        <div class="page-markdown" id="homeContent"></div>
+    </section>
+
+    <section class="page-section" id="page-wants" data-page="wants">
+        <div class="page-markdown" id="wantsContent"></div>
+    </section>
+
+    <section class="page-section" id="page-rules" data-page="rules">
+        <div class="page-markdown" id="rulesContent"></div>
+    </section>
+
+    <section class="page-section" id="page-contact" data-page="contact">
+        <div class="page-markdown" id="contactContent"></div>
+    </section>
+
+    <section class="page-section" id="page-videos" data-page="videos">
         <div class="control-row">
             <div class="search-box">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -536,47 +621,26 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
                 </div>
             </div>
         </div>
-    </div>
-</header>
 
-<main class="page">
-    <section class="preamble-shell open" id="preambleShell">
-        <div class="preamble-head" id="preambleHead">
-            <span class="preamble-label">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                Introduction
-            </span>
-            <span class="preamble-toggle" id="preambleToggle">
-                Hide
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </span>
-        </div>
-        <div class="preamble-body">
-            <div class="preamble-content">
-                <div class="preamble-markdown" id="preambleContent"></div>
+        <div class="archive-head">
+            <div class="archive-head-row">
+                <h2 class="archive-heading" id="archiveHeading">Videos</h2>
+                <div class="archive-head-controls">
+                    <span class="status" id="statusText">Loading archive…</span>
+                    <button class="tool" id="toggleShowsBtn">Collapse shows</button>
+                    <button class="tool" id="toggleRecsBtn">Collapse recs</button>
+                </div>
+            </div>
+            <div class="slug-filter-banner" id="slugFilterBanner">
+                <button type="button" id="clearSlugFilter">View full collection</button>
             </div>
         </div>
+
+        <div id="archiveContainer">
+            <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
+        <div class="no-results" id="noResults">No matching recordings.</div>
     </section>
-
-    <div class="archive-head">
-        <div class="archive-head-row">
-            <h2 class="archive-heading">Recordings</h2>
-            <div class="archive-head-controls">
-                <span class="status" id="statusText">Loading archive…</span>
-                <button class="tool" id="toggleShowsBtn">Collapse shows</button>
-                <button class="tool" id="toggleRecsBtn">Collapse recs</button>
-            </div>
-        </div>
-        <div class="slug-filter-banner" id="slugFilterBanner">
-            Showing <strong id="slugFilterName"></strong> only ·
-            <button type="button" id="clearSlugFilter">view full archive</button>
-        </div>
-    </div>
-
-    <div id="archiveContainer">
-        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-    </div>
-    <div class="no-results" id="noResults">No matching recordings.</div>
 </main>
 
 <div class="request-pill-group" id="requestPill">
@@ -606,7 +670,7 @@ const $ = id => document.getElementById(id);
 
 let allData = [], dataById = new Map();
 let currentQuery = '', sortMode = 'title-asc', requestedItems = [], searchTimer;
-let activeResolutions = new Set(), proshotOnly = false, titleSlugFilter = '';
+let activeResolutions = new Set(), proshotOnly = false, titleSlugFilter = '', castSlugFilter = '';
 let yearBounds = null;               // {min, max} across the whole archive
 let yearRange = { min: null, max: null }; // current slider selection; null bound = that side is unrestricted
 
@@ -616,13 +680,18 @@ function render() {
     currentQuery = currentQuery || '';
     let q = currentQuery.trim().toLowerCase();
     let filtered = App.filterRows(allData, {
-        query: q, resolutions: activeResolutions, yearRange, proshotOnly, titleSlug: titleSlugFilter,
+        query: q, resolutions: activeResolutions, yearRange, proshotOnly,
+        titleSlug: titleSlugFilter, castSlug: castSlugFilter,
     });
     let rows = App.sortRows(filtered, sortMode);
     let html = '';
     // Title A-Z groups by show; Master A-Z groups by taper - both fold
-    // into expand/collapse-able sections, just keyed differently.
+    // into expand/collapse-able sections, just keyed differently. Deep-
+    // linked into one specific show, though, "grouped by title" is
+    // meaningless - there's only ever one title to group, so it behaves
+    // like an ungrouped sort instead (the dropdown itself is left alone).
     let groupMode = sortMode === 'title-asc' ? 'title' : (sortMode === 'master-asc' ? 'master' : 'none');
+    if (groupMode === 'title' && titleSlugFilter) groupMode = 'none';
 
     if (groupMode !== 'none' && rows.length > 0) {
         let groups = groupMode === 'title' ? App.groupByTitle(rows) : App.groupByMaster(rows);
@@ -639,29 +708,22 @@ function render() {
                     <span class="group-chevron">${App.ICONS.chevron}</span>
                 </summary>
                 <div class="group-content">
-                    ${rs.map(r => App.record(r, q, groupMode, isRequested(r), disambigLabels.get(r) || '')).join('')}
+                    ${rs.map(r => App.record(r, q, groupMode, isRequested(r), disambigLabels.get(r) || '', castSlugFilter)).join('')}
                 </div>
             </details>`;
         }
     } else {
-        html = rows.map(r => App.record(r, q, 'none', isRequested(r), '')).join('');
+        html = rows.map(r => App.record(r, q, 'none', isRequested(r), '', castSlugFilter)).join('');
     }
 
     $('archiveContainer').innerHTML = html;
     $('noResults').style.display = rows.length ? 'none' : 'block';
     let yearFilterActive = yearBounds && (yearRange.min !== yearBounds.min || yearRange.max !== yearBounds.max);
-    let anyFilterActive = q || activeResolutions.size || yearFilterActive || proshotOnly || titleSlugFilter;
+    let anyFilterActive = q || activeResolutions.size || yearFilterActive || proshotOnly || titleSlugFilter || castSlugFilter;
     $('statusText').textContent = anyFilterActive
         ? `${rows.length} of ${allData.length} recordings`
         : `${allData.length} recordings`;
     updateToggleStates();
-}
-
-function renderStats() {
-    const stats = App.computeStats(allData);
-    let html = `<strong>${stats.recordingCount}</strong> recordings · <strong>${stats.showCount}</strong> shows · <strong>${stats.totalSizeText}</strong>`;
-    if (stats.proshotCount) html += ` · <strong>${stats.proshotCount}</strong> proshot`;
-    $('statsLine').innerHTML = html;
 }
 
 function buildFilterChips() {
@@ -854,8 +916,8 @@ $('emailRequestBtn').addEventListener('click', () => {
     window.location.href = `mailto:MrLeoD96@gmail.com?subject=${subject}&body=${encodeURIComponent(body)}`;
 });
 
-// -- Search + show-name suggestions (Google-style autocomplete) -----------
-let suggestionTitles = [], activeSuggestionIndex = -1;
+// -- Search + suggestions (Google-style autocomplete, shows AND cast) -----
+let suggestionItems = [], activeSuggestionIndex = -1;
 
 function setSearchValue(value) {
     $('searchInput').value = value;
@@ -867,20 +929,34 @@ function setSearchValue(value) {
 function updateSuggestions(query) {
     const q = query.trim().toLowerCase();
     if (!q) { hideSuggestions(); return; }
-    const titles = Array.from(new Set(allData.map(r => r.title).filter(Boolean)));
-    const matches = titles.filter(t => t.toLowerCase().includes(q)).slice(0, 8);
+
+    const titleMatches = Array.from(new Set(allData.map(r => r.title).filter(Boolean)))
+        .filter(t => t.toLowerCase().includes(q))
+        .slice(0, 5)
+        .map(label => ({ type: 'show', label, slug: App.slugify(label) }));
+
+    const castMatches = App.distinctCastNames(allData)
+        .filter(n => n.toLowerCase().includes(q))
+        .slice(0, 5)
+        .map(label => ({ type: 'cast', label, slug: App.slugify(label) }));
+
+    const matches = [...titleMatches, ...castMatches].slice(0, 8);
     if (!matches.length) { hideSuggestions(); return; }
-    suggestionTitles = matches;
+
+    suggestionItems = matches;
     activeSuggestionIndex = -1;
-    $('searchSuggestions').innerHTML = matches.map((t, i) =>
-        `<div class="suggestion-item" role="option" data-index="${i}">${App.hi(t, q)}</div>`).join('');
+    $('searchSuggestions').innerHTML = matches.map((m, i) =>
+        `<div class="suggestion-item" role="option" data-index="${i}">` +
+        `<span class="suggestion-type">${m.type === 'show' ? 'Show' : 'Cast'}</span>` +
+        `${App.hi(m.label, q)}</div>`
+    ).join('');
     $('searchSuggestions').style.display = 'block';
 }
 
 function hideSuggestions() {
     $('searchSuggestions').style.display = 'none';
     $('searchSuggestions').innerHTML = '';
-    suggestionTitles = [];
+    suggestionItems = [];
     activeSuggestionIndex = -1;
 }
 
@@ -893,13 +969,16 @@ function highlightActiveSuggestion() {
 }
 
 // Selecting a suggestion (click, or Enter while highlighted) drops you
-// into that show's deep link - same #show-name filter the copy-able
-// links use - rather than doing a plain text search.
-function selectSuggestion(title) {
+// into a deep link rather than doing a plain text search: a show
+// suggestion goes to #videos/<show>, a cast suggestion goes to
+// #videos/cast/<name> - every recording featuring that person, with their
+// name highlighted throughout (see App.record's castHighlightSlug).
+function selectSuggestion(item) {
     hideSuggestions();
     setSearchValue('');
     currentQuery = '';
-    location.hash = App.slugify(title);
+    if (item.type === 'cast') goToPage('videos', '', item.slug);
+    else goToPage('videos', item.slug);
 }
 
 $('searchInput').addEventListener('input', e => {
@@ -921,7 +1000,7 @@ $('searchInput').addEventListener('blur', () => {
 $('searchSuggestions').addEventListener('mousedown', e => {
     const item = e.target.closest('.suggestion-item');
     if (!item) return;
-    selectSuggestion(suggestionTitles[+item.dataset.index]);
+    selectSuggestion(suggestionItems[+item.dataset.index]);
 });
 
 $('clearSearch').addEventListener('click', () => {
@@ -933,7 +1012,7 @@ $('searchInput').addEventListener('keydown', e => {
     const suggestionsOpen = $('searchSuggestions').style.display === 'block';
     if (e.key === 'ArrowDown' && suggestionsOpen) {
         e.preventDefault();
-        activeSuggestionIndex = Math.min(activeSuggestionIndex + 1, suggestionTitles.length - 1);
+        activeSuggestionIndex = Math.min(activeSuggestionIndex + 1, suggestionItems.length - 1);
         highlightActiveSuggestion();
     } else if (e.key === 'ArrowUp' && suggestionsOpen) {
         e.preventDefault();
@@ -941,7 +1020,7 @@ $('searchInput').addEventListener('keydown', e => {
         highlightActiveSuggestion();
     } else if (e.key === 'Enter' && suggestionsOpen && activeSuggestionIndex >= 0) {
         e.preventDefault();
-        selectSuggestion(suggestionTitles[activeSuggestionIndex]);
+        selectSuggestion(suggestionItems[activeSuggestionIndex]);
     } else if (e.key === 'Escape') {
         if (suggestionsOpen) {
             hideSuggestions();
@@ -960,41 +1039,94 @@ document.addEventListener('keydown', e => {
 
 $('sortSelect').addEventListener('change', e => { sortMode = e.target.value; render(); });
 
-$('preambleHead').addEventListener('click', () => {
-    let s = $('preambleShell'), open = s.classList.toggle('open');
-    $('preambleToggle').firstChild.textContent = open ? 'Hide ' : 'Show ';
-});
-
 window.addEventListener('scroll', () => { $('backTop').classList.toggle('show', scrollY > 600); }, { passive: true });
 $('backTop').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
 
-// -- Deep link: #show-name filters the whole page to that show ------------
-// e.g. .../trade-list/#cabaret shows only recordings whose title matches
-// "cabaret" - build these links by hand (lowercase the title, spaces to
-// hyphens); there's no per-recording link, only per-show.
-function applyHashFilter() {
-    const slug = decodeURIComponent(location.hash.replace(/^#/, '')).trim().toLowerCase();
-    titleSlugFilter = slug;
-    if (slug) {
-        const match = allData.find(r => App.slugify(r.title).includes(slug));
-        $('slugFilterName').textContent = match ? match.title : `"${slug}"`;
-        $('slugFilterBanner').classList.add('show');
-    } else {
-        $('slugFilterBanner').classList.remove('show');
-    }
+// -- Routing: #home, #videos, #wants, #rules, #contact switch pages;
+// #videos/show-name additionally filters the Videos page to that show
+// (build these by hand - lowercase the title, spaces to hyphens - there's
+// no per-recording link, only per-show). Unknown/empty hashes fall back to
+// Home, matching "first tab is Home" from the nav itself. -----------------
+const PAGES = ['home', 'videos', 'wants', 'rules', 'contact'];
+
+function parseRoute() {
+    const raw = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
+    const parts = raw.split('/').filter(Boolean);
+    const page = PAGES.includes(parts[0]) ? parts[0] : 'home';
+    const isCast = page === 'videos' && parts[1] === 'cast' && parts[2];
+    const castSlug = isCast ? parts[2].trim().toLowerCase() : '';
+    const slug = page === 'videos' && !isCast && parts[1] ? parts[1].trim().toLowerCase() : '';
+    return { page, slug, castSlug };
 }
 
-$('clearSlugFilter').addEventListener('click', () => {
-    titleSlugFilter = '';
-    $('slugFilterBanner').classList.remove('show');
-    history.replaceState(null, '', location.pathname + location.search);
-    render();
-});
+function goToPage(page, slug, castSlug) {
+    let hash = page;
+    if (castSlug) hash += '/cast/' + castSlug;
+    else if (slug) hash += '/' + slug;
+    location.hash = hash;
+}
 
-window.addEventListener('hashchange', () => { applyHashFilter(); render(); });
+// Sets the "Videos" heading above the archive list: the generic label by
+// default, or - deep-linked into one show or one performer - a heading
+// that names them "in big" rather than relying solely on the small banner
+// link below it.
+function updateArchiveHeading(titleMatch, castName) {
+    let text = 'Videos';
+    if (titleMatch) text = `Videos of ${titleMatch}`;
+    else if (castName) text = `Videos with ${castName}`;
+    $('archiveHeading').textContent = text;
+}
+
+function renderRoute() {
+    const { page, slug, castSlug } = parseRoute();
+    document.querySelectorAll('.page-section').forEach(s => s.classList.toggle('active', s.dataset.page === page));
+    document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.page === page));
+
+    if (page === 'videos') {
+        titleSlugFilter = slug;
+        castSlugFilter = castSlug;
+        if (slug) {
+            const match = allData.find(r => App.slugify(r.title).includes(slug));
+            updateArchiveHeading(match ? match.title : `"${slug}"`, '');
+            $('slugFilterBanner').classList.add('show');
+        } else if (castSlug) {
+            const match = allData.flatMap(r => App.parseCastNames(r.cast))
+                .find(name => App.slugify(name).includes(castSlug));
+            updateArchiveHeading('', match || `"${castSlug}"`);
+            $('slugFilterBanner').classList.add('show');
+        } else {
+            updateArchiveHeading('', '');
+            $('slugFilterBanner').classList.remove('show');
+        }
+        if (!dataLoadFailed) render();
+    }
+    window.scrollTo(0, 0);
+}
+
+$('clearSlugFilter').addEventListener('click', () => goToPage('videos'));
+window.addEventListener('hashchange', renderRoute);
 
 // -- Last updated: prefer the timestamp baked into data.json; only fall
-// back to a live GitHub API call for an old data.json that predates it. --
+// back to a live GitHub API call for an old data.json that predates it.
+// Stored globally (rather than passed around) because the {site status}
+// stat grid can now appear anywhere, possibly more than once, and each
+// copy needs the same value once it's known - see .stat-last-updated
+// below, a class rather than an id for exactly that reason. -------------
+let generatedAtGlobal = null;
+
+function formatLastUpdatedText(generatedAt) {
+    if (!generatedAt) return null;
+    const d = new Date(generatedAt);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function applyLastUpdatedText(text) {
+    document.querySelectorAll('.stat-last-updated-value').forEach(el => {
+        el.textContent = text;
+    });
+}
+
 async function fetchLastUpdatedFromGithub() {
     try {
         let parts = location.hostname.split('.'), owner = parts[0], repo = location.pathname.split('/')[1];
@@ -1004,58 +1136,124 @@ async function fetchLastUpdatedFromGithub() {
         let c = await r.json();
         if (c.length) {
             let d = new Date(c[0].commit.committer.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-            $('lastUpdated').innerHTML = `Last updated <span class="date">${App.esc(d)}</span>`;
+            applyLastUpdatedText(d);
         }
     } catch (e) { console.log('Could not fetch last updated date.', e); }
 }
 
-function renderLastUpdated(generatedAt) {
-    if (generatedAt) {
-        const d = new Date(generatedAt);
-        if (!isNaN(d.getTime())) {
-            const text = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-            $('lastUpdated').innerHTML = `Last updated <span class="date">${App.esc(text)}</span>`;
-            return;
-        }
-    }
+function renderLastUpdated() {
+    const text = formatLastUpdatedText(generatedAtGlobal);
+    if (text) { applyLastUpdatedText(text); return; }
     fetchLastUpdatedFromGithub();
 }
 
-fetch('README.md').then(r => r.ok ? r.text() : null).then(text => {
-    if (!text) return;
-    let html = marked.parse(text), m = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
-    if (m) {
-        let t = document.createElement('div'); t.innerHTML = m[1];
-        $('siteTitle').textContent = t.textContent;
-        html = html.replace(m[0], '');
-    }
-    $('preambleContent').innerHTML = html;
-    $('preambleShell').style.display = 'block';
-}).catch(() => {});
+// -- Static pages (Home/Wants/Rules/Contact) are entirely README-driven:
+// a top-level "# Home", "# Wants", "# Rules", "# Contact" section in
+// README.md becomes that page's content, verbatim. Videos is not on this
+// list - it's the interactive archive above, not markdown. -----------------
+function renderPageMarkdown(elementId, markdown, label) {
+    const el = $(elementId);
+    if (markdown && markdown.trim()) {
+        // marked is loaded from an external CDN - if it's blocked (ad
+        // blocker, offline, a flaky network) don't pretend the section is
+        // missing, just show it as plain text instead of losing the content.
+        let usedMarked = typeof marked !== 'undefined' && !!marked.parse;
+        let html = usedMarked
+            ? marked.parse(markdown)
+            : `<pre class="page-plaintext">${App.esc(markdown)}</pre>`;
 
-fetch('data.json').then(r => { if (!r.ok) throw Error('data'); return r.json(); }).then(d => {
-    let generatedAt = null;
+        // A "{site status}" placeholder anywhere in the section is swapped
+        // for a live stat-card grid, right where it was written (also
+        // stripping the <p> tags marked.js wraps a lone placeholder line
+        // in).
+        if (html.includes('{site status}')) {
+            const statsHtml = getStatsHtml();
+            html = html.replace(/<p>\{site status\}<\/p>/gi, statsHtml)
+                       .replace(/\{site status\}/gi, statsHtml);
+        }
+        el.innerHTML = html;
+        // Title+subtitle centering only makes sense for real rendered
+        // headings, not the plaintext-fallback <pre> block.
+        if (usedMarked) applyOpeningTitlePair(el);
+    } else {
+        el.innerHTML = `<p class="page-empty">Add a <code># ${App.esc(label)}</code> section to your README.md to populate this page.</p>`;
+    }
+}
+
+// When a section opens with two headings back-to-back (nothing between
+// them), treat them as a title+subtitle pair - typically an H2 followed
+// by a small H5 - and center both, tight together, rather than leaving
+// them left-aligned like ordinary body headings.
+const HEADING_TAGS = new Set(['H1', 'H2', 'H3', 'H4', 'H5', 'H6']);
+function applyOpeningTitlePair(el) {
+    const first = el.firstElementChild;
+    if (!first || !HEADING_TAGS.has(first.tagName)) return;
+    const second = first.nextElementSibling;
+    if (!second || !HEADING_TAGS.has(second.tagName)) return;
+    first.classList.add('md-open-title');
+    second.classList.add('md-open-subtitle');
+}
+
+function getStatsHtml() {
+    const stats = App.computeStats(allData);
+    const lastMod = formatLastUpdatedText(generatedAtGlobal) || 'Unknown';
+    return `
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-value">${stats.showCount}</div><div class="stat-label">Shows</div></div>
+        <div class="stat-card"><div class="stat-value">${stats.recordingCount}</div><div class="stat-label">Videos</div></div>
+        <div class="stat-card"><div class="stat-value">${stats.totalSizeText}</div><div class="stat-label">Total Size</div></div>
+        <div class="stat-card"><div class="stat-value stat-last-updated-value" style="font-size: 1.5rem;">${lastMod}</div><div class="stat-label">Last Updated</div></div>
+    </div>`;
+}
+
+function renderStaticPages() {
+    const sections = readmeSections || {};
+    renderPageMarkdown('homeContent', sections['home'], 'Home');
+    renderPageMarkdown('wantsContent', sections['wants'], 'Wants');
+    renderPageMarkdown('rulesContent', sections['rules'], 'Rules');
+    renderPageMarkdown('contactContent', sections['contact'], 'Contact');
+    // Any {site status} grid(s) just got rendered with a placeholder/best-
+    // effort date - fill in the real one (or kick off the GitHub fallback)
+    // once, now that all sections exist in the DOM.
+    renderLastUpdated();
+}
+
+let readmeSections = null;
+let dataLoadFailed = false;
+
+// README.md and data.json load in parallel; the static pages (which may
+// need real numbers for the {site status} stat grid) aren't rendered
+// until BOTH have settled, one way or the other - rendering Home the
+// moment README.md lands would otherwise show "0 shows / 0 videos" if it
+// happened to resolve before data.json did.
+const readmeReady = fetch('README.md').then(r => r.ok ? r.text() : '').then(text => {
+    readmeSections = App.splitMarkdownSections(text || '');
+}).catch(() => { readmeSections = {}; });
+
+const dataReady = fetch('data.json').then(r => { if (!r.ok) throw Error('data'); return r.json(); }).then(d => {
     if (Array.isArray(d)) {
         allData = d; // old pre-timestamp export shape, still supported
     } else if (d && Array.isArray(d.shows)) {
         allData = d.shows;
-        generatedAt = d.generated_at || null;
+        generatedAtGlobal = d.generated_at || null;
     } else {
         allData = [];
     }
     dataById = new Map(allData.map(r => [String(r.id), r]));
 
-    renderStats();
     buildFilterChips();
-    applyHashFilter();
-    render();
-    renderLastUpdated(generatedAt);
 }).catch(e => {
     console.error('Failed to load data.json:', e);
+    dataLoadFailed = true;
     $('statusText').textContent = 'Could not load archive data.';
     $('archiveContainer').innerHTML = '';
     $('noResults').textContent = 'Failed to load data.json.';
     $('noResults').style.display = 'block';
+});
+
+Promise.allSettled([readmeReady, dataReady]).then(() => {
+    renderStaticPages();
+    renderRoute(); // still let Home/Wants/Rules/Contact work even if Videos data failed
 });
 </script>
 </body>

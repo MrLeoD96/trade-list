@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-09-08T23:23:18Z",
+    "generated_at": "2026-09-09T10:36:01Z",
     "shows": [
         {
             "id": 1,
@@ -1792,12 +1792,12 @@
             "file_size": "9.37 GB",
             "nft_date": "",
             "trading_status": "",
-            "cast": "Casey Likes (William Miller), Solea Pfeiffer (Penny Lane), Van Hughes (u/s Russell Hammond), Anika Larsen (Elaine Miller), Drew Gehling (Jeff Bebe), Rob Colletti (Lester Bangs), Julia Cassandra (Estrella), Jana Djenne Jackson (Polexia), Matt Bittner (Larry Fellows), Katie Ladner (Sapphire), Danny Lindgren (s/w David\nFelton), Jakeim Hart (Dennis Hope), Gerard Canonico (Dick Roswell), Emily Schultheis (Anita Miller), Brandon Contreras (Silent Ed Vallencourt), Chad Burris (Vic Nettles), Daniel Sovich (Darryl), Libby Winters (Leslie)",
+            "cast": "Casey Likes (William Miller), Solea Pfeiffer (Penny Lane), Van Hughes (u/s Russell Hammond), Anika Larsen (Elaine Miller), Drew Gehling (Jeff Bebe), Rob Colletti (Lester Bangs), Julia Cassandra (Estrella), Jana Djenne Jackson (Polexia), Matt Bittner (Larry Fellows), Katie Ladner (Sapphire), Danny Lindgren (s/w David Felton), Jakeim Hart (Dennis Hope), Gerard Canonico (Dick Roswell), Emily Schultheis (Anita Miller), Brandon Contreras (Silent Ed Vallencourt), Chad Burris (Vic Nettles), Daniel Sovich (Darryl), Libby Winters (Leslie)",
             "master_notes": "Brilliant capture of this show! Unobstructed aside from minor disruption in the final scenes due to people leaving early.",
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 65,
@@ -1855,7 +1855,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "25/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "09/09/2026"
         },
         {
             "id": 67,
@@ -2418,10 +2418,10 @@
             "date": "00-00-1998",
             "sequence_number": "",
             "performance_time": "",
-            "performance_type": "Highllights",
+            "performance_type": "",
             "media_type": "Video",
-            "recording_type": "Bootleg",
-            "completeness": "Full Show",
+            "recording_type": "Press Reel",
+            "completeness": "Press Reel",
             "master": "Press Reel",
             "format": "VOB + smalls; MKV",
             "resolution": "SD",
@@ -2431,8 +2431,8 @@
             "nft_date": "",
             "trading_status": "",
             "cast": "Alan Cumming (Emcee), Mary McCormack (Sally Bowles), Natasha Richardson (Sally Bowles), Blair Brown (Fräulein Schneider), Mary Louise Wilson (Fräulein Schneider), Ron Rifkin (Herr Schultz), John Benjamin Hickey (Clifford Bradshaw), Michele Pawk (Fräulein Kost)",
-            "master_notes": "Press Reels from 1998/1999. About 90 minutes of raw press footage of the original and replacement casts. Excellent sound and picture for both. Some generation loss. Includes 50 minutes of Gina Gershon highlights, not press reel.",
-            "trader_notes": "",
+            "master_notes": "Press Reels from 1998/1999. About 90 minutes of raw press footage of the original and replacement casts. Excellent sound and picture for both. Some generation loss..",
+            "trader_notes": "Press Reels from 1998/1999. About 90 minutes of raw press footage of the original and replacement casts. Excellent sound and picture for both. Some generation loss. Includes 50 minutes of Gina Gershon highlights, not press reel.",
             "flags": "",
             "date_added": "01/09/2026",
             "last_modified": "09/09/2026"

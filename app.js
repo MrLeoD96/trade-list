@@ -92,10 +92,113 @@
         return `${y}${s}`;
     }
 
+    // -- NFT display (nft_date can hold either a real "DD-MM-YYYY" date -
+    // the same stored-date convention as the `date` field above - or free
+    // text like "FOREVER EXCEPT THROUGH MASTER"; both mean "not tradeable
+    // right now", just phrased differently) ------------------------------
+    function isStoredDateShape(v) {
+        return /^\d{2}-\d{2}-\d{4}$/.test(String(v || "").trim());
+    }
+
+    function ordinal(n) {
+        const suffixes = ["th", "st", "nd", "rd"];
+        const v = n % 100;
+        return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
+    }
+
+    // "November 5th, 2026" - same DD-MM-YYYY parsing as fmtDate, but with
+    // an ordinal day and no sequence-number suffix; used only for the NFT
+    // bubble/detail, which wants a more conversational date than fmtDate's
+    // "November 05, 2026" style used everywhere else.
+    function fmtDateReadable(v) {
+        let p = String(v).split("-");
+        if (p.length !== 3) return String(v);
+        let d = +p[0], mo = +p[1], y = +p[2];
+        if (!y) return String(v);
+        if (d && mo) return `${MONTH_NAMES[mo - 1]} ${ordinal(d)}, ${y}`;
+        if (mo) return `${MONTH_NAMES[mo - 1]} ${y}`;
+        return `${y}`;
+    }
+
+    // Always-shown label for the NFT detail row, regardless of whether the
+    // restriction is still active: "NFT until {date}" for a real date
+    // (flagged "(expired)" once it's passed), or "NFT {text}" verbatim for
+    // free text.
+    function formatNftDisplay(nftStr) {
+        if (!nftStr) return "";
+        if (isStoredDateShape(nftStr)) {
+            const label = `NFT until ${fmtDateReadable(nftStr)}`;
+            return dateValue(nftStr) < Date.now() ? `${label} (expired)` : label;
+        }
+        return `NFT ${String(nftStr).trim()}`;
+    }
+
+    // Whether the NFT restriction is worth flagging in the summary row: a
+    // real date only counts while it's still in the future (a passed NFT
+    // date is no longer a restriction); free text has no expiry, so it's
+    // always active.
+    function isNftActive(nftStr) {
+        if (!nftStr) return false;
+        if (isStoredDateShape(nftStr)) return dateValue(nftStr) > Date.now();
+        return !!String(nftStr).trim();
+    }
+
+    // -- flag pills --------------------------------------------------------
+    // A data-quality problem (corrupt/damaged/etc) gets the same amber
+    // "issue" treatment classifyStatus (below) already uses for that;
+    // anything else (Censored, Uncensored, ...) is purely informational.
+    function classifyFlagText(flag) {
+        return /\b(corrupt|damaged|broken|missing|incomplete)\b/i.test(flag) ? "issue" : "info";
+    }
+
+    function renderFlagPills(flagsStr, q) {
+        if (!flagsStr) return "";
+        return splitMultiValue(flagsStr).map(f => {
+            const isIssue = classifyFlagText(f) === "issue";
+            const cls = isIssue ? "nft-pill nft-amber" : "flag-pill";
+            const icon = isIssue ? ICONS.alert : ICONS.info;
+            return `<span class="${cls}">${icon} ${hi(f, q)}</span>`;
+        }).join("");
+    }
+
     // -- text helpers --------------------------------------------------
     function leads(cast) {
         if (!cast) return "";
         return String(cast).split(/\s*[;,|]\s*/).filter(Boolean).slice(0, 2).join(" · ");
+    }
+
+    // Strips accents/diacritics so "Raúl Esparza" and "raul esparza" slugify
+    // and match identically - names in the cast field are typed with real
+    // accents, but URLs/search shouldn't require typing them.
+    function foldDiacritics(str) {
+        return String(str || "").normalize("NFD").replace(/[̀-ͯ]/g, "");
+    }
+
+    // Splits a free-text cast field into individual "Name (Role)" entries.
+    // Deliberately NOT splitMultiValue: that also splits on "/", but real
+    // cast roles routinely contain one ("Aaron Alcaraz (s/w Ensemble)" -
+    // swing/understudy shorthand), which would otherwise tear a single
+    // entry's parenthetical in half.
+    function splitCastEntries(castStr) {
+        return castStr ? String(castStr).split(/\s*[;,|]\s*/).map(s => s.trim()).filter(Boolean) : [];
+    }
+
+    // Splits a free-text cast field ("Raúl Esparza (Bobby); Jane Doe (Amy)")
+    // into just the performer names, stripping each entry's trailing
+    // "(Role)" parenthetical.
+    function parseCastNames(castStr) {
+        return splitCastEntries(castStr).map(entry => {
+            const m = entry.match(/^(.*?)\s*\([^)]*\)\s*$/);
+            return (m ? m[1] : entry).trim();
+        }).filter(Boolean);
+    }
+
+    // Every distinct performer name across the whole archive, alphabetized -
+    // backs the cast-search suggestions and the #videos/cast/<slug> deep link.
+    function distinctCastNames(shows) {
+        const set = new Set();
+        (shows || []).forEach(r => { parseCastNames(r.cast).forEach(n => set.add(n)); });
+        return Array.from(set).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
     }
 
     function stripArticles(title) {
@@ -190,6 +293,7 @@
         const yearRange = opts.yearRange;
         const proshotOnly = !!opts.proshotOnly;
         const titleSlug = (opts.titleSlug || "").trim();
+        const castSlug = (opts.castSlug || "").trim();
 
         return rows.filter(r => {
             if (q && !searchable(r).includes(q)) return false;
@@ -208,6 +312,7 @@
                 if (yearRange.max != null && yNum > yearRange.max) return false;
             }
             if (titleSlug && !slugify(r.title).includes(titleSlug)) return false;
+            if (castSlug && !parseCastNames(r.cast).some(n => slugify(n).includes(castSlug))) return false;
             return true;
         });
     }
@@ -258,9 +363,43 @@
     // links: visiting .../#cabaret filters the page to shows whose slug
     // contains "cabaret", instead of linking to one specific recording.
     function slugify(text) {
-        return String(text || "").toLowerCase().trim()
+        return foldDiacritics(String(text || "")).toLowerCase().trim()
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/^-+|-+$/g, "");
+    }
+
+    // -- README section splitting ------------------------------------------
+    // The static pages (Home/Wants/Rules/Contact) are driven entirely by
+    // top-level "# Heading" sections in README.md, keyed by the lowercased
+    // heading text. A "# Heading" (H1, exactly one #) starts a new
+    // section; everything up to the next H1 (or EOF) belongs to it.
+    // Sub-headings (##, ###...) inside a section are left alone - only the
+    // top level splits pages. Content before the first H1 is discarded (a
+    // README's own title line, if any, isn't page content).
+    function splitMarkdownSections(markdown) {
+        const sections = {};
+        if (!markdown) return sections;
+
+        const lines = String(markdown).split(/\r?\n/);
+        let currentKey = null;
+        let buffer = [];
+
+        function flush() {
+            if (currentKey) sections[currentKey] = buffer.join("\n").trim();
+            buffer = [];
+        }
+
+        for (const line of lines) {
+            const m = line.match(/^#\s+(.+?)\s*$/); // one # only, not ## or deeper
+            if (m) {
+                flush();
+                currentKey = m[1].trim().toLowerCase();
+            } else if (currentKey) {
+                buffer.push(line);
+            }
+        }
+        flush();
+        return sections;
     }
 
     // -- disambiguation bubble ------------------------------------------------
@@ -428,10 +567,42 @@
         return { formats: fHtml, sizes: sHtml };
     }
 
+    // -- cast rendering -----------------------------------------------------
+    // Renders one "Name (Role)" cast entry as a clickable
+    // #videos/cast/<slug> link around just the name, preserving the role
+    // suffix as plain text. When castHighlightSlug is set (viewing that
+    // performer's own deep link) and this entry is them, the name gets the
+    // same amber highlight styling as a search match, so their name stands
+    // out in every show listed on the filtered page.
+    function renderCastEntry(entry, q, castHighlightSlug) {
+        const m = entry.match(/^(.*?)\s*(\([^)]*\))?\s*$/);
+        const name = (m && m[1] ? m[1] : entry).trim();
+        const roleSuffix = m && m[2] ? " " + m[2] : "";
+        const slug = slugify(name);
+        let nameHtml = hi(name, q);
+        if (castHighlightSlug && slug.includes(castHighlightSlug)) {
+            nameHtml = `<span class="highlight">${nameHtml}</span>`;
+        }
+        return `<a class="cast-link" href="#videos/cast/${esc(slug)}">${nameHtml}</a>${esc(roleSuffix)}`;
+    }
+
+    // limit: cap how many entries render (used for the brief summary
+    // lead-line); omitted/0 renders the full cast list (used in the
+    // expanded Cast detail row).
+    function renderCastHtml(castStr, q, castHighlightSlug, limit) {
+        if (!castStr) return "-";
+        let entries = splitCastEntries(castStr);
+        if (!entries.length) return hi(castStr, q);
+        if (limit) entries = entries.slice(0, limit);
+        return entries.map(e => renderCastEntry(e, q, castHighlightSlug)).join(limit ? " &middot; " : ", ");
+    }
+
     // -- record card -----------------------------------------------------
     // Pure: given a row + view state, returns the HTML string for one
     // record. Callers own the DOM; this just decides what markup to write.
-    function record(r, q, groupMode, requested, disambigLabel) {
+    // castHighlightSlug: set while viewing a #videos/cast/<slug> deep link,
+    // so this performer's name can be highlighted everywhere it appears.
+    function record(r, q, groupMode, requested, disambigLabel, castHighlightSlug) {
         const id = r.id != null ? r.id : "";
         // groupMode: 'none' (ungrouped), 'title' (grouped by show - title is
         // the group header, so the record's own line shows its date
@@ -455,12 +626,24 @@
         // Shown when a sibling in the same group would otherwise look
         // identical in this collapsed view (see computeDisambiguationLabels).
         let disambigHtml = disambigLabel ? `<span class="disambig-pill">${hi(disambigLabel, q)}</span>` : "";
+        // A currently-active NFT restriction (date still in the future, or
+        // free text with no expiry) gets its own red bubble right in the
+        // summary row, same as it used to - a passed NFT date no longer
+        // counts as a restriction, so it drops out of the summary (it's
+        // still visible, noted "(expired)", in the NFT detail row below).
+        let nftPillHtml = isNftActive(r.nft_date)
+            ? `<span class="nft-pill nft-red">${ICONS.alert} ${hi(formatNftDisplay(r.nft_date), q)}</span>` : "";
+        // Data-quality flags (CORRUPT FILE, ...) and purely informational
+        // ones (Censored/Uncensored, ...) both get their own pill here too,
+        // so they're visible without expanding the card.
+        let flagPillsHtml = renderFlagPills(r.flags, q);
 
         // "Where" used to be one free-text field (venue_production) filled
         // in with whatever was most specific at the time - schema v3 split
-        // that into tour/production/venue/city. Same fallback order the
-        // desktop app itself uses for its filename convention.
-        let whereText = r.production || r.venue || r.tour || "-";
+        // that into tour/production/venue/city. `tour` (Broadway/West End/
+        // Regional/...) is deliberately left out here and out of the
+        // detail grid below - it's for sorting/grouping, not for display.
+        let whereText = r.production || r.venue || "-";
 
         // Audio-only masters (media_type) don't have a resolution.
         let isAudio = String(r.media_type || "").toLowerCase() === "audio";
@@ -470,23 +653,39 @@
                         <span class="detail-value">${hi(r.resolution || "-", q)}</span>
                     </div>`;
 
-        // These four are new in schema v3 and often blank, so - unlike the
+        // These are all new in schema v3 and often blank, so - unlike the
         // always-shown details above - they only render when there's
-        // actually something to say.
+        // actually something to say. `tour` is left out on purpose (see
+        // whereText above); `production` is the specific staging (e.g.
+        // "Second Broadway Revival") and gets shown alongside its venue
+        // and city.
+        let productionHtml = r.production ? `
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.info} Production</span>
+                        <span class="detail-value">${hi(r.production, q)}</span>
+                    </div>` : "";
+        let venueHtml = r.venue ? `
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.pin} Venue</span>
+                        <span class="detail-value">${hi(r.venue, q)}</span>
+                    </div>` : "";
+        let cityHtml = r.city ? `
+                    <div class="detail">
+                        <span class="detail-label">${ICONS.pin} City</span>
+                        <span class="detail-value">${hi(r.city, q)}</span>
+                    </div>` : "";
         let completenessHtml = (r.completeness && r.completeness !== "Full Show") ? `
                     <div class="detail">
                         <span class="detail-label">${ICONS.check} Completeness</span>
                         <span class="detail-value">${hi(r.completeness, q)}</span>
                     </div>` : "";
+        // Always shown when present, regardless of whether the summary
+        // pill above is (a passed NFT date still gets recorded here, just
+        // noted "(expired)" - see formatNftDisplay).
         let nftHtml = r.nft_date ? `
                     <div class="detail">
-                        <span class="detail-label">${ICONS.calendar} NFT Until</span>
-                        <span class="detail-value">${hi(fmtDate(r.nft_date), q)}</span>
-                    </div>` : "";
-        let flagsHtml = r.flags ? `
-                    <div class="detail">
-                        <span class="detail-label">${ICONS.alert} Flags</span>
-                        <span class="detail-value">${hi(r.flags, q)}</span>
+                        <span class="detail-label">${ICONS.calendar} NFT</span>
+                        <span class="detail-value">${hi(formatNftDisplay(r.nft_date), q)}</span>
                     </div>` : "";
         let traderNotesHtml = r.trader_notes ? `
                     <div class="detail full">
@@ -500,13 +699,15 @@
             <summary>
                 <div class="summary-title">
                     <div class="title-line">${hi(titleText, q)}</div>
-                    ${leads(r.cast) ? `<div class="lead-line">${hi(leads(r.cast), q)}</div>` : ""}
+                    ${leads(r.cast) ? `<div class="lead-line">${renderCastHtml(r.cast, q, castHighlightSlug, 2)}</div>` : ""}
                 </div>
                 <div class="summary-meta">${ICONS.pin}<span>${hi(whereText, q)}</span></div>
                 ${dateHtml}
                 ${disambigHtml}
                 ${recTypePillHtml}
                 ${statusPillHtml}
+                ${nftPillHtml}
+                ${flagPillsHtml}
                 <button class="request-btn summary-req ${requested ? "requested" : ""}" data-request="${esc(id)}" title="Add to trade request">
                     ${requested ? ICONS.check : ICONS.plus}
                 </button>
@@ -517,7 +718,7 @@
                     <div class="detail">
                         <span class="detail-label">${ICONS.user} Master</span>
                         <span class="detail-value">${hi(r.master || "-", q)}</span>
-                    </div>
+                    </div>${productionHtml}${venueHtml}${cityHtml}
                     <div class="detail">
                         <span class="detail-label">${ICONS.film} Performance</span>
                         <span class="detail-value">${hi([r.performance_type, r.performance_time].filter(Boolean).join(" · ") || "-", q)}</span>
@@ -533,10 +734,10 @@
                     <div class="detail">
                         <span class="detail-label">${ICONS.captions} Subtitles</span>
                         <span class="detail-value">${hi(r.subtitles || "-", q)}</span>
-                    </div>${completenessHtml}${nftHtml}${flagsHtml}
+                    </div>${completenessHtml}${nftHtml}
                     <div class="detail full">
                         <span class="detail-label">${ICONS.users} Cast</span>
-                        <span class="detail-value">${hi(r.cast || "-", q)}</span>
+                        <span class="detail-value">${renderCastHtml(r.cast, q, castHighlightSlug)}</span>
                     </div>
                     <div class="detail full">
                         <span class="detail-label">${ICONS.fileText} Master Notes</span>
@@ -553,12 +754,15 @@
         esc, hi,
         dateValue, fmtDate,
         leads, stripArticles, searchable,
+        foldDiacritics, splitCastEntries, parseCastNames, distinctCastNames,
         sortRows, timeOfDayRank, groupByField, groupByTitle, groupByMaster,
-        filterRows, splitMultiValue, distinctResolutions, slugify,
+        filterRows, splitMultiValue, distinctResolutions, slugify, splitMarkdownSections,
         getYear, distinctYears, getYearBounds,
         computeDisambiguationLabels,
         parseSizeString, formatBytes, computeStats,
         classifyStatus, renderStatusPill,
+        fmtDateReadable, formatNftDisplay, isNftActive,
+        classifyFlagText, renderFlagPills,
         requestKey,
         getFileColor, getColoredFormatsAndSizes,
         record,

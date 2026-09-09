@@ -1,6 +1,7 @@
 # Home
 
 ## Welcome to my trading site :)
+##### *Willkommen, Bienvenue, Welcome*
 
 {site status}
 

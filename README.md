@@ -1,9 +1,11 @@
 # Home
 
 ## Welcome to my trading site :)
-##### *Willkommen, Bienvenue, Welcome*
+##### *Bleibe, reste, stay!*
 
 {site status}
+{up since: July 30, 2026}
+{trade status: Open for Trading}
 
 hiya, i'm **MrLeoD96** or LD. i started trading not too long ago (3 months or so) but i thought i'd do my own website for trading since those are always fun :) *this site is indefinitely a work in progress*
 
@@ -21,7 +23,9 @@ rant over, feel free to search my list for anything you like. go over my rules. 
 ## My Rules
 ##### *buy me a dinner first, won't ya?*
 
-to ensure trading is well enough and fun, there's a couple of very universal rules.
+to ensure trading is well enough and fun, I've a couple of very basic universal rules:
+
+---
 
 1. **Politeness & Patience:** i've got a life outside of trading as i'm sure you do too. please allow up to a few days for a response from me. still, if i somehow genuinely missed your message, feel free to poke me because i really am that forgetful and never mean harm :)
 2. **Trading Ratio:** a standard ratio of **1:1** (one video/audio for one video/audio). i don't do special ratios for "rare" or new releases. if you want more stuff from my list than i want from yours, just ask and i'll probably just gift some things.
@@ -30,10 +34,14 @@ to ensure trading is well enough and fun, there's a couple of very universal rul
 5. **Format:** I trade mostly via Mega, as well as some Google Drive/Dropbox/Transfer links. this will be listed with the items. make sure your links are usable and lmk if any of the links i provide are broken and i will soon fix it <3
 6. **Be Cool and Chill and Stuff:** this is bootleg trading let's all just have a good time xx
 
+---
+
+yuh thats it bae ur good 2 go
+
 # Wants
 
 ## My Wants
-##### "I want you to want, Paul!"
+##### *"I want you to want, Paul!"*
 
 in general, i pretty much trade for anything i do not yet have, so feel free to interest me in any shows you have that are not on my want list because i am always looking to expand the list, that said i also have favourites which i will basically trade my life for
 
@@ -51,10 +59,7 @@ in general, i pretty much trade for anything i do not yet have, so feel free to 
 	* *Any Notable Version I Do Not Already Own*
 * Company:
 	* London Revival (Donmar Warehouse) | February 1996 | Proshot | Adrian Lester
-	* Second Broadway Revival (Commercial Release) | 2007 | Proshot | **Raúl Esparza**
-	* *Any Capture of the Second Bway Revival with **Raúl Esparza***
 	* *Any Capture of the Third Bway Revival with **Jonathan Bailey***
-* Sweeney Todd: The Demon Barber of Fleet Street | New York Philharmonic Concert | 5-8 March 2014 | Proshot
 * Little Shop of Horrors w/ **Megan Hilty** and **Josh Radnor**
 
 #### General Wants:
@@ -83,7 +88,7 @@ in general, i pretty much trade for anything i do not yet have, so feel free to 
 # Contact
 
 ## Contact Me :)
-##### wanna trade? let's trade :) trade w/ me
+##### *wanna trade? let's trade :) trade w/ me*
 
 you can (and should) use the add to cart feature i put on this website, it is for your ease of use. however if you feel the need to contact me through other means for any earthly/unearthly reason i will happily oblige. you can trade with me through:
 

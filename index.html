@@ -14,6 +14,7 @@
      SRI hash per exact version - add an integrity="sha384-..." attribute
      once you've picked one, from https://www.jsdelivr.com/package/npm/marked -->
 <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="app.js"></script>
 <style>
 :root {
@@ -110,20 +111,81 @@ button, input, select { font: inherit; color: inherit; }
     font-family: inherit; color: var(--soft); margin: 0;
 }
 
-/* Stat cards - fills in a {site status} placeholder anywhere in a page's
-   README.md content with a live snapshot of the collection. */
+/* Site status block - fills in a {site status} placeholder anywhere in a
+   page's README.md content with a live snapshot of the collection: a row
+   of stat cards, then a meta bar with "Up since" / "Last updated" / a
+   trade-status pill. "Up since" and the trade status text both come from
+   optional {up since: ...} / {trade status: ...} tokens elsewhere in
+   README.md (see App.extractSiteConfig) - leave them out and that part of
+   the bar just doesn't render. */
+.site-status { margin: 28px 0; }
 .stats-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 14px; margin: 28px 0;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+}
+@media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr; }
 }
 .stat-card {
-    background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
-    padding: 20px; text-align: center;
+    display: flex; align-items: center; gap: 14px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px;
 }
-.stat-value { font: 800 26px var(--sans); color: var(--text); margin-bottom: 4px; }
+.stat-icon {
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    width: 38px; height: 38px; border-radius: 8px;
+    background: var(--accent-soft); color: var(--accent);
+}
+.stat-icon svg { width: 19px; height: 19px; }
+.stat-card-recordings .stat-icon { background: rgba(96, 165, 250, 0.12); color: var(--blue); }
+.stat-card-size .stat-icon { background: rgba(167, 139, 250, 0.12); color: var(--purple); }
+.stat-body { min-width: 0; }
+.stat-value {
+    font: 800 22px var(--sans); color: var(--text); line-height: 1.2;
+    overflow-wrap: break-word;
+}
 .stat-label {
     font: 600 11px var(--mono-font); color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.08em;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px;
+    white-space: nowrap;
+}
+
+.site-meta-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px 20px;
+    margin-top: 12px; padding: 13px 18px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 10px;
+}
+.site-meta-info {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px;
+    min-width: 0; color: var(--soft); font: 500 13px var(--sans);
+}
+.site-meta-item { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.site-meta-item svg { width: 14px; height: 14px; color: var(--muted); flex-shrink: 0; }
+.site-meta-item strong { color: var(--text); font-weight: 700; }
+.site-meta-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--dim); flex-shrink: 0; }
+
+@media (max-width: 560px) {
+    .site-meta-bar { flex-direction: column; align-items: flex-start; }
+    .site-meta-info { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .site-meta-sep { display: none; }
+}
+
+.trade-status-pill {
+    display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
+    padding: 6px 12px; border-radius: 999px;
+    font: 700 11px var(--mono-font); text-transform: uppercase; letter-spacing: 0.04em;
+    border: 1px solid var(--line); color: var(--soft); background: var(--paper2);
+}
+.ts-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.trade-status-pill.ts-open {
+    color: var(--accent); border-color: var(--accent); background: rgba(74, 222, 128, 0.1);
+}
+.trade-status-pill.ts-limited {
+    color: var(--amber); border-color: var(--amber); background: rgba(251, 191, 36, 0.1);
+}
+.trade-status-pill.ts-closed {
+    color: var(--red); border-color: var(--red); background: rgba(248, 113, 113, 0.1);
 }
 
 /* One control row: search (primary, takes remaining space), sort, and a
@@ -475,6 +537,13 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 .cast-link:hover { color: var(--accent2); border-bottom-color: var(--accent2); }
 .lead-line .cast-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
+/* Alternates/e-c/g-p/swings/standbys/understudies (see app.js's
+   ALT_ROLE_RE) - name and role both get the same purple accent used for
+   italics elsewhere on the site, so they read as a distinct "not the
+   regular cast" category at a glance. */
+.cast-alt { color: var(--purple); }
+.cast-alt .cast-link { border-bottom-color: rgba(167, 139, 250, 0.4); }
+
 .request-btn {
     display: inline-flex; align-items: center; gap: 6px;
     margin-top: 8px; padding: 7px 14px; border: 1px solid var(--line);
@@ -484,6 +553,11 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 }
 .request-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
 .request-btn.requested { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+/* An item currently (or permanently) NFT can't be requested - grayed out,
+   not-allowed cursor, and clicking it explains why (see the toast below)
+   instead of silently doing nothing. */
+.request-btn.nft-locked { color: var(--dim); opacity: 0.6; cursor: not-allowed; }
+.request-btn.nft-locked:hover { background: transparent; border-color: var(--line); color: var(--dim); }
 
 /* The horizontal padding gives the highlighted background some breathing
    room, but padding on an inline element also pushes the surrounding text
@@ -528,6 +602,90 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 }
 .back-top.show { display: block; }
 .back-top:hover { color: var(--text); border-color: var(--paper3); }
+
+/* Small on-screen message for feedback that isn't worth a whole page
+   reflow (an NFT-locked click, a form send success/failure). Reused
+   wherever a brief "here's what happened" note is needed. */
+.toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(12px);
+    background: var(--paper2); border: 1px solid var(--line); color: var(--text);
+    padding: 12px 18px; border-radius: 8px; font: 500 13px var(--sans);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.35); z-index: 200;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease;
+    max-width: 360px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Contact form - EmailJS-powered, sits below the README-driven Contact
+   markdown content, same content width as .page-markdown. */
+.contact-form {
+    max-width: 560px; margin: 0 auto; padding: 0 4px 60px;
+    display: flex; flex-direction: column; gap: 16px;
+}
+.contact-form-title {
+    font: 700 22px var(--sans); color: var(--text); margin: 0 0 4px; text-align: center;
+}
+.form-row { display: flex; flex-direction: column; gap: 6px; }
+.form-row label {
+    font: 600 11px var(--mono-font); color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+}
+.form-row .req-star { color: var(--red); }
+.form-row input, .form-row select, .form-row textarea {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 12px; font: 14px var(--mono-font); color: var(--text);
+    outline: 0; transition: border-color 0.2s, box-shadow 0.2s; resize: vertical;
+}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.form-row select { cursor: pointer; }
+/* Request Type: a two-way segmented pill instead of a <select> - one side
+   always "on" (accent fill), the other dim, click either to switch. */
+.cf-type-toggle {
+    display: flex; width: fit-content; border: 1px solid var(--line);
+    border-radius: 999px; overflow: hidden;
+}
+.cf-type-option {
+    padding: 9px 20px; border: 0; background: transparent; color: var(--muted);
+    font: 600 12px var(--mono-font); text-transform: uppercase; letter-spacing: 0.04em;
+    cursor: pointer; transition: all 0.2s ease;
+}
+.cf-type-option + .cf-type-option { border-left: 1px solid var(--line); }
+.cf-type-option.active { background: var(--accent); color: var(--bg); }
+.cf-type-option:not(.active):hover { color: var(--text); background: var(--paper2); }
+.cf-items-list {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 6px;
+    border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
+    max-height: 260px; overflow-y: auto;
+}
+.cf-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 8px 10px; border-bottom: 1px solid var(--line);
+}
+.cf-item:last-child { border-bottom: 0; }
+.cf-item-text { font: 13px var(--mono-font); color: var(--text); line-height: 1.4; }
+.cf-item-remove {
+    flex: none; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 1px solid var(--line); border-radius: 6px;
+    color: var(--muted); cursor: pointer; transition: all 0.2s ease; padding: 0;
+}
+.cf-item-remove svg { width: 12px; height: 12px; }
+.cf-item-remove:hover { border-color: var(--red); color: var(--red); background: rgba(239, 68, 68, 0.1); }
+.cf-items-empty {
+    padding: 14px 12px; font: 13px var(--mono-font); color: var(--muted);
+    text-align: center;
+}
+.contact-form-submit {
+    align-self: center; margin-top: 8px; padding: 12px 32px;
+    background: var(--accent); color: var(--bg); border: 0; border-radius: 8px;
+    font: 700 13px var(--mono-font); text-transform: uppercase; letter-spacing: 0.05em;
+    cursor: pointer; transition: all 0.2s ease;
+}
+.contact-form-submit:hover { background: var(--accent2); }
+.contact-form-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+.contact-form-note { text-align: center; color: var(--muted); font-size: 13px; min-height: 1.2em; margin: 0; }
 
 @media (max-width: 800px) {
     .record summary { flex-wrap: wrap; gap: 8px 12px; }
@@ -590,6 +748,38 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 
     <section class="page-section" id="page-contact" data-page="contact">
         <div class="page-markdown" id="contactContent"></div>
+        <form class="contact-form" id="contactForm" novalidate>
+            <h3 class="contact-form-title">Send a Request</h3>
+            <div class="form-row">
+                <label>Request Type <span class="req-star">*</span></label>
+                <div class="cf-type-toggle" id="cfTypeToggle" role="group" aria-label="Request Type">
+                    <button type="button" class="cf-type-option active" data-type="Trade Request" aria-pressed="true">Trade Request</button>
+                    <button type="button" class="cf-type-option" data-type="Gift Request" aria-pressed="false">Gift Request</button>
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="cfName">Name <span class="req-star">*</span></label>
+                <input type="text" id="cfName" required autocomplete="name">
+            </div>
+            <div class="form-row">
+                <label for="cfEmail">Email <span class="req-star">*</span></label>
+                <input type="email" id="cfEmail" required autocomplete="email">
+            </div>
+            <div class="form-row" id="cfUrlRow">
+                <label for="cfUrl">Your Trading List URL <span class="req-star">*</span></label>
+                <input type="url" id="cfUrl" placeholder="https://...">
+            </div>
+            <div class="form-row cf-items-row" id="cfItemsRow">
+                <label>Requested Items</label>
+                <ul class="cf-items-list" id="cfItemsList"></ul>
+            </div>
+            <div class="form-row">
+                <label for="cfMessage">Message / Notes</label>
+                <textarea id="cfMessage" rows="5"></textarea>
+            </div>
+            <button type="submit" class="contact-form-submit" id="cfSubmit">Send</button>
+            <p class="contact-form-note" id="cfNote"></p>
+        </form>
     </section>
 
     <section class="page-section" id="page-videos" data-page="videos">
@@ -666,6 +856,8 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
     </button>
 </div>
 
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <button class="back-top" id="backTop" aria-label="Back to top">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
 </button>
@@ -678,6 +870,25 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 // into the page.
 const App = window.TradeListApp;
 const $ = id => document.getElementById(id);
+
+// ==== EmailJS configuration ====
+
+const EMAILJS_SERVICE_ID = 'service_rkry3wk';
+const EMAILJS_TEMPLATE_ID = 'template_11nl7cj';
+const EMAILJS_PUBLIC_KEY = 'XSsTY7F4qugYDF2Gi';
+const emailjsReady = typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY';
+if (emailjsReady) emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+// -- Toast: a brief on-screen note for feedback that doesn't need a full
+// page reaction (an NFT-locked click, a form send result). -------------
+let toastTimer;
+function showToast(message) {
+    const el = $('toast');
+    el.textContent = message;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
 
 let allData = [], dataById = new Map();
 let currentQuery = '', sortMode = 'title-asc', requestedItems = [], searchTimer;
@@ -874,6 +1085,12 @@ $('clearFiltersBtn').addEventListener('click', () => {
 
 // -- Request basket ---------------------------------------------------
 $('archiveContainer').addEventListener('click', e => {
+    let locked = e.target.closest('[data-nft-locked]');
+    if (locked) {
+        e.preventDefault(); e.stopPropagation();
+        showToast('This recording cannot be requested as it is NFT.');
+        return;
+    }
     let b = e.target.closest('[data-request]');
     if (!b) return;
     e.preventDefault(); e.stopPropagation();
@@ -888,6 +1105,7 @@ $('archiveContainer').addEventListener('click', e => {
     } else {
         requestedItems.push({
             key,
+            id: r.id != null ? r.id : '',
             title: r.title || '',
             date: App.fmtDate(r.date, r.sequence_number),
             master: r.master || '',
@@ -901,6 +1119,26 @@ $('archiveContainer').addEventListener('click', e => {
 function updateRequests() {
     $('requestCount').textContent = requestedItems.length;
     $('requestPill').classList.toggle('show', requestedItems.length > 0);
+    renderRequestedItemsPanel();
+}
+
+// Removes one item from the basket from wherever it's triggered (the
+// contact form's item list, currently) - splices the shared state, resets
+// the matching "+"/check button back to normal if it's on-screen right now
+// (the Videos page's own record markup isn't rebuilt just because the
+// basket changed elsewhere), and refreshes the pill + panel.
+function removeRequestedItem(key) {
+    let i = requestedItems.findIndex(x => x.key === key);
+    if (i < 0) return;
+    let [removed] = requestedItems.splice(i, 1);
+    if (removed && removed.id !== '' && removed.id != null) {
+        let btn = document.querySelector(`#archiveContainer [data-request="${CSS.escape(String(removed.id))}"]`);
+        if (btn) {
+            btn.classList.remove('requested');
+            btn.innerHTML = App.ICONS.plus;
+        }
+    }
+    updateRequests();
 }
 
 function buildRequestBody() {
@@ -908,6 +1146,37 @@ function buildRequestBody() {
         `${i + 1}. ${x.title}${x.date ? ' - ' + x.date : ''}${x.master ? ' - ' + x.master : ''}`
     ).join('\n');
 }
+
+// A bare comma-separated list of the underlying recording IDs (matching
+// data.json's "id" field) - sent alongside the human-readable list above
+// so a parser on the receiving end can go straight from the email to the
+// right links without matching against titles/dates by hand.
+function buildRequestedIds() {
+    return requestedItems.map(x => x.id).filter(id => id !== '' && id != null).join(',');
+}
+
+// The contact form's "Requested Items" panel: a live view of the same
+// basket the "+" buttons and the request pill share, each row removable
+// with its own "x" so someone can trim their list right before sending.
+function renderRequestedItemsPanel() {
+    let list = $('cfItemsList');
+    if (!requestedItems.length) {
+        list.innerHTML = `<li class="cf-items-empty">You haven't added any recordings to your request list.</li>`;
+        return;
+    }
+    list.innerHTML = requestedItems.map(x => `
+        <li class="cf-item" data-key="${App.esc(x.key)}">
+            <span class="cf-item-text">${App.esc(x.title)}${x.date ? ' - ' + App.esc(x.date) : ''}${x.master ? ' - ' + App.esc(x.master) : ''}</span>
+            <button type="button" class="cf-item-remove" data-remove-key="${App.esc(x.key)}" title="Remove from request" aria-label="Remove ${App.esc(x.title)} from request">${App.ICONS.close}</button>
+        </li>`).join('');
+}
+renderRequestedItemsPanel(); // paint the empty-state message on first load
+
+$('cfItemsList').addEventListener('click', e => {
+    let b = e.target.closest('[data-remove-key]');
+    if (!b) return;
+    removeRequestedItem(b.dataset.removeKey);
+});
 
 $('copyRequestBtn').addEventListener('click', () => {
     if (!requestedItems.length) return;
@@ -922,9 +1191,96 @@ $('copyRequestBtn').addEventListener('click', () => {
 
 $('emailRequestBtn').addEventListener('click', () => {
     if (!requestedItems.length) return;
-    let body = buildRequestBody();
-    let subject = encodeURIComponent('Archive trade request');
-    window.location.href = `mailto:MrLeoD96@gmail.com?subject=${subject}&body=${encodeURIComponent(body)}`;
+    goToPage('contact');
+    setTimeout(() => {
+        setRequestType('Trade Request');
+        $('contactForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        $('cfName').focus();
+    }, 50);
+});
+
+// -- Contact form: EmailJS instead of mailto: --------------------------
+// Request Type used to be a <select>; it's now a two-way segmented pill
+// (see .cf-type-toggle) - one button always carries .active, the other is
+// dimmed, and clicking either switches which one does. cfRequestType is
+// the single source of truth other code (URL-field visibility, the
+// EmailJS payload) reads from.
+let cfRequestType = 'Trade Request';
+
+function setRequestType(type) {
+    cfRequestType = type;
+    document.querySelectorAll('#cfTypeToggle .cf-type-option').forEach(btn => {
+        let isActive = btn.dataset.type === type;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', String(isActive));
+    });
+    updateContactUrlRequirement();
+}
+
+$('cfTypeToggle').addEventListener('click', e => {
+    let b = e.target.closest('.cf-type-option');
+    if (!b) return;
+    setRequestType(b.dataset.type);
+});
+
+function updateContactUrlRequirement() {
+    let isTrade = cfRequestType === 'Trade Request';
+    $('cfUrlRow').style.display = isTrade ? '' : 'none';
+    $('cfUrl').required = isTrade;
+    if (!isTrade) $('cfUrl').value = '';
+}
+updateContactUrlRequirement();
+
+$('contactForm').addEventListener('submit', e => {
+    e.preventDefault();
+    let form = $('contactForm');
+    if (!form.reportValidity()) return;
+
+    if (!emailjsReady) {
+        showToast('Automatic email system failed - please email MrLeoD96@gmail.com directly for now.');
+        return;
+    }
+
+    // Two shapes of the same basket, for two different readers: a
+    // numbered, human-readable list (title - date - master) for the email
+    // body, and a bare comma-separated list of the underlying recording
+    // IDs (matching data.json's "id" field) meant for a parser on my end -
+    // paste it in and go straight to pulling the right links, no manual
+    // matching against titles/dates.
+    let templateParams = {
+        request_type: cfRequestType,
+        from_name: $('cfName').value,
+        from_email: $('cfEmail').value,
+        reply_to: $('cfEmail').value,
+        trading_list_url: $('cfUrl').value,
+        message: $('cfMessage').value,
+        requested_items: buildRequestBody(),
+        requested_ids: buildRequestedIds(),
+    };
+
+    let submitBtn = $('cfSubmit');
+    let originalLabel = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams).then(() => {
+        showToast('Thanks! Your message has been sent.');
+        form.reset();
+        setRequestType('Trade Request');
+        requestedItems.length = 0;
+        document.querySelectorAll('#archiveContainer .request-btn.requested').forEach(btn => {
+            btn.classList.remove('requested');
+            btn.innerHTML = App.ICONS.plus;
+        });
+        updateRequests();
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+    }).catch(err => {
+        console.error('EmailJS send failed:', err);
+        showToast('Something went wrong sending your message - please try again or email MrLeoD96@gmail.com directly.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+    });
 });
 
 // -- Search + suggestions (Google-style autocomplete, shows AND cast) -----
@@ -1120,8 +1476,7 @@ function renderRoute() {
 $('clearSlugFilter').addEventListener('click', () => goToPage('videos'));
 window.addEventListener('hashchange', renderRoute);
 
-// -- Last updated: prefer the timestamp baked into data.json; only fall
-// back to a live GitHub API call for an old data.json that predates it.
+// -- Last updated: the timestamp baked into data.json by export_db.py.
 // Stored globally (rather than passed around) because the {site status}
 // stat grid can now appear anywhere, possibly more than once, and each
 // copy needs the same value once it's known - see .stat-last-updated
@@ -1141,24 +1496,8 @@ function applyLastUpdatedText(text) {
     });
 }
 
-async function fetchLastUpdatedFromGithub() {
-    try {
-        let parts = location.hostname.split('.'), owner = parts[0], repo = location.pathname.split('/')[1];
-        if (!owner || !repo) return;
-        let r = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?path=data.json&per_page=1`);
-        if (!r.ok) return;
-        let c = await r.json();
-        if (c.length) {
-            let d = new Date(c[0].commit.committer.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-            applyLastUpdatedText(d);
-        }
-    } catch (e) { console.log('Could not fetch last updated date.', e); }
-}
-
 function renderLastUpdated() {
-    const text = formatLastUpdatedText(generatedAtGlobal);
-    if (text) { applyLastUpdatedText(text); return; }
-    fetchLastUpdatedFromGithub();
+    applyLastUpdatedText(formatLastUpdatedText(generatedAtGlobal) || 'Unknown');
 }
 
 // -- Static pages (Home/Wants/Rules/Contact) are entirely README-driven:
@@ -1218,12 +1557,37 @@ function applyOpeningTitlePair(el) {
 function getStatsHtml() {
     const stats = App.computeStats(allData);
     const lastMod = formatLastUpdatedText(generatedAtGlobal) || 'Unknown';
+    const upSince = (siteConfig && siteConfig.upSince) || null;
+    const tradeStatusText = (siteConfig && siteConfig.tradeStatus) || null;
+    const level = App.classifyTradeStatus(tradeStatusText);
+    const statusHtml = tradeStatusText
+        ? `<span class="trade-status-pill ts-${level}"><span class="ts-dot"></span>${App.esc(tradeStatusText)}</span>`
+        : '';
+    const upSinceHtml = upSince
+        ? `<span class="site-meta-item">${App.ICONS.clock}Up since <strong>${App.esc(upSince)}</strong></span><span class="site-meta-sep"></span>`
+        : '';
     return `
-    <div class="stats-grid">
-        <div class="stat-card"><div class="stat-value">${stats.showCount}</div><div class="stat-label">Shows</div></div>
-        <div class="stat-card"><div class="stat-value">${stats.recordingCount}</div><div class="stat-label">Videos</div></div>
-        <div class="stat-card"><div class="stat-value">${stats.totalSizeText}</div><div class="stat-label">Total Size</div></div>
-        <div class="stat-card"><div class="stat-value stat-last-updated-value" style="font-size: 1.5rem;">${lastMod}</div><div class="stat-label">Last Updated</div></div>
+    <div class="site-status">
+        <div class="stats-grid">
+            <div class="stat-card stat-card-shows">
+                <span class="stat-icon">${App.ICONS.film}</span>
+                <div class="stat-body"><div class="stat-value">${stats.showCount}</div><div class="stat-label">Shows</div></div>
+            </div>
+            <div class="stat-card stat-card-recordings">
+                <span class="stat-icon">${App.ICONS.monitor}</span>
+                <div class="stat-body"><div class="stat-value">${stats.recordingCount}</div><div class="stat-label">Recordings</div></div>
+            </div>
+            <div class="stat-card stat-card-size">
+                <span class="stat-icon">${App.ICONS.hdd}</span>
+                <div class="stat-body"><div class="stat-value">${stats.totalSizeText}</div><div class="stat-label">Collection Size</div></div>
+            </div>
+        </div>
+        <div class="site-meta-bar">
+            <div class="site-meta-info">
+                ${upSinceHtml}<span class="site-meta-item">${App.ICONS.history}Last updated <strong class="stat-last-updated-value">${lastMod}</strong></span>
+            </div>
+            ${statusHtml}
+        </div>
     </div>`;
 }
 
@@ -1241,6 +1605,10 @@ function renderStaticPages() {
 
 let readmeSections = null;
 let dataLoadFailed = false;
+// {up since: ...} / {trade status: ...} tokens pulled out of README.md -
+// see App.extractSiteConfig. Populated once README.md resolves, read by
+// getStatsHtml() when it builds the {site status} block.
+let siteConfig = {};
 
 // README.md and data.json load in parallel; the static pages (which may
 // need real numbers for the {site status} stat grid) aren't rendered
@@ -1248,13 +1616,13 @@ let dataLoadFailed = false;
 // moment README.md lands would otherwise show "0 shows / 0 videos" if it
 // happened to resolve before data.json did.
 const readmeReady = fetch('README.md').then(r => r.ok ? r.text() : '').then(text => {
-    readmeSections = App.splitMarkdownSections(text || '');
-}).catch(() => { readmeSections = {}; });
+    const cfg = App.extractSiteConfig(text || '');
+    siteConfig = cfg;
+    readmeSections = App.splitMarkdownSections(cfg.cleaned || '');
+}).catch(() => { readmeSections = {}; siteConfig = {}; });
 
 const dataReady = fetch('data.json').then(r => { if (!r.ok) throw Error('data'); return r.json(); }).then(d => {
-    if (Array.isArray(d)) {
-        allData = d; // old pre-timestamp export shape, still supported
-    } else if (d && Array.isArray(d.shows)) {
+    if (d && Array.isArray(d.shows)) {
         allData = d.shows;
         generatedAtGlobal = d.generated_at || null;
     } else {

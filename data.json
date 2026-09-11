@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-09-11T18:59:00Z",
+    "generated_at": "2026-09-11T23:31:09Z",
     "shows": [
         {
             "id": 1,
@@ -511,8 +511,8 @@
             "master": "bikinibottomday",
             "format": "MP4",
             "resolution": "4K",
-            "subtitles": "",
-            "file_size_bytes": "12496763383",
+            "subtitles": "External SRT",
+            "file_size_bytes": "12496927162",
             "file_size": "11.64 GB",
             "nft_date": "",
             "trading_status": "",
@@ -521,7 +521,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "12/09/2026"
         },
         {
             "id": 19,
@@ -719,12 +719,12 @@
             "file_size": "9.84 GB",
             "nft_date": "",
             "trading_status": "",
-            "cast": "Neil Patrick Harris (Bobby/Bobbie), Patti LuPone (Joanne), Martha Plimpton (Sarah), Stephen Colbert (Harry), Jennifer Laura Thompson (Jenny), Jon Cryer (David), Christina Hendricks (April/Andy), Chryssie Whitehead (Kathy/Theo), Anika Noni Rose (Marta/PJ), Katie Finneran (Amy/Jamie)",
-            "master_notes": "Filmed version of the staged concert production at the New York Philharmonic. Filmed April 7-9, 2011. BluRay x264 encode by GECKOS.",
-            "trader_notes": "",
+            "cast": "Neil Patrick Harris (Bobby), Patti LuPone (Joanne), Martha Plimpton (Sarah), Stephen Colbert (Harry), Jennifer Laura Thompson (Jenny), Jon Cryer (David), Christina Hendricks (April), Chryssie Whitehead (Kathy), Anika Noni Rose (Marta), Katie Finneran (Amy)",
+            "master_notes": "",
+            "trader_notes": "Filmed version of the staged concert production at the New York Philharmonic. Filmed April 7-9, 2011. BluRay x264 encode by GECKOS.",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "11/09/2026"
         },
         {
             "id": 26,
@@ -772,8 +772,8 @@
             "master": "Lasagna",
             "format": "MP4",
             "resolution": "4K",
-            "subtitles": "",
-            "file_size_bytes": "8674635859",
+            "subtitles": "External ASS",
+            "file_size_bytes": "8674770021",
             "file_size": "8.08 GB",
             "nft_date": "",
             "trading_status": "",
@@ -782,7 +782,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "01/09/2026"
+            "last_modified": "12/09/2026"
         },
         {
             "id": 28,
@@ -798,7 +798,7 @@
             "media_type": "Video",
             "recording_type": "Bootleg",
             "completeness": "Full Show",
-            "master": "",
+            "master": "Unknown",
             "format": "MKV",
             "resolution": "SD",
             "subtitles": "",
@@ -811,7 +811,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "12/09/2026"
         },
         {
             "id": 29,
@@ -2232,7 +2232,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "31/08/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "12/09/2026"
         },
         {
             "id": 81,
@@ -3015,7 +3015,7 @@
             "trader_notes": "Filmed on 5-8 March 2014 and aired on PBS on September 26, 2014.",
             "flags": "",
             "date_added": "11/09/2026",
-            "last_modified": "11/09/2026"
+            "last_modified": "12/09/2026"
         },
         {
             "id": 108,
@@ -3044,7 +3044,7 @@
             "trader_notes": "Penultimate show. Distributed commercially.",
             "flags": "",
             "date_added": "11/09/2026",
-            "last_modified": "11/09/2026"
+            "last_modified": "12/09/2026"
         },
         {
             "id": 109,

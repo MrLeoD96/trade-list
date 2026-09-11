@@ -38,7 +38,11 @@
         info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
         plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>',
         check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-        star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>'
+        star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
+        lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>',
+        close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
+        clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
+        history: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"></path><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"></path><polyline points="12 7 12 12 16 14"></polyline></svg>'
     };
 
     // -- escaping / highlighting --------------------------------------
@@ -407,7 +411,7 @@
     // -- year range ----------------------------------------------------------
     function getYear(dateStr) {
         if (!dateStr) return null;
-        const parts = String(dateStr).split("/");
+        const parts = String(dateStr).split("-");
         return parts.length === 3 && parts[2] ? parts[2] : null;
     }
 
@@ -594,6 +598,42 @@
         return `<span class="nft-pill ${cls}">${icon} ${esc(String(status).trim())}</span>`;
     }
 
+    // -- site status config (new) --------------------------------------------
+    // Two optional inline tokens, written anywhere in README.md, let the
+    // {site status} block be customized without touching code:
+    //   {up since: 12 June 2026}
+    //   {trade status: Open for Trades}
+    // Both take free text. Trade status is matched case-insensitively
+    // against a few known phrases to decide its pill color; unrecognized
+    // text still displays verbatim, just with a neutral color, so a typo
+    // never silently hides the status. Both tokens are stripped out of the
+    // markdown before it's rendered, wherever they appear.
+    const TRADE_STATUS_LEVELS = [
+        { re: /open/i, level: "open" },
+        { re: /limited|wants/i, level: "limited" },
+        { re: /closed/i, level: "closed" },
+    ];
+
+    function classifyTradeStatus(text) {
+        if (!text) return null;
+        const hit = TRADE_STATUS_LEVELS.find(l => l.re.test(text));
+        return hit ? hit.level : "neutral";
+    }
+
+    function extractSiteConfig(markdown) {
+        const src = String(markdown || "");
+        const upMatch = src.match(/\{up since:\s*([^}]+)\}/i);
+        const statusMatch = src.match(/\{trade status:\s*([^}]+)\}/i);
+        const cleaned = src
+            .replace(/\{up since:\s*[^}]+\}\n?/gi, "")
+            .replace(/\{trade status:\s*[^}]+\}\n?/gi, "");
+        return {
+            upSince: upMatch ? upMatch[1].trim() : null,
+            tradeStatus: statusMatch ? statusMatch[1].trim() : null,
+            cleaned,
+        };
+    }
+
     // -- request key (fixed) -----------------------------------------------
     // Previously title|date|master - a real (if rare) collision risk when
     // master is blank. `id` is already unique and already in the export.
@@ -636,12 +676,25 @@
     }
 
     // -- cast rendering -----------------------------------------------------
+    // A role is an "alternate" of some kind - an alternate, emergency cover,
+    // guest performer, swing, standby (both spellings), trainee/rehearsal
+    // cover, or understudy - when its text starts with one of these short
+    // slashed abbreviations, right after the opening "(" or after a "/" in
+    // a role that lists more than one (e.g. "(s/w Philip Schuyler/s/w James
+    // Reynolds/s/w Doctor)").
+    const ALT_ROLE_RE = /(^|[(/])\s*(alt|e\/c|g\/p|s\/w|s\/b|st\/by|t\/r|u\/s)\b/i;
+    function isAlternateRole(roleSuffix) {
+        return ALT_ROLE_RE.test(roleSuffix);
+    }
+
     // Renders one "Name (Role)" cast entry as a clickable
     // #videos/cast/<slug> link around just the name, preserving the role
     // suffix as plain text. When castHighlightSlug is set (viewing that
     // performer's own deep link) and this entry is them, the name gets the
     // same amber highlight styling as a search match, so their name stands
-    // out in every show listed on the filtered page.
+    // out in every show listed on the filtered page. An alternate/e-c/g-p/
+    // swing/standby/understudy role - name and role both - gets the same
+    // purple accent used for italics elsewhere on the site.
     function renderCastEntry(entry, q, castHighlightSlug) {
         // Same rule as parseCastNames: everything before the first "(" is
         // the name, everything from it onward (role, alternates, whatever
@@ -654,7 +707,8 @@
         if (castHighlightSlug && slug.includes(castHighlightSlug)) {
             nameHtml = `<span class="highlight">${nameHtml}</span>`;
         }
-        return `<a class="cast-link" href="#videos/cast/${esc(slug)}">${nameHtml}</a>${esc(roleSuffix)}`;
+        const entryHtml = `<a class="cast-link" href="#videos/cast/${esc(slug)}">${nameHtml}</a>${esc(roleSuffix)}`;
+        return isAlternateRole(roleSuffix) ? `<span class="cast-alt">${entryHtml}</span>` : entryHtml;
     }
 
     // limit: cap how many entries render (used for the brief summary
@@ -702,7 +756,10 @@
         // summary row, same as it used to - a passed NFT date no longer
         // counts as a restriction, so it drops out of the summary (it's
         // still visible, noted "(expired)", in the NFT detail row below).
-        let nftPillHtml = isNftActive(r.nft_date)
+        // The same flag also locks the request button below - an item
+        // that's currently (or permanently) NFT can't be requested.
+        let nftLocked = isNftActive(r.nft_date);
+        let nftPillHtml = nftLocked
             ? `<span class="nft-pill nft-red">${ICONS.alert} ${hi(formatNftDisplay(r.nft_date), q)}</span>` : "";
         // Data-quality flags (CORRUPT FILE, ...) and purely informational
         // ones (Censored/Uncensored, ...) both get their own pill here too,
@@ -779,9 +836,9 @@
                 ${statusPillHtml}
                 ${nftPillHtml}
                 ${flagPillsHtml}
-                <button class="request-btn summary-req ${requested ? "requested" : ""}" data-request="${esc(id)}" title="Add to trade request">
-                    ${requested ? ICONS.check : ICONS.plus}
-                </button>
+                ${nftLocked
+                    ? `<button type="button" class="request-btn summary-req nft-locked" data-nft-locked="1" title="This recording is NFT and cannot be requested" aria-disabled="true">${ICONS.lock}</button>`
+                    : `<button type="button" class="request-btn summary-req ${requested ? "requested" : ""}" data-request="${esc(id)}" title="Add to trade request">${requested ? ICONS.check : ICONS.plus}</button>`}
                 <div class="chevron-icon">${ICONS.chevron}</div>
             </summary>
             <div class="record-body">
@@ -826,12 +883,14 @@
         dateValue, fmtDate,
         leads, stripArticles, searchable,
         foldDiacritics, splitCastEntries, parseCastNames, distinctCastNames,
+        isAlternateRole,
         sortRows, timeOfDayRank, groupByField, groupByTitle, groupByMaster,
         filterRows, splitMultiValue, distinctResolutions, slugify, splitMarkdownSections,
         getYear, distinctYears, getYearBounds,
         computeDisambiguationLabels,
         parseSizeString, formatBytes, computeStats,
         classifyStatus, renderStatusPill,
+        classifyTradeStatus, extractSiteConfig,
         fmtDateReadable, formatNftDisplay, isNftActive,
         classifyFlagText, renderFlagPills,
         requestKey,

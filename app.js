@@ -42,17 +42,60 @@
     };
 
     // -- escaping / highlighting --------------------------------------
-    function esc(v) {
-        return v == null || v === "" ? "-" : String(v)
+    // Plain HTML-entity escaping, no "-" placeholder behavior - esc() below
+    // (the one most of this file calls) wraps this with that placeholder
+    // for display purposes, but hi()'s chunk-by-chunk highlighter below
+    // needs to escape substrings that are legitimately empty (e.g. a match
+    // starting at position 0 has nothing before it) without them turning
+    // into a stray "-".
+    function escRaw(v) {
+        return String(v)
             .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
+    function esc(v) {
+        return v == null || v === "" ? "-" : escRaw(v);
+    }
+
+    // Diacritic-insensitive highlighting: a search for "raul" needs to
+    // highlight "Raúl" in the rendered text, accents and all - not some
+    // ASCII stand-in. foldDiacritics (below) collapses accented characters
+    // down to their base letter for COMPARISON, but the actual highlighted
+    // span still wraps the real original characters; `map` remembers, for
+    // every character in the folded string, which character of the
+    // original string it came from, so a match found in folded-space can
+    // be translated back to the right slice of the real text.
     function hi(v, q) {
-        let s = esc(v);
-        if (!q) return s;
-        let r = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        return s.replace(new RegExp("(" + r + ")", "gi"), '<span class="highlight">$1</span>');
+        if (v == null || v === "") return "-";
+        const orig = String(v);
+        if (!q) return esc(orig);
+        const foldedQ = foldDiacritics(String(q)).toLowerCase();
+        if (!foldedQ) return esc(orig);
+
+        const origChars = Array.from(orig);
+        let folded = "";
+        const map = []; // map[i] = index into origChars for folded[i]
+        origChars.forEach((ch, idx) => {
+            const piece = foldDiacritics(ch);
+            for (const fc of piece) { folded += fc; map.push(idx); }
+        });
+        const foldedLower = folded.toLowerCase();
+
+        let result = "", lastEnd = 0, searchFrom = 0;
+        while (true) {
+            const idx = foldedLower.indexOf(foldedQ, searchFrom);
+            if (idx === -1) break;
+            const endIdx = idx + foldedQ.length - 1;
+            const origStart = map[idx];
+            const origEnd = map[endIdx] + 1;
+            result += escRaw(origChars.slice(lastEnd, origStart).join(""));
+            result += '<span class="highlight">' + escRaw(origChars.slice(origStart, origEnd).join("")) + '</span>';
+            lastEnd = origEnd;
+            searchFrom = endIdx + 1;
+        }
+        result += escRaw(origChars.slice(lastEnd).join(""));
+        return result;
     }
 
     // -- dates -----------------------------------------------------------
@@ -175,21 +218,42 @@
     }
 
     // Splits a free-text cast field into individual "Name (Role)" entries.
-    // Deliberately NOT splitMultiValue: that also splits on "/", but real
-    // cast roles routinely contain one ("Aaron Alcaraz (s/w Ensemble)" -
-    // swing/understudy shorthand), which would otherwise tear a single
-    // entry's parenthetical in half.
+    // Depth-aware: only a comma/semicolon OUTSIDE parentheses ends one
+    // entry and starts the next, so anything inside the parens - slashes,
+    // pipes, spaces, even commas - never gets mistaken for a boundary
+    // between two people. Deliberately NOT splitMultiValue (which splits
+    // on those characters unconditionally): a role can contain a slash
+    // ("Aaron Alcaraz (s/w Ensemble)") or a pipe ("Megan Hilty (Ivy Lynn/
+    // Norma Jeane | Marilyn Monroe)" - Bombshell's dual-role structure),
+    // and both used to tear a single entry's parenthetical in half.
     function splitCastEntries(castStr) {
-        return castStr ? String(castStr).split(/\s*[;,|]\s*/).map(s => s.trim()).filter(Boolean) : [];
+        if (!castStr) return [];
+        const str = String(castStr);
+        const entries = [];
+        let depth = 0, current = "";
+        for (const ch of str) {
+            if (ch === "(") { depth++; current += ch; continue; }
+            if (ch === ")") { depth = Math.max(0, depth - 1); current += ch; continue; }
+            if (depth === 0 && (ch === "," || ch === ";")) {
+                entries.push(current.trim());
+                current = "";
+                continue;
+            }
+            current += ch;
+        }
+        if (current.trim()) entries.push(current.trim());
+        return entries.filter(Boolean);
     }
 
     // Splits a free-text cast field ("Raúl Esparza (Bobby); Jane Doe (Amy)")
-    // into just the performer names, stripping each entry's trailing
-    // "(Role)" parenthetical.
+    // into just the performer names: everything before the "(" is the
+    // actor's name, everything inside it is the character/role and is
+    // ignored here - and ONLY that split point counts, regardless of what
+    // punctuation shows up inside the parens.
     function parseCastNames(castStr) {
         return splitCastEntries(castStr).map(entry => {
-            const m = entry.match(/^(.*?)\s*\([^)]*\)\s*$/);
-            return (m ? m[1] : entry).trim();
+            const parenIdx = entry.indexOf("(");
+            return (parenIdx === -1 ? entry : entry.slice(0, parenIdx)).trim();
         }).filter(Boolean);
     }
 
@@ -295,8 +359,12 @@
         const titleSlug = (opts.titleSlug || "").trim();
         const castSlug = (opts.castSlug || "").trim();
 
+        // Diacritic-insensitive: folding both sides means searching "raul"
+        // matches "Raúl" - same fold used for slugs/highlighting elsewhere.
+        const foldedQ = foldDiacritics(q);
+
         return rows.filter(r => {
-            if (q && !searchable(r).includes(q)) return false;
+            if (foldedQ && !foldDiacritics(searchable(r)).includes(foldedQ)) return false;
             // is_proshot (bool) -> recording_type (Bootleg/Pro-Shot/House
             // Cam/Press Reel/Demo/Soundboard) in schema v3; "Proshot only"
             // keeps its old meaning of "exactly Pro-Shot" for now.
@@ -575,9 +643,12 @@
     // same amber highlight styling as a search match, so their name stands
     // out in every show listed on the filtered page.
     function renderCastEntry(entry, q, castHighlightSlug) {
-        const m = entry.match(/^(.*?)\s*(\([^)]*\))?\s*$/);
-        const name = (m && m[1] ? m[1] : entry).trim();
-        const roleSuffix = m && m[2] ? " " + m[2] : "";
+        // Same rule as parseCastNames: everything before the first "(" is
+        // the name, everything from it onward (role, alternates, whatever
+        // punctuation it holds) is just carried along as display text.
+        const parenIdx = entry.indexOf("(");
+        const name = (parenIdx === -1 ? entry : entry.slice(0, parenIdx)).trim();
+        const roleSuffix = parenIdx === -1 ? "" : " " + entry.slice(parenIdx).trim();
         const slug = slugify(name);
         let nameHtml = hi(name, q);
         if (castHighlightSlug && slug.includes(castHighlightSlug)) {

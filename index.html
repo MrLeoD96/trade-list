@@ -301,6 +301,10 @@ button, input, select { font: inherit; color: inherit; }
    instead of sitting left-aligned like ordinary body headings. */
 .page-markdown .md-open-title { text-align: center; margin: 0 0 2px; }
 .page-markdown .md-open-subtitle { text-align: center; margin: -2px 0 30px; }
+/* A title with no subtitle underneath it isn't butting up against
+   anything, so it gets normal spacing before whatever comes next instead
+   of the 2px meant to sit tight above a subtitle line. */
+.page-markdown .md-open-title.md-open-title-solo { margin-bottom: 30px; }
 
 .archive-head {
     margin: 28px 0 16px; border-bottom: 1px solid var(--line); padding-bottom: 12px;
@@ -481,7 +485,14 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 .request-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
 .request-btn.requested { color: var(--bg); background: var(--accent); border-color: var(--accent); }
 
-.highlight { background: var(--amber); color: #211a10; padding: 1px 3px; border-radius: 3px; font-weight: 600; }
+/* The horizontal padding gives the highlighted background some breathing
+   room, but padding on an inline element also pushes the surrounding text
+   away by that same amount - visible as a stray gap right at the edge of
+   a partial-word match (e.g. "E[spar]za"). The matching negative margin
+   cancels that push while leaving the padding (and the background box it
+   creates) alone, so the highlighted span still looks inset but no longer
+   shoves its neighbors apart. */
+.highlight { background: var(--amber); color: #211a10; padding: 1px 3px; margin: 0 -3px; border-radius: 3px; font-weight: 600; }
 .no-results { display: none; text-align: center; padding: 70px; color: var(--muted); font-family: var(--mono-font); }
 .skeleton {
     height: 52px; border-bottom: 1px solid var(--line);
@@ -929,14 +940,17 @@ function setSearchValue(value) {
 function updateSuggestions(query) {
     const q = query.trim().toLowerCase();
     if (!q) { hideSuggestions(); return; }
+    // Diacritic-insensitive, same as the main search and the highlighting
+    // in App.record - typing "raul" should surface "Raúl Esparza".
+    const foldedQ = App.foldDiacritics(q);
 
     const titleMatches = Array.from(new Set(allData.map(r => r.title).filter(Boolean)))
-        .filter(t => t.toLowerCase().includes(q))
+        .filter(t => App.foldDiacritics(t.toLowerCase()).includes(foldedQ))
         .slice(0, 5)
         .map(label => ({ type: 'show', label, slug: App.slugify(label) }));
 
     const castMatches = App.distinctCastNames(allData)
-        .filter(n => n.toLowerCase().includes(q))
+        .filter(n => App.foldDiacritics(n.toLowerCase()).includes(foldedQ))
         .slice(0, 5)
         .map(label => ({ type: 'cast', label, slug: App.slugify(label) }));
 
@@ -1180,18 +1194,25 @@ function renderPageMarkdown(elementId, markdown, label) {
     }
 }
 
-// When a section opens with two headings back-to-back (nothing between
-// them), treat them as a title+subtitle pair - typically an H2 followed
-// by a small H5 - and center both, tight together, rather than leaving
-// them left-aligned like ordinary body headings.
+// A section's opening heading always gets centered as the page's title -
+// whether or not anything follows it. If it's immediately followed by a
+// second heading (nothing in between), that one is treated as its
+// subtitle - typically an H2 followed by a small H5 - and centered too,
+// tight underneath, rather than left-aligned like ordinary body headings.
 const HEADING_TAGS = new Set(['H1', 'H2', 'H3', 'H4', 'H5', 'H6']);
 function applyOpeningTitlePair(el) {
     const first = el.firstElementChild;
     if (!first || !HEADING_TAGS.has(first.tagName)) return;
-    const second = first.nextElementSibling;
-    if (!second || !HEADING_TAGS.has(second.tagName)) return;
     first.classList.add('md-open-title');
-    second.classList.add('md-open-subtitle');
+    const second = first.nextElementSibling;
+    if (second && HEADING_TAGS.has(second.tagName)) {
+        second.classList.add('md-open-subtitle');
+    } else {
+        // No subtitle to sit close to it - give it normal breathing room
+        // before whatever comes next instead of the tight 2px meant to
+        // butt up against a subtitle line.
+        first.classList.add('md-open-title-solo');
+    }
 }
 
 function getStatsHtml() {

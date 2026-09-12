@@ -478,6 +478,26 @@ button, input, select { font: inherit; color: inherit; }
 }
 .proshot-pill svg { width: 10px; height: 10px; }
 
+/* Tracked/Untracked - Audio tab only (see app.js's record()). Tracked
+   reuses the site's green accent (a completed/good state); Untracked
+   uses amber, matching the desktop app's own default-state color choices
+   elsewhere (e.g. the nft-pill amber for a data-quality note). */
+.audio-tracked-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 8px; border-radius: 4px;
+    font: 600 10px var(--mono-font); text-transform: uppercase;
+    white-space: nowrap; flex-shrink: 0;
+}
+.audio-tracked-pill svg { width: 10px; height: 10px; }
+.audio-tracked-pill.tracked {
+    border: 1px solid var(--accent); color: var(--accent);
+    background: var(--accent-soft);
+}
+.audio-tracked-pill.untracked {
+    border: 1px solid var(--amber); color: var(--amber);
+    background: rgba(251, 191, 36, 0.1);
+}
+
 /* Disambiguation bubble - shown when two recordings in the same group
    would otherwise look identical in the collapsed summary row (e.g. same
    date, one matinee one evening); distinct from the status pills since
@@ -692,6 +712,7 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
     .summary-title { flex-basis: 100%; }
     .summary-meta { flex: 1; font-size: 11px; }
     .proshot-pill { order: 4; }
+    .audio-tracked-pill { order: 4; }
     .disambig-pill { order: 4; }
     .flag-pill { order: 4; }
     .nft-pill { order: 4; flex-basis: 100%; margin-top: 4px; }
@@ -726,6 +747,7 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
         <div class="nav-links">
             <a href="#home" class="nav-link active" data-page="home">Home</a>
             <a href="#videos" class="nav-link" data-page="videos">Videos</a>
+            <a href="#audio" class="nav-link" data-page="audio">Audio</a>
             <a href="#wants" class="nav-link" data-page="wants">Wants</a>
             <a href="#rules" class="nav-link" data-page="rules">Rules</a>
             <a href="#contact" class="nav-link nav-link-cta" data-page="contact">Contact</a>
@@ -896,12 +918,25 @@ let activeResolutions = new Set(), proshotOnly = false, titleSlugFilter = '', ca
 let yearBounds = null;               // {min, max} across the whole archive
 let yearRange = { min: null, max: null }; // current slider selection; null bound = that side is unrestricted
 
+// Which of the two shared "Videos"/"Audio" tabs is currently showing -
+// 'Video' or 'Audio' (matching media_type values), or null before either
+// has ever been visited. Drives currentMediaRows() below, so every
+// filter/search/render on that shared page only ever sees its own kind.
+let currentMediaType = null;
+
 function isRequested(r) { return requestedItems.some(x => x.key === App.requestKey(r)); }
+
+// Rows belonging to whichever of Videos/Audio is the active tab. A blank
+// media_type is treated as 'Video' (pre-Audio-tab data, or a row where it
+// was never set), matching archive_app.py's own default.
+function currentMediaRows() {
+    return allData.filter(r => (String(r.media_type || '').trim() || 'Video') === currentMediaType);
+}
 
 function render() {
     currentQuery = currentQuery || '';
     let q = currentQuery.trim().toLowerCase();
-    let filtered = App.filterRows(allData, {
+    let filtered = App.filterRows(currentMediaRows(), {
         query: q, resolutions: activeResolutions, yearRange, proshotOnly,
         titleSlug: titleSlugFilter, castSlug: castSlugFilter,
     });
@@ -943,17 +978,17 @@ function render() {
     let yearFilterActive = yearBounds && (yearRange.min !== yearBounds.min || yearRange.max !== yearBounds.max);
     let anyFilterActive = q || activeResolutions.size || yearFilterActive || proshotOnly || titleSlugFilter || castSlugFilter;
     $('statusText').textContent = anyFilterActive
-        ? `${rows.length} of ${allData.length} recordings`
-        : `${allData.length} recordings`;
+        ? `${rows.length} of ${currentMediaRows().length} recordings`
+        : `${currentMediaRows().length} recordings`;
     updateToggleStates();
 }
 
 function buildFilterChips() {
-    const resolutions = App.distinctResolutions(allData);
+    const resolutions = App.distinctResolutions(currentMediaRows());
     $('resolutionChips').innerHTML = resolutions.map(r =>
         `<button type="button" class="chip" data-res="${App.esc(r)}" aria-pressed="false">${App.esc(r)}</button>`).join('');
 
-    yearBounds = App.getYearBounds(allData);
+    yearBounds = App.getYearBounds(currentMediaRows());
     if (yearBounds) {
         $('yearMin').min = $('yearMax').min = yearBounds.min;
         $('yearMin').max = $('yearMax').max = yearBounds.max;
@@ -1067,7 +1102,10 @@ $('filterPanelWrap').addEventListener('click', e => {
     render();
 });
 
-$('clearFiltersBtn').addEventListener('click', () => {
+// Shared by the "Clear filters" button and by switching between the
+// Videos/Audio tabs (a resolution or year range picked on one tab
+// shouldn't silently carry over and hide rows on the other).
+function resetFilterState() {
     activeResolutions.clear(); proshotOnly = false;
     if (yearBounds) {
         $('yearMin').value = yearBounds.min;
@@ -1080,6 +1118,10 @@ $('clearFiltersBtn').addEventListener('click', () => {
         c.setAttribute('aria-pressed', 'false');
     });
     updateClearFiltersVisibility();
+}
+
+$('clearFiltersBtn').addEventListener('click', () => {
+    resetFilterState();
     render();
 });
 
@@ -1300,12 +1342,12 @@ function updateSuggestions(query) {
     // in App.record - typing "raul" should surface "Raúl Esparza".
     const foldedQ = App.foldDiacritics(q);
 
-    const titleMatches = Array.from(new Set(allData.map(r => r.title).filter(Boolean)))
+    const titleMatches = Array.from(new Set(currentMediaRows().map(r => r.title).filter(Boolean)))
         .filter(t => App.foldDiacritics(t.toLowerCase()).includes(foldedQ))
         .slice(0, 5)
         .map(label => ({ type: 'show', label, slug: App.slugify(label) }));
 
-    const castMatches = App.distinctCastNames(allData)
+    const castMatches = App.distinctCastNames(currentMediaRows())
         .filter(n => App.foldDiacritics(n.toLowerCase()).includes(foldedQ))
         .slice(0, 5)
         .map(label => ({ type: 'cast', label, slug: App.slugify(label) }));
@@ -1347,8 +1389,9 @@ function selectSuggestion(item) {
     hideSuggestions();
     setSearchValue('');
     currentQuery = '';
-    if (item.type === 'cast') goToPage('videos', '', item.slug);
-    else goToPage('videos', item.slug);
+    const targetPage = currentMediaType === 'Audio' ? 'audio' : 'videos';
+    if (item.type === 'cast') goToPage(targetPage, '', item.slug);
+    else goToPage(targetPage, item.slug);
 }
 
 $('searchInput').addEventListener('input', e => {
@@ -1417,15 +1460,18 @@ $('backTop').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smoot
 // (build these by hand - lowercase the title, spaces to hyphens - there's
 // no per-recording link, only per-show). Unknown/empty hashes fall back to
 // Home, matching "first tab is Home" from the nav itself. -----------------
-const PAGES = ['home', 'videos', 'wants', 'rules', 'contact'];
+const PAGES = ['home', 'videos', 'audio', 'wants', 'rules', 'contact'];
 
 function parseRoute() {
     const raw = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
     const parts = raw.split('/').filter(Boolean);
     const page = PAGES.includes(parts[0]) ? parts[0] : 'home';
-    const isCast = page === 'videos' && parts[1] === 'cast' && parts[2];
+    // Videos and Audio share the same slug/cast deep-link shape - only
+    // which media_type currentMediaRows() filters to differs.
+    const isMediaPage = page === 'videos' || page === 'audio';
+    const isCast = isMediaPage && parts[1] === 'cast' && parts[2];
     const castSlug = isCast ? parts[2].trim().toLowerCase() : '';
-    const slug = page === 'videos' && !isCast && parts[1] ? parts[1].trim().toLowerCase() : '';
+    const slug = isMediaPage && !isCast && parts[1] ? parts[1].trim().toLowerCase() : '';
     return { page, slug, castSlug };
 }
 
@@ -1441,26 +1487,44 @@ function goToPage(page, slug, castSlug) {
 // that names them "in big" rather than relying solely on the small banner
 // link below it.
 function updateArchiveHeading(titleMatch, castName) {
-    let text = 'Videos';
-    if (titleMatch) text = `Videos of ${titleMatch}`;
-    else if (castName) text = `Videos with ${castName}`;
+    let label = currentMediaType === 'Audio' ? 'Audio' : 'Videos';
+    let text = label;
+    if (titleMatch) text = `${label} of ${titleMatch}`;
+    else if (castName) text = `${label} with ${castName}`;
     $('archiveHeading').textContent = text;
 }
 
 function renderRoute() {
     const { page, slug, castSlug } = parseRoute();
-    document.querySelectorAll('.page-section').forEach(s => s.classList.toggle('active', s.dataset.page === page));
+    // Audio has no page-section of its own - it reuses the Videos markup
+    // (search bar, filter panel, archive list) and just switches which
+    // rows currentMediaRows() hands to it.
+    document.querySelectorAll('.page-section').forEach(s => {
+        const active = s.dataset.page === page || (s.dataset.page === 'videos' && page === 'audio');
+        s.classList.toggle('active', active);
+    });
     document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.page === page));
 
-    if (page === 'videos') {
+    if (page === 'videos' || page === 'audio') {
+        const newMediaType = page === 'audio' ? 'Audio' : 'Video';
+        const mediaTypeChanged = newMediaType !== currentMediaType;
+        currentMediaType = newMediaType;
+        if (mediaTypeChanged) {
+            // A resolution/proshot/year filter picked on one tab shouldn't
+            // silently apply (or hide everything) on the other, and the
+            // filter chips themselves (resolutions, year bounds) need
+            // rebuilding from this tab's own rows.
+            buildFilterChips();
+            resetFilterState();
+        }
         titleSlugFilter = slug;
         castSlugFilter = castSlug;
         if (slug) {
-            const match = allData.find(r => App.slugify(r.title).includes(slug));
+            const match = currentMediaRows().find(r => App.slugify(r.title).includes(slug));
             updateArchiveHeading(match ? match.title : `"${slug}"`, '');
             $('slugFilterBanner').classList.add('show');
         } else if (castSlug) {
-            const match = allData.flatMap(r => App.parseCastNames(r.cast))
+            const match = currentMediaRows().flatMap(r => App.parseCastNames(r.cast))
                 .find(name => App.slugify(name).includes(castSlug));
             updateArchiveHeading('', match || `"${castSlug}"`);
             $('slugFilterBanner').classList.add('show');
@@ -1629,8 +1693,6 @@ const dataReady = fetch('data.json').then(r => { if (!r.ok) throw Error('data');
         allData = [];
     }
     dataById = new Map(allData.map(r => [String(r.id), r]));
-
-    buildFilterChips();
 }).catch(e => {
     console.error('Failed to load data.json:', e);
     dataLoadFailed = true;

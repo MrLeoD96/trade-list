@@ -695,7 +695,7 @@
     // out in every show listed on the filtered page. An alternate/e-c/g-p/
     // swing/standby/understudy role - name and role both - gets the same
     // purple accent used for italics elsewhere on the site.
-    function renderCastEntry(entry, q, castHighlightSlug) {
+    function renderCastEntry(entry, q, castHighlightSlug, mediaPage) {
         // Same rule as parseCastNames: everything before the first "(" is
         // the name, everything from it onward (role, alternates, whatever
         // punctuation it holds) is just carried along as display text.
@@ -707,19 +707,22 @@
         if (castHighlightSlug && slug.includes(castHighlightSlug)) {
             nameHtml = `<span class="highlight">${nameHtml}</span>`;
         }
-        const entryHtml = `<a class="cast-link" href="#videos/cast/${esc(slug)}">${nameHtml}</a>${esc(roleSuffix)}`;
+        // mediaPage: "videos" or "audio" - so a cast link on an Audio row
+        // deep-links back into the Audio tab, not Videos.
+        const page = mediaPage || "videos";
+        const entryHtml = `<a class="cast-link" href="#${page}/cast/${esc(slug)}">${nameHtml}</a>${esc(roleSuffix)}`;
         return isAlternateRole(roleSuffix) ? `<span class="cast-alt">${entryHtml}</span>` : entryHtml;
     }
 
     // limit: cap how many entries render (used for the brief summary
     // lead-line); omitted/0 renders the full cast list (used in the
     // expanded Cast detail row).
-    function renderCastHtml(castStr, q, castHighlightSlug, limit) {
+    function renderCastHtml(castStr, q, castHighlightSlug, limit, mediaPage) {
         if (!castStr) return "-";
         let entries = splitCastEntries(castStr);
         if (!entries.length) return hi(castStr, q);
         if (limit) entries = entries.slice(0, limit);
-        return entries.map(e => renderCastEntry(e, q, castHighlightSlug)).join(limit ? " &middot; " : ", ");
+        return entries.map(e => renderCastEntry(e, q, castHighlightSlug, mediaPage)).join(limit ? " &middot; " : ", ");
     }
 
     // -- record card -----------------------------------------------------
@@ -775,11 +778,22 @@
 
         // Audio-only masters (media_type) don't have a resolution.
         let isAudio = String(r.media_type || "").toLowerCase() === "audio";
+        // Cast deep-links on this row should stay within whichever tab
+        // this row actually lives in.
+        let mediaPage = isAudio ? "audio" : "videos";
         let resolutionHtml = isAudio ? "" : `
                     <div class="detail">
                         <span class="detail-label">${ICONS.monitor} Resolution</span>
                         <span class="detail-value">${hi(r.resolution || "-", q)}</span>
                     </div>`;
+        // Tracked/Untracked - audio-only (see archive_app.py's
+        // AUDIO_TRACKED_OPTIONS), always one of exactly two values for an
+        // Audio row and blank for Video, so this never shows on a video.
+        let audioTrackedPillHtml = "";
+        if (isAudio && r.audio_tracked) {
+            let isTracked = String(r.audio_tracked).toLowerCase() === "tracked";
+            audioTrackedPillHtml = `<span class="audio-tracked-pill ${isTracked ? "tracked" : "untracked"}">${isTracked ? ICONS.check : ICONS.info} ${esc(r.audio_tracked)}</span>`;
+        }
 
         // These are all new in schema v3 and often blank, so - unlike the
         // always-shown details above - they only render when there's
@@ -827,12 +841,13 @@
             <summary>
                 <div class="summary-title">
                     <div class="title-line">${hi(titleText, q)}</div>
-                    ${leads(r.cast) ? `<div class="lead-line">${renderCastHtml(r.cast, q, castHighlightSlug, 2)}</div>` : ""}
+                    ${leads(r.cast) ? `<div class="lead-line">${renderCastHtml(r.cast, q, castHighlightSlug, 2, mediaPage)}</div>` : ""}
                 </div>
                 <div class="summary-meta">${ICONS.pin}<span>${hi(whereText, q)}</span></div>
                 ${dateHtml}
                 ${disambigHtml}
                 ${recTypePillHtml}
+                ${audioTrackedPillHtml}
                 ${statusPillHtml}
                 ${nftPillHtml}
                 ${flagPillsHtml}
@@ -865,7 +880,7 @@
                     </div>${completenessHtml}${nftHtml}
                     <div class="detail full">
                         <span class="detail-label">${ICONS.users} Cast</span>
-                        <span class="detail-value">${renderCastHtml(r.cast, q, castHighlightSlug)}</span>
+                        <span class="detail-value">${renderCastHtml(r.cast, q, castHighlightSlug, 0, mediaPage)}</span>
                     </div>
                     <div class="detail full">
                         <span class="detail-label">${ICONS.fileText} Master Notes</span>

@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-09-12T10:40:12Z",
+    "generated_at": "2026-09-12T23:49:08Z",
     "shows": [
         {
             "id": 1,
@@ -28,7 +28,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "03/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 2,
@@ -57,7 +58,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 3,
@@ -86,7 +88,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "31/08/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 4,
@@ -115,7 +118,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 5,
@@ -144,7 +148,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "03/09/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 6,
@@ -173,7 +178,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "03/09/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 7,
@@ -202,7 +208,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "25/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 8,
@@ -231,7 +238,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 9,
@@ -260,7 +268,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 10,
@@ -289,7 +298,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 11,
@@ -318,7 +328,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 12,
@@ -347,7 +358,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 13,
@@ -376,7 +388,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 14,
@@ -405,7 +418,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 15,
@@ -434,7 +448,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 16,
@@ -463,7 +478,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 17,
@@ -492,7 +508,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "10/09/2026"
+            "last_modified": "10/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 18,
@@ -521,7 +538,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "12/09/2026"
+            "last_modified": "12/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 19,
@@ -550,7 +568,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 20,
@@ -579,7 +598,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 21,
@@ -608,7 +628,8 @@
             "trader_notes": "Pro-shot. Filmed on stage at the Adelphi Theatre (London, England) and distributed commercially. Ultimate Edition Blu-Ray x265 rip w/ PGS subtitles for 19 languages. Proper 5.1 Audio. Includes 12 featurettes.",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 22,
@@ -637,7 +658,8 @@
             "trader_notes": "",
             "flags": "CORRUPT FILE",
             "date_added": "15/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "25/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 23,
@@ -666,7 +688,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "31/08/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 24,
@@ -695,7 +718,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 25,
@@ -724,7 +748,8 @@
             "trader_notes": "Filmed version of the staged concert production at the New York Philharmonic. Filmed April 7-9, 2011. BluRay x264 encode by GECKOS.",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "11/09/2026"
+            "last_modified": "11/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 26,
@@ -753,7 +778,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 27,
@@ -782,7 +808,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "12/09/2026"
+            "last_modified": "12/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 28,
@@ -811,7 +838,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "12/09/2026"
+            "last_modified": "12/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 29,
@@ -840,7 +868,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 30,
@@ -869,7 +898,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "01/09/2026"
+            "last_modified": "01/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 31,
@@ -898,7 +928,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "25/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 32,
@@ -927,7 +958,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 33,
@@ -956,7 +988,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 34,
@@ -985,7 +1018,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 35,
@@ -1014,7 +1048,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "01/09/2026"
+            "last_modified": "01/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 36,
@@ -1043,7 +1078,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 37,
@@ -1072,7 +1108,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 38,
@@ -1101,7 +1138,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 39,
@@ -1130,7 +1168,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "01/09/2026"
+            "last_modified": "01/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 40,
@@ -1159,7 +1198,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 42,
@@ -1188,7 +1228,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 43,
@@ -1217,7 +1258,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 44,
@@ -1246,7 +1288,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "02/09/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 45,
@@ -1275,7 +1318,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 46,
@@ -1304,7 +1348,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 47,
@@ -1333,7 +1378,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "03/09/2026",
-            "last_modified": "03/09/2026"
+            "last_modified": "03/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 48,
@@ -1362,7 +1408,8 @@
             "trader_notes": "",
             "flags": "Censored",
             "date_added": "30/08/2026",
-            "last_modified": "30/08/2026"
+            "last_modified": "30/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 49,
@@ -1391,7 +1438,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 50,
@@ -1420,7 +1468,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "26/08/2026",
-            "last_modified": "26/08/2026"
+            "last_modified": "26/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 51,
@@ -1449,7 +1498,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 52,
@@ -1478,7 +1528,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 53,
@@ -1507,7 +1558,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 54,
@@ -1536,7 +1588,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 55,
@@ -1565,7 +1618,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 56,
@@ -1584,8 +1638,8 @@
             "master": "bikinibottomday",
             "format": "MP4",
             "resolution": "4K",
-            "subtitles": "",
-            "file_size_bytes": "11905886838",
+            "subtitles": "External SRT",
+            "file_size_bytes": "11906077501",
             "file_size": "11.09 GB",
             "nft_date": "",
             "trading_status": "",
@@ -1594,7 +1648,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "12/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 57,
@@ -1623,7 +1678,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 58,
@@ -1652,7 +1708,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "01/09/2026"
+            "last_modified": "01/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 59,
@@ -1681,7 +1738,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "15/08/2026",
-            "last_modified": "15/08/2026"
+            "last_modified": "15/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 61,
@@ -1710,7 +1768,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "24/08/2026",
-            "last_modified": "24/08/2026"
+            "last_modified": "24/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 62,
@@ -1739,7 +1798,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "31/08/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 63,
@@ -1768,7 +1828,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "24/08/2026",
-            "last_modified": "24/08/2026"
+            "last_modified": "24/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 64,
@@ -1797,7 +1858,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 65,
@@ -1826,7 +1888,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "24/08/2026",
-            "last_modified": "24/08/2026"
+            "last_modified": "24/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 66,
@@ -1855,7 +1918,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "25/08/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 67,
@@ -1884,7 +1948,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "25/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "25/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 68,
@@ -1913,7 +1978,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "25/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "25/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 69,
@@ -1942,7 +2008,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "02/09/2026",
-            "last_modified": "02/09/2026"
+            "last_modified": "02/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 70,
@@ -1971,7 +2038,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "02/09/2026",
-            "last_modified": "02/09/2026"
+            "last_modified": "02/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 71,
@@ -2000,7 +2068,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "25/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "25/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 72,
@@ -2029,7 +2098,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "25/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "25/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 73,
@@ -2058,7 +2128,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "25/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "25/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 74,
@@ -2087,7 +2158,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "25/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "25/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 75,
@@ -2116,7 +2188,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "25/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "25/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 76,
@@ -2145,7 +2218,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "02/09/2026",
-            "last_modified": "02/09/2026"
+            "last_modified": "02/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 77,
@@ -2174,7 +2248,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "01/09/2026"
+            "last_modified": "01/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 78,
@@ -2203,7 +2278,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "25/08/2026",
-            "last_modified": "25/08/2026"
+            "last_modified": "25/08/2026",
+            "audio_tracked": ""
         },
         {
             "id": 80,
@@ -2232,7 +2308,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "31/08/2026",
-            "last_modified": "12/09/2026"
+            "last_modified": "12/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 81,
@@ -2261,7 +2338,8 @@
             "trader_notes": "",
             "flags": "Uncensored",
             "date_added": "01/09/2026",
-            "last_modified": "01/09/2026"
+            "last_modified": "01/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 82,
@@ -2290,7 +2368,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "31/08/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 83,
@@ -2319,7 +2398,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "31/08/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 84,
@@ -2348,7 +2428,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "01/09/2026"
+            "last_modified": "01/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 85,
@@ -2377,7 +2458,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "01/09/2026"
+            "last_modified": "01/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 86,
@@ -2406,7 +2488,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "01/09/2026"
+            "last_modified": "01/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 87,
@@ -2435,7 +2518,8 @@
             "trader_notes": "Press Reels from 1998/1999. About 90 minutes of raw press footage of the original and replacement casts. Excellent sound and picture for both. Some generation loss. Includes 50 minutes of Gina Gershon highlights, not press reel.",
             "flags": "",
             "date_added": "01/09/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 88,
@@ -2464,7 +2548,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "02/09/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 89,
@@ -2493,7 +2578,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "02/09/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "09/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 90,
@@ -2522,7 +2608,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "02/09/2026",
-            "last_modified": "09/09/2026"
+            "last_modified": "12/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 91,
@@ -2551,7 +2638,8 @@
             "trader_notes": "This is a play, not a musical :)",
             "flags": "",
             "date_added": "06/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 92,
@@ -2580,7 +2668,8 @@
             "trader_notes": "Muxed into 2 MKVs for your convenience.",
             "flags": "",
             "date_added": "06/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 93,
@@ -2609,7 +2698,8 @@
             "trader_notes": "Muxed into 2 MKVs for your convenience.",
             "flags": "",
             "date_added": "06/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 94,
@@ -2638,7 +2728,8 @@
             "trader_notes": "The stars of the NBC musical drama series Smash reunite virtually for a special one-night-only streaming event: Bombshell in Concert. The event, announced by The Actors Fund in association with PEOPLE, features the never-seen sold-out live performance of Bombshell in Concert that electrified Broadway at the Minskoff Theater in New York City in 2015.",
             "flags": "",
             "date_added": "06/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 95,
@@ -2667,7 +2758,8 @@
             "trader_notes": "Muxed into an MKV for your convenience. In the video the selection screen of the DVD is shown and then different parts (Playbill, Acts 1, 2) are selected. Then the selection screen reappears for some 30 odd minutes. This  is how the original VOB+Smalls are provided.",
             "flags": "",
             "date_added": "06/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 96,
@@ -2696,7 +2788,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "06/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 97,
@@ -2725,7 +2818,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "06/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 98,
@@ -2754,7 +2848,8 @@
             "trader_notes": "Starts in the middle of Beautiful.",
             "flags": "",
             "date_added": "06/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 99,
@@ -2783,7 +2878,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "06/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 100,
@@ -2812,7 +2908,8 @@
             "trader_notes": "2017 London Revival. Proshot for National Theatre Live, broadcast live to cinemas around the world. Uses the original script and moments not seen on Broadway since original 1971 run. This production's book is unique to this iteration.",
             "flags": "",
             "date_added": "06/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 101,
@@ -2841,7 +2938,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "06/09/2026",
-            "last_modified": "06/09/2026"
+            "last_modified": "06/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 102,
@@ -2870,7 +2968,8 @@
             "trader_notes": "At least three versions exist: this one, that's 4.19 GB, is lower quality and contains an ad for Sweeney Todd, one that's 4.01 GB which is complete, and one that's 3.96 GB which is missing the Cabaret name in lights at the beginning. This version has many quiet popping noises in the audio track.",
             "flags": "NOT HIGHEST QUALITY",
             "date_added": "11/09/2026",
-            "last_modified": "11/09/2026"
+            "last_modified": "11/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 103,
@@ -2899,7 +2998,8 @@
             "trader_notes": "Pro-shot for PBS filmed between October 21-25. Highest quality video of this show. Includes positioned SRT subtitles. Includes 5.1 Surround Mix, Stereo Mix, and a commentary audio track.\nThe commentary track features composer Stephen Sondheim, director and book writer James Lapine, and original stars Mandy Patinkin and Bernadette Peters. Laughs are had, memories are recounted, and tears are (repeatedly) shed.",
             "flags": "",
             "date_added": "11/09/2026",
-            "last_modified": "11/09/2026"
+            "last_modified": "11/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 104,
@@ -2928,7 +3028,8 @@
             "trader_notes": "Directed by and translation by Ohad Ashkenazi. This production won the Israeli Theater Academy Award for Best Musical. Some VHS related generation loss.",
             "flags": "",
             "date_added": "11/09/2026",
-            "last_modified": "11/09/2026"
+            "last_modified": "11/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 105,
@@ -2957,7 +3058,8 @@
             "trader_notes": "Staging for the Sondheim Celebration at The John F. Kennedy Center for the Performing Arts. Pretty well shot. Sound is on the muffled side. Labelled as either 15th or 16th. An MKV copy labeled as June 2 also circulates, but it is a higher generation version of this video.",
             "flags": "",
             "date_added": "11/09/2026",
-            "last_modified": "11/09/2026"
+            "last_modified": "12/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 106,
@@ -2986,7 +3088,8 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "11/09/2026",
-            "last_modified": "11/09/2026"
+            "last_modified": "11/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 107,
@@ -3015,7 +3118,8 @@
             "trader_notes": "Filmed on 5-8 March 2014 and aired on PBS on September 26, 2014.",
             "flags": "",
             "date_added": "11/09/2026",
-            "last_modified": "12/09/2026"
+            "last_modified": "12/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 108,
@@ -3044,7 +3148,8 @@
             "trader_notes": "Penultimate show. Distributed commercially.",
             "flags": "",
             "date_added": "11/09/2026",
-            "last_modified": "12/09/2026"
+            "last_modified": "12/09/2026",
+            "audio_tracked": ""
         },
         {
             "id": 109,
@@ -3073,7 +3178,188 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "11/09/2026",
-            "last_modified": "11/09/2026"
+            "last_modified": "11/09/2026",
+            "audio_tracked": ""
+        },
+        {
+            "id": 110,
+            "title": "Cabaret",
+            "tour": "West End",
+            "production": "Fifth West End Revival",
+            "venue": "Playhouse Theatre",
+            "city": "London",
+            "date": "08-07-2026",
+            "sequence_number": "",
+            "performance_time": "Matinee",
+            "performance_type": "",
+            "media_type": "Audio",
+            "recording_type": "Bootleg",
+            "completeness": "Full Show",
+            "master": "BobbysKazoo",
+            "format": "M4A",
+            "resolution": "",
+            "subtitles": "",
+            "file_size_bytes": "473373381",
+            "file_size": "451.44 MB",
+            "nft_date": "",
+            "trading_status": "",
+            "cast": "Jamie Muscato (Emcee), Joy Woods (Sally Bowles), Baker Mukasa (Clifford Bradshaw), Jessica Kirton (u/s Fräulein Schneider), Adrian Grove (u/s Herr Schultz), Lucas Koch (Ernst Ludwig), Alexandra Regan (u/s Fräulein Kost/Fritzie), Danny Fogarty (s/w Max/Herman), Xavion Campbell Brown (Bobby), Ben Simon-Wilson (e/c Victor), Eva-Rose Tanaka (Frenchie), Hicaro Nicolai (Lulu), Lucy Young (s/w Rosie), Olivia-Rose Deer (Helga), Anya Ferdinand (Texas), Tom Scanlon (Hans)",
+            "master_notes": "Only Joy Woods could get me to see this production again. Clear audio recorded from a table; occasional chatter around me.",
+            "trader_notes": "",
+            "flags": "",
+            "date_added": "13/09/2026",
+            "last_modified": "13/09/2026",
+            "audio_tracked": "Untracked"
+        },
+        {
+            "id": 111,
+            "title": "Groundhog Day",
+            "tour": "International",
+            "production": "Melbourne",
+            "venue": "Princess Theatre",
+            "city": "Melbourne, Australia",
+            "date": "08-02-2024",
+            "sequence_number": "",
+            "performance_time": "Evening",
+            "performance_type": "",
+            "media_type": "Audio",
+            "recording_type": "Bootleg",
+            "completeness": "Full Show",
+            "master": "John Aaaaasmith",
+            "format": "M4A",
+            "resolution": "",
+            "subtitles": "",
+            "file_size_bytes": "100313340",
+            "file_size": "95.67 MB",
+            "nft_date": "",
+            "trading_status": "",
+            "cast": "Andy Karl (Phil Connors), Elise McCann (Rita Hanson), Tim Wright (Ned Ryerson), Ashleigh Rubenach (Nancy), Conor Neylon (Gus/Jeff), Connor Sweeney (Ralph), Kaya Byrne (Larry), Andrew Dunne (Buster), Afua Adjei (Debbie), Jacob Steen (Fred), Alison Whyte (Mrs Lancaster), Etuate Lutui (Deputy/Jonathan), Kate Cole (Piano Teacher), Michael Lindner (Jenson), Kate Yaxley (Joelle), Matthew Hamilton (Sheriff), Andrew Coshan (Billy), Grant Almirall (Hotdog Guy)",
+            "master_notes": "Not really sharing this audio for a while, but it seems to be pretty clear! Lots of applause and laughter kind of drowning out the \"Stuck\" song, but still good to listen to! Act 2 has a bit of shuffling and you can hear people next to me eating, but not during the quiet scenes! I'm just so excited Melbourne is getting a lot of theatre at the moment!",
+            "trader_notes": "",
+            "flags": "",
+            "date_added": "13/09/2026",
+            "last_modified": "13/09/2026",
+            "audio_tracked": "Untracked"
+        },
+        {
+            "id": 112,
+            "title": "The Lost Boys",
+            "tour": "Broadway",
+            "production": "Broadway",
+            "venue": "Palace Theatre",
+            "city": "New York, NY",
+            "date": "14-04-2026",
+            "sequence_number": "",
+            "performance_time": "",
+            "performance_type": "",
+            "media_type": "Audio",
+            "recording_type": "Bootleg",
+            "completeness": "Full Show",
+            "master": "Santa Carla Vampire Brother",
+            "format": "M4A",
+            "resolution": "",
+            "subtitles": "",
+            "file_size_bytes": "71904632",
+            "file_size": "68.57 MB",
+            "nft_date": "",
+            "trading_status": "Giftable",
+            "cast": "LJ Benet (Michael Emerson), Shoshana Bean (Lucy Emerson), Ali Louis Bourzgui (David), Benjamin Pajak (Sam Emerson), Maria Wirries (Star), Paul Alexander Nolan (Max), Jennifer Duka (Alan Frog), Miguel Gil (Edgar Frog), Brian Flores (Marko), Sean Grandillo (Dwayne), Dean Maupin (Paul), Ryan Behan (Ensemble), Ben Crawford (Ensemble), Dominic Dorset (Ensemble), Carissa Gaughran (Ensemble), Ashley Jenkins (Ensemble), Cameron Loyal (Ensemble), Pierre Marais (Ensemble), Colin Trudell (Ensemble), DeLaney Westfall (Ensemble), Pierce Wheeler (Ensemble)",
+            "master_notes": "Recorded with Apple Watch from front of orchestra. First show of the altered rewind song. Only edits I have done are trimming the beginning and end.",
+            "trader_notes": "",
+            "flags": "",
+            "date_added": "13/09/2026",
+            "last_modified": "13/09/2026",
+            "audio_tracked": "Untracked"
+        },
+        {
+            "id": 113,
+            "title": "Hex",
+            "tour": "West End",
+            "production": "National Theatre (Second Season)",
+            "venue": "Olivier Theatre",
+            "city": "London",
+            "date": "06-12-2022",
+            "sequence_number": "",
+            "performance_time": "",
+            "performance_type": "",
+            "media_type": "Video",
+            "recording_type": "Pro-Shot",
+            "completeness": "Full Show",
+            "master": "",
+            "format": "MP4",
+            "resolution": "HD",
+            "subtitles": "External SRT",
+            "file_size_bytes": "5777135712",
+            "file_size": "5.38 GB",
+            "nft_date": "",
+            "trading_status": "",
+            "cast": "Cast: Lisa Lambe (Fairy), Rosie Graham (Rose), Victoria Hamilton-Barritt (Queenie), Michael Elcock (Bert), Michael Matus (Smith/Smith-Smith), Kody Mortimer (King Rex/Prince), Neima Naouri (Queen Regina), Mark Oxtoby (Bruiser Thorn), Kate Parr (High Fairy), Olivia Saunders (High Fairy), Rumi Sutton (High Fairy), Marc Akinfolarin (Prince), Christopher Akrill (Prince), Sabrina Aloueche (Prince), Ben Goffe (Prince), Chris Jenkins (Prince), Riley Woodford (Prince), Zayan Ahmed, Kalisha Johnson, Amanda Lindgren, Aharon Rayner, Sasha Shadid",
+            "master_notes": "",
+            "trader_notes": "",
+            "flags": "",
+            "date_added": "13/09/2026",
+            "last_modified": "13/09/2026",
+            "audio_tracked": ""
+        },
+        {
+            "id": 114,
+            "title": "Charlie and the Chocolate Factory",
+            "tour": "Broadway",
+            "production": "Broadway",
+            "venue": "Lunt-Fontanne Theatre",
+            "city": "New York, NY",
+            "date": "20-04-2017",
+            "sequence_number": "",
+            "performance_time": "",
+            "performance_type": "Preview",
+            "media_type": "Video",
+            "recording_type": "Bootleg",
+            "completeness": "Full Show",
+            "master": "SunsetBlvd79",
+            "format": "VOB (missing smalls)",
+            "resolution": "SD",
+            "subtitles": "",
+            "file_size_bytes": "8379500544",
+            "file_size": "7.80 GB",
+            "nft_date": "",
+            "trading_status": "",
+            "cast": "Christian Borle (Willy Wonka), Ryan Foust (Charlie Bucket), John Rubinstein (Grandpa Joe), F Michael Haynie (Augus Gloop), Kathy Fitzgerald (Mrs Gloop), Emma Pfaeffle (Veruca Salt), Ben Crawford (Mr Salt), Trista Dollison (Violet Beauregarde), Alan H Green (Mr Beauregarde), Michael Wartella (Mike Teavee), Jackie Hoffman (Mrs Teavee), Emily Padgett (Mrs Bucket)",
+            "master_notes": "Great HD capture of the new musical based on the Roald Dahl classic novel. A fresh dark take on the material, which was fun and very enjoyable! A great comedic cast and innovative production. Starts in the middle of \"The Candy Man\". A",
+            "trader_notes": "",
+            "flags": "MISSING SMALLS",
+            "date_added": "13/09/2026",
+            "last_modified": "13/09/2026",
+            "audio_tracked": ""
+        },
+        {
+            "id": 115,
+            "title": "9 to 5: The Musical",
+            "tour": "Broadway",
+            "production": "Broadway",
+            "venue": "Marquis Theatre",
+            "city": "New York, NY",
+            "date": "11-04-2009",
+            "sequence_number": "",
+            "performance_time": "",
+            "performance_type": "Preview",
+            "media_type": "Video",
+            "recording_type": "Pro-Shot",
+            "completeness": "Full Show",
+            "master": "",
+            "format": "MKV",
+            "resolution": "SD",
+            "subtitles": "",
+            "file_size_bytes": "4516724427",
+            "file_size": "4.21 GB",
+            "nft_date": "",
+            "trading_status": "Giftable",
+            "cast": "Allison Janney (Violet Newstead), Megan Hilty (Doralee Rhodes), Stephanie J Block (Judy Bernly), Kathy Fitzgerald (Roz Keith), Marc Kudisch (Franklin Hart, Jr.), Andy Karl (Joe), Charlie Pollock (Dwayne), Dan Cooney (Dick), Van Hughes (Josh), Ioana Alfonso (Maria), Jeremy Davis (Bob Enright), Ann Harada (Kathy), Lisa Howard (Missy), Michael X Martin (Tinsworthy), Karen Murphy (Margaret), Tory Ross (Daphnie), Maia Nkenge Wilson (Anita)",
+            "master_notes": "",
+            "trader_notes": "Originally circulated as an SD mkv (4.20 GB). An HD mp4 (10.4 GB) version is also circulating - upscaled video with aspect ratio corrections and audio converted to stereo.",
+            "flags": "",
+            "date_added": "13/09/2026",
+            "last_modified": "13/09/2026",
+            "audio_tracked": ""
         }
     ]
 }

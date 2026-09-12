@@ -1,7 +1,7 @@
 # Home
 
 ## Welcome to my trading site :)
-##### *Bleibe, reste, stay!*
+### *Bleibe, reste, stay!*
 
 {site status}
 {up since: July 30, 2026}
@@ -21,7 +21,7 @@ rant over, feel free to search my list for anything you like. go over my rules. 
 # Rules
 
 ## My Rules
-##### *buy me a dinner first, won't ya?*
+### *buy me a dinner first, won't ya?*
 
 to ensure trading is well enough and fun, I've a couple of very basic universal rules:
 
@@ -41,7 +41,7 @@ yuh thats it bae ur good 2 go
 # Wants
 
 ## My Wants
-##### *"I want you to want, Paul!"*
+### *"I want you to want, Paul!"*
 
 in general, i pretty much trade for anything i do not yet have, so feel free to interest me in any shows you have that are not on my want list because i am always looking to expand the list, that said i also have favourites which i will basically trade my life for
 
@@ -73,6 +73,7 @@ in general, i pretty much trade for anything i do not yet have, so feel free to 
 
 - **Raúl Esparza**, *my love and my light*
 - **Jamie Muscato**
+- **Nicholas Christopher**
 - Christian Borle
 - Stephanie J. Block
 - Casey Likes
@@ -88,7 +89,7 @@ in general, i pretty much trade for anything i do not yet have, so feel free to 
 # Contact
 
 ## Contact Me :)
-##### *wanna trade? let's trade :) trade w/ me*
+### *wanna trade? let's trade :) trade w/ me*
 
 you can (and should) use the add to cart feature i put on this website, it is for your ease of use. however if you feel the need to contact me through other means for any earthly/unearthly reason i will happily oblige. you can trade with me through:
 

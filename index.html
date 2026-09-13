@@ -697,6 +697,30 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
     padding: 14px 12px; font: 13px var(--mono-font); color: var(--muted);
     text-align: center;
 }
+/* A requested item currently marked "Never Gift" - only shown while
+   Request Type is Gift Request (see renderRequestedItemsPanel). */
+.cf-item.cf-item-non-giftable { background: rgba(248, 113, 113, 0.08); }
+.cf-item-flag {
+    display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px;
+    border: 1px solid var(--red); color: var(--red); font: 700 10px var(--mono-font);
+    text-transform: uppercase; letter-spacing: 0.04em; vertical-align: middle;
+}
+/* Blocks submitting a Gift Request while it still contains a "Never Gift"
+   item - see updateGiftWarning() / the contactForm submit handler. */
+.cf-gift-warning-box {
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 12px 14px; border: 1px solid var(--red); border-radius: 8px;
+    background: rgba(248, 113, 113, 0.1); color: var(--text); font: 13px var(--mono-font);
+    line-height: 1.5;
+}
+.cf-gift-warning-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.cf-gift-warning-btn {
+    padding: 7px 14px; border-radius: 6px; border: 1px solid var(--red);
+    background: transparent; color: var(--red); font: 700 12px var(--mono-font);
+    text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer;
+    transition: all 0.2s ease;
+}
+.cf-gift-warning-btn:hover { background: var(--red); color: var(--bg); }
 .contact-form-submit {
     align-self: center; margin-top: 8px; padding: 12px 32px;
     background: var(--accent); color: var(--bg); border: 0; border-radius: 8px;
@@ -794,6 +818,15 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
             <div class="form-row cf-items-row" id="cfItemsRow">
                 <label>Requested Items</label>
                 <ul class="cf-items-list" id="cfItemsList"></ul>
+            </div>
+            <div class="form-row" id="cfGiftWarning" style="display:none;">
+                <div class="cf-gift-warning-box">
+                    <span id="cfGiftWarningText"></span>
+                    <div class="cf-gift-warning-actions">
+                        <button type="button" class="cf-gift-warning-btn" id="cfRemoveNonGiftableBtn">Remove them</button>
+                        <button type="button" class="cf-gift-warning-btn" id="cfSwitchToTradeBtn">Ask for a trade instead</button>
+                    </div>
+                </div>
             </div>
             <div class="form-row">
                 <label for="cfMessage">Message / Notes</label>
@@ -1158,10 +1191,55 @@ $('archiveContainer').addEventListener('click', e => {
     updateRequests();
 });
 
+// -- Gift Request vs "Never Gift" items --------------------------------
+// A recording whose trading_status contains "Never Gift" can still be
+// traded, just not given away - so Gift Request is the one Request Type
+// it has to be blocked from going out under. cfRequestType (set further
+// below) and dataById (populated once data.json loads) are both read
+// here rather than passed in, same as the rest of this basket code.
+function isNonGiftableItem(x) {
+    let row = dataById.get(String(x.id));
+    let status = row ? row.trading_status : '';
+    return /never\s*gift/i.test(String(status || ''));
+}
+
+function nonGiftableRequestedItems() {
+    return requestedItems.filter(isNonGiftableItem);
+}
+
+// Shows/hides the red "you can't gift these" box in the contact form and
+// keeps its message in sync with the current basket + Request Type. Also
+// the single source of truth the submit handler checks before sending.
+function updateGiftWarning() {
+    let box = $('cfGiftWarning');
+    if (cfRequestType !== 'Gift Request') {
+        box.style.display = 'none';
+        return;
+    }
+    let bad = nonGiftableRequestedItems();
+    if (!bad.length) {
+        box.style.display = 'none';
+        return;
+    }
+    box.style.display = '';
+    let count = bad.length;
+    let names = bad.map(x => x.title).join(', ');
+    $('cfGiftWarningText').textContent =
+        `You have ${count} item${count === 1 ? '' : 's'} marked "Never Gift" in this request` +
+        ` (${names}). Remove ${count === 1 ? 'it' : 'them'} or switch to a Trade Request before sending.`;
+}
+
+$('cfRemoveNonGiftableBtn').addEventListener('click', () => {
+    nonGiftableRequestedItems().forEach(x => removeRequestedItem(x.key));
+});
+
+$('cfSwitchToTradeBtn').addEventListener('click', () => setRequestType('Trade Request'));
+
 function updateRequests() {
     $('requestCount').textContent = requestedItems.length;
     $('requestPill').classList.toggle('show', requestedItems.length > 0);
     renderRequestedItemsPanel();
+    updateGiftWarning();
 }
 
 // Removes one item from the basket from wherever it's triggered (the
@@ -1206,11 +1284,18 @@ function renderRequestedItemsPanel() {
         list.innerHTML = `<li class="cf-items-empty">You haven't added any recordings to your request list.</li>`;
         return;
     }
-    list.innerHTML = requestedItems.map(x => `
-        <li class="cf-item" data-key="${App.esc(x.key)}">
-            <span class="cf-item-text">${App.esc(x.title)}${x.date ? ' - ' + App.esc(x.date) : ''}${x.master ? ' - ' + App.esc(x.master) : ''}</span>
+    // The "Never Gift" flag only means anything while asking for a gift -
+    // the same item on a Trade Request is perfectly fine, so it's only
+    // shown/checked here when cfRequestType actually is Gift Request.
+    let flagNonGiftable = cfRequestType === 'Gift Request';
+    list.innerHTML = requestedItems.map(x => {
+        let nonGiftable = flagNonGiftable && isNonGiftableItem(x);
+        return `
+        <li class="cf-item${nonGiftable ? ' cf-item-non-giftable' : ''}" data-key="${App.esc(x.key)}">
+            <span class="cf-item-text">${App.esc(x.title)}${x.date ? ' - ' + App.esc(x.date) : ''}${x.master ? ' - ' + App.esc(x.master) : ''}${nonGiftable ? ' <span class="cf-item-flag">Never Gift</span>' : ''}</span>
             <button type="button" class="cf-item-remove" data-remove-key="${App.esc(x.key)}" title="Remove from request" aria-label="Remove ${App.esc(x.title)} from request">${App.ICONS.close}</button>
-        </li>`).join('');
+        </li>`;
+    }).join('');
 }
 renderRequestedItemsPanel(); // paint the empty-state message on first load
 
@@ -1257,6 +1342,8 @@ function setRequestType(type) {
         btn.setAttribute('aria-pressed', String(isActive));
     });
     updateContactUrlRequirement();
+    renderRequestedItemsPanel();
+    updateGiftWarning();
 }
 
 $('cfTypeToggle').addEventListener('click', e => {
@@ -1277,6 +1364,16 @@ $('contactForm').addEventListener('submit', e => {
     e.preventDefault();
     let form = $('contactForm');
     if (!form.reportValidity()) return;
+
+    // Hard block: a Gift Request can't go out while it still contains a
+    // "Never Gift" item - updateGiftWarning() already keeps the box/count
+    // in sync on every basket or Request Type change, so this just
+    // re-checks the same thing and refuses to send if it's still true.
+    if (cfRequestType === 'Gift Request' && nonGiftableRequestedItems().length > 0) {
+        updateGiftWarning();
+        $('cfGiftWarning').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
 
     if (!emailjsReady) {
         showToast('Automatic email system failed - please email MrLeoD96@gmail.com directly for now.');

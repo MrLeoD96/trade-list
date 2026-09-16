@@ -77,7 +77,7 @@ that said, i also have favourites which i will basically trade my life for xx
 	* *Any Notable Versions*
 * Little Shop of Horrors w/ **Megan Hilty** and **Josh Radnor** (pretty sure this doesn't exist D:)
 
-more general shows: Heathers, Chess, Evita, Death Becomes Her. CATS, The Band's Visit.
+more general shows: Heathers, Chess, Evita, Death Becomes Her, CATS, The Band's Visit.
 
 #### General Wants:
 

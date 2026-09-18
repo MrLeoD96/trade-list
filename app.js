@@ -139,6 +139,19 @@
         return `${y}${s}`;
     }
 
+    // Matinee/Evening performance-time abbreviation appended straight
+    // after a formatted date ("August 11, 2019 M") - same substring match
+    // and same " M"/" E" suffix as archive_app.py's get_expected_prefix,
+    // so the web listing's date reads the same way the desktop app's own
+    // filenames do.
+    function perfTimeAbbrev(performanceTime) {
+        if (!performanceTime) return "";
+        const t = String(performanceTime).toLowerCase();
+        if (t.includes("mat")) return " M";
+        if (t.includes("eve")) return " E";
+        return "";
+    }
+
     // -- NFT display (nft_date can hold either a real "DD-MM-YYYY" date -
     // the same stored-date convention as the `date` field above - or free
     // text like "FOREVER EXCEPT THROUGH MASTER"; both mean "not tradeable
@@ -733,15 +746,35 @@
     function record(r, q, groupMode, requested, disambigLabel, castHighlightSlug) {
         const id = r.id != null ? r.id : "";
         // groupMode: 'none' (ungrouped), 'title' (grouped by show - title is
-        // the group header, so the record's own line shows its date
+        // the group header, so the record's own line leads with its date
         // instead), or 'master' (grouped by taper - master is the group
-        // header, so the record's own line shows its show title, same as
-        // ungrouped).
-        let titleText = groupMode === "title"
-            ? fmtDate(r.date, r.sequence_number)
-            : (r.title || "-");
-        let dateHtml = groupMode === "title" ? "" :
-            `<div class="summary-meta">${ICONS.calendar}<span>${hi(fmtDate(r.date, r.sequence_number), q)}</span></div>`;
+        // header, so the record's own line leads with its show title, same
+        // as ungrouped).
+        // "Where" used to be one free-text field (venue_production) filled
+        // in with whatever was most specific at the time - schema v3 split
+        // that into tour/production/venue/city. `tour` (Broadway/West End/
+        // Regional/...) is deliberately left out here and out of the
+        // detail grid below - it's for sorting/grouping, not for display.
+        let whereText = r.production || r.venue || "-";
+
+        // Title, production/venue, and the date+performance-time used to
+        // render as up to three separate pieces: the title-line held
+        // either the title or the date depending on groupMode, while
+        // production and date each got their own small ".summary-meta"
+        // line shoved off to the right of the row next to the flag pills.
+        // In real use these are always read together ("Broadway · August
+        // 11, 2019 M"), so they're one line now, at full title-line
+        // weight, on the left: title (only when the group header isn't
+        // already the title) · production/venue · date, with the date's
+        // Matinee/Evening abbreviation matching the desktop app's own
+        // "M"/"E" filename convention (see archive_app.py's
+        // get_expected_prefix).
+        let dateWithTime = fmtDate(r.date, r.sequence_number) + perfTimeAbbrev(r.performance_time);
+        let titleParts = [];
+        if (groupMode !== "title" && r.title) titleParts.push(r.title);
+        if (whereText !== "-") titleParts.push(whereText);
+        titleParts.push(dateWithTime);
+        let titleText = titleParts.join(" · ");
 
         let { formats, sizes } = getColoredFormatsAndSizes(r.format, r.file_size, q);
         let statusPillHtml = renderStatusPill(r.trading_status);
@@ -768,13 +801,6 @@
         // ones (Censored/Uncensored, ...) both get their own pill here too,
         // so they're visible without expanding the card.
         let flagPillsHtml = renderFlagPills(r.flags, q);
-
-        // "Where" used to be one free-text field (venue_production) filled
-        // in with whatever was most specific at the time - schema v3 split
-        // that into tour/production/venue/city. `tour` (Broadway/West End/
-        // Regional/...) is deliberately left out here and out of the
-        // detail grid below - it's for sorting/grouping, not for display.
-        let whereText = r.production || r.venue || "-";
 
         // Audio-only masters (media_type) don't have a resolution.
         let isAudio = String(r.media_type || "").toLowerCase() === "audio";
@@ -843,8 +869,6 @@
                     <div class="title-line">${hi(titleText, q)}</div>
                     ${leads(r.cast) ? `<div class="lead-line">${renderCastHtml(r.cast, q, castHighlightSlug, 2, mediaPage)}</div>` : ""}
                 </div>
-                <div class="summary-meta">${ICONS.pin}<span>${hi(whereText, q)}</span></div>
-                ${dateHtml}
                 ${disambigHtml}
                 ${recTypePillHtml}
                 ${audioTrackedPillHtml}
@@ -895,7 +919,7 @@
     return {
         ICONS,
         esc, hi,
-        dateValue, fmtDate,
+        dateValue, fmtDate, perfTimeAbbrev,
         leads, stripArticles, searchable,
         foldDiacritics, splitCastEntries, parseCastNames, distinctCastNames,
         isAlternateRole,

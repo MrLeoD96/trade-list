@@ -439,13 +439,6 @@ button, input, select { font: inherit; color: inherit; }
     overflow: hidden; text-overflow: ellipsis;
 }
 
-.summary-meta {
-    min-width: 0; color: var(--soft); font-size: 12px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    display: flex; align-items: center; gap: 8px;
-}
-.summary-meta svg { width: 14px; height: 14px; opacity: 0.6; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
-
 /* Status pill in summary - red for "not available to trade", amber for a
    data-quality issue (corrupt/damaged/etc). Previously both were forced
    into the same red pill. */
@@ -734,12 +727,26 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
 @media (max-width: 800px) {
     .record summary { flex-wrap: wrap; gap: 8px 12px; }
     .summary-title { flex-basis: 100%; }
-    .summary-meta { flex: 1; font-size: 11px; }
+    /* The title-line now carries title + production/venue + date all in
+       one string (see app.js's record()) - on a phone-width row that's
+       often too long for one line, and single-line ellipsis was cutting
+       it off mid-word, sometimes losing the date entirely. Once
+       .summary-title has the full row to itself (just above), there's no
+       reason to still force one line - let it wrap instead. */
+    .title-line { white-space: normal; overflow: visible; text-overflow: unset; }
     .proshot-pill { order: 4; }
     .audio-tracked-pill { order: 4; }
     .disambig-pill { order: 4; }
     .flag-pill { order: 4; }
-    .nft-pill { order: 4; flex-basis: 100%; margin-top: 4px; }
+    /* Previously forced to its own full-width row (flex-basis: 100%).
+       That rule didn't distinguish the rare genuinely-long NFT message
+       ("FOREVER EXCEPT THROUGH MASTER") from the everyday trading-status
+       pill sharing this same class ("Giftable", "Never Gift") - so a
+       short one-word pill stretched edge-to-edge on every single row.
+       Treated like the other pills instead: it sizes to its own content
+       and wraps onto a new line via the row's flex-wrap only when it
+       doesn't fit, same as everything else here. */
+    .nft-pill { order: 4; }
     .request-btn.summary-req { margin-left: auto; order: 5; }
     .chevron-icon { order: 6; }
 }
@@ -754,7 +761,6 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
     .control-row .sort, .filters-toggle { flex: 1; justify-content: center; }
     .record summary { padding: 12px 14px; }
     .record-body { padding: 0 14px 16px 14px; }
-    .summary-meta:nth-of-type(2) { display: none; }
     .back-top { display: none !important; }
     .request-pill-group { right: 16px; bottom: 16px; }
 }

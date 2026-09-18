@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-09-18T05:57:05Z",
+    "generated_at": "2026-09-18T18:01:22Z",
     "shows": [
         {
             "id": 1,
@@ -1888,7 +1888,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "24/08/2026",
-            "last_modified": "24/08/2026",
+            "last_modified": "18/09/2026",
             "audio_tracked": ""
         },
         {
@@ -2068,7 +2068,7 @@
             "trader_notes": "Almeida Theatre's 2017 acclaimed production of William Shakespeare's great play, recorded as-live in its West End transfer on the stage of London's Harold Pinter Theatre. Robert Icke's innovative modern-dress production has been widely acclaimed as a dazzlingly intelligent, forcefully contemporary staging. The Evening Standard hailed Andrew Scott's 'career-defining performance... he makes the most famous speeches feel fresh and unpredictable.'\nFirst broadcast on 31 March 2018",
             "flags": "",
             "date_added": "25/08/2026",
-            "last_modified": "25/08/2026",
+            "last_modified": "18/09/2026",
             "audio_tracked": ""
         },
         {
@@ -3388,7 +3388,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "13/09/2026",
-            "last_modified": "13/09/2026",
+            "last_modified": "18/09/2026",
             "audio_tracked": ""
         },
         {
@@ -3723,7 +3723,7 @@
         },
         {
             "id": 129,
-            "title": "Tick, Tick... Boom!",
+            "title": "tick, tick... BOOM!",
             "tour": "Regional",
             "production": "Broadway Center Stage",
             "venue": "Eisenhower Theater (Kennedy Center)",
@@ -3748,7 +3748,7 @@
             "trader_notes": "Production ran January 26 - February 4, 2024 (11 performances only) at the Eisenhower Theater, Kennedy Center, directed by Neil Patrick Harris. The exact performance falls between January 26-31.",
             "flags": "",
             "date_added": "15/09/2026",
-            "last_modified": "16/09/2026",
+            "last_modified": "18/09/2026",
             "audio_tracked": ""
         },
         {
@@ -4646,6 +4646,36 @@
             "cast": "Jeremy Jordan (Seymour), Chelsea Turbin (u/s Audrey), Christian Borle (Orin & Others), Tom Alan Robbins (Mushnik), Aaron Arnell Harrington (Voice of Audrey II), Salome Smith (Ronnette), Aveena Sawyer (Crystal), Joy Woods (Chiffon), Teddy Yudain (Derelict/Audrey II Manipulation), Eric Wright (Audrey II Manipulation), Evan Alexander Smith (Audrey II Manipulation)",
             "master_notes": "",
             "trader_notes": "",
+            "flags": "",
+            "date_added": "18/09/2026",
+            "last_modified": "18/09/2026",
+            "audio_tracked": ""
+        },
+        {
+            "id": 160,
+            "title": "tick, tick... BOOM!",
+            "tour": "Off-Broadway",
+            "production": "Workshop/Concert",
+            "venue": "Village Gate",
+            "city": "New York, NY",
+            "date": "25-11-1991",
+            "sequence_number": "",
+            "performance_time": "",
+            "performance_type": "",
+            "media_type": "Video",
+            "recording_type": "Bootleg",
+            "completeness": "Highlights",
+            "master": "Unknown",
+            "format": "VOB + smalls; MKV",
+            "resolution": "SD",
+            "subtitles": "",
+            "file_size_bytes": "1033066496; 1014025596",
+            "file_size": "985.21 MB; 967.05 MB",
+            "nft_date": "",
+            "trading_status": "",
+            "cast": "Jonathan Larson (Jon)",
+            "master_notes": "",
+            "trader_notes": "Remarkable, one of a kind footage of Jonathan Larson himself performing the show as a solo piece at The Village Gate. The quality is amazing for the time period, with clear, steady shots and lots of close-ups. Four songs only: 30/90, Johnny Can't Decide, Sunday, and Why. 19 minutes and 985mb. \"Smalls\" files are .dv2, .idx, and .lst.\nTo scrub through the original VOB correctly you need to use the dv2 file with AviSynth. It has been remuxed into an MKV for convenience and chapters for the four songs were added by LD.",
             "flags": "",
             "date_added": "18/09/2026",
             "last_modified": "18/09/2026",

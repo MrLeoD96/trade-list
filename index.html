@@ -539,7 +539,13 @@ details[open] .chevron-icon { transform: rotate(180deg); color: var(--accent2); 
     display: flex; align-items: center; gap: 6px;
 }
 .detail-label svg { width: 12px; height: 12px; opacity: 0.8; stroke: currentColor; fill: none; stroke-width: 2; }
-.detail-value { color: var(--soft); font-size: 13px; word-break: break-word; line-height: 1.5; }
+/* pre-line (not the default `normal`) so a literal line break typed into
+   Cast, Master Notes or Trader Notes - e.g. to separate multiple
+   recording versions - actually renders as one, instead of being
+   collapsed into a single space like any other run of whitespace. Every
+   other field using this class is single-line text with no embedded
+   newlines, so this is a no-op for them. */
+.detail-value { color: var(--soft); font-size: 13px; word-break: break-word; line-height: 1.5; white-space: pre-line; }
 .detail.full { grid-column: 1 / -1; }
 
 /* Cast names are deep links to that actor's own filtered page - see
@@ -996,10 +1002,16 @@ function render() {
             : (r => r.title);
         for (const [groupName, rs] of groups) {
             let disambigLabels = App.computeDisambiguationLabels(rs, summaryKeyFn);
+            // Grouped by title, this header IS the show title - acronym
+            // search ("tbom" -> "The Book of Mormon") needs to work here
+            // too, not just on the title-line inside each record. Grouped
+            // by master, groupName is a taper's name instead - not a
+            // title, so it stays on the plain substring hi().
+            let groupNameHtml = groupMode === 'title' ? App.hiTitle(groupName, q) : App.hi(groupName, q);
             html += `
             <details class="group-details" open>
                 <summary class="group-summary">
-                    <h3 class="group-title">${App.hi(groupName, q)}</h3>
+                    <h3 class="group-title">${groupNameHtml}</h3>
                     <span class="group-count">${rs.length} REC</span>
                     <span class="group-chevron">${App.ICONS.chevron}</span>
                 </summary>
@@ -1445,8 +1457,11 @@ function updateSuggestions(query) {
     // in App.record - typing "raul" should surface "Raúl Esparza".
     const foldedQ = App.foldDiacritics(q);
 
+    // Title acronym match ("tbom" -> "The Book of Mormon") counts as a
+    // suggestion hit too, same as it does for the main search below -
+    // cast names don't get this, only show titles.
     const titleMatches = Array.from(new Set(currentMediaRows().map(r => r.title).filter(Boolean)))
-        .filter(t => App.foldDiacritics(t.toLowerCase()).includes(foldedQ))
+        .filter(t => App.foldDiacritics(t.toLowerCase()).includes(foldedQ) || App.titleHasAcronymMatch(t, foldedQ))
         .slice(0, 5)
         .map(label => ({ type: 'show', label, slug: App.slugify(label) }));
 
@@ -1463,7 +1478,7 @@ function updateSuggestions(query) {
     $('searchSuggestions').innerHTML = matches.map((m, i) =>
         `<div class="suggestion-item" role="option" data-index="${i}">` +
         `<span class="suggestion-type">${m.type === 'show' ? 'Show' : 'Cast'}</span>` +
-        `${App.hi(m.label, q)}</div>`
+        `${m.type === 'show' ? App.hiTitle(m.label, q) : App.hi(m.label, q)}</div>`
     ).join('');
     $('searchSuggestions').style.display = 'block';
 }

@@ -102,6 +102,97 @@
         return result;
     }
 
+    // -- title acronym search ---------------------------------------------
+    // Titles only get one extra trick on top of the plain substring search
+    // above: typing a run of initials matches the words they'd spell out
+    // in full, IN ORDER, with no word skipped - "tbom" for "The Book of
+    // Mormon" (all four words), but also "tbo" for just "The Book of" (the
+    // first three) or "bom" for "Book of Mormon" (the last three, starting
+    // partway through). Every word in the matched span counts, including
+    // short connectors like "of" - the query has to spell every one of
+    // their initials, not just the "important" words. This never applies
+    // to any other field (cast, venue, master, ...) - only the title.
+    //
+    // Returns character ranges (start/end offsets into `title`) for every
+    // contiguous word-span whose initials spell `foldedQ` exactly.
+    function findAcronymRanges(title, foldedQ) {
+        if (!foldedQ) return [];
+        const words = [];
+        const wordRe = /\S+/g;
+        let m;
+        while ((m = wordRe.exec(String(title || "")))) {
+            const initial = foldDiacritics(m[0].charAt(0)).toLowerCase();
+            words.push({ start: m.index, end: m.index + m[0].length, initial });
+        }
+        const ranges = [];
+        for (let i = 0; i + foldedQ.length <= words.length; i++) {
+            let matched = true;
+            for (let k = 0; k < foldedQ.length; k++) {
+                if (words[i + k].initial !== foldedQ.charAt(k)) { matched = false; break; }
+            }
+            if (matched) ranges.push({ start: words[i].start, end: words[i + foldedQ.length - 1].end });
+        }
+        return ranges;
+    }
+
+    // Same job as hi() (plain substring highlighting), but for the title
+    // field specifically: also highlights any acronym match found by
+    // findAcronymRanges, merging it with the ordinary substring ranges so
+    // a title matching both ways never gets double-wrapped.
+    function hiTitle(v, q) {
+        if (v == null || v === "") return "-";
+        const orig = String(v);
+        if (!q) return esc(orig);
+        const foldedQ = foldDiacritics(String(q)).toLowerCase();
+        if (!foldedQ) return esc(orig);
+
+        const origChars = Array.from(orig);
+        let folded = "";
+        const map = [];
+        origChars.forEach((ch, idx) => {
+            const piece = foldDiacritics(ch);
+            for (const fc of piece) { folded += fc; map.push(idx); }
+        });
+        const foldedLower = folded.toLowerCase();
+
+        const ranges = [];
+        let searchFrom = 0;
+        while (true) {
+            const idx = foldedLower.indexOf(foldedQ, searchFrom);
+            if (idx === -1) break;
+            const endIdx = idx + foldedQ.length - 1;
+            ranges.push({ start: map[idx], end: map[endIdx] + 1 });
+            searchFrom = endIdx + 1;
+        }
+        findAcronymRanges(orig, foldedQ).forEach(r => ranges.push(r));
+
+        if (!ranges.length) return esc(orig);
+
+        ranges.sort((a, b) => a.start - b.start || a.end - b.end);
+        const merged = [ranges[0]];
+        for (let i = 1; i < ranges.length; i++) {
+            const last = merged[merged.length - 1];
+            if (ranges[i].start <= last.end) last.end = Math.max(last.end, ranges[i].end);
+            else merged.push(ranges[i]);
+        }
+
+        let result = "", lastEnd = 0;
+        merged.forEach(r => {
+            result += escRaw(origChars.slice(lastEnd, r.start).join(""));
+            result += '<span class="highlight">' + escRaw(origChars.slice(r.start, r.end).join("")) + '</span>';
+            lastEnd = r.end;
+        });
+        result += escRaw(origChars.slice(lastEnd).join(""));
+        return result;
+    }
+
+    // Boolean form for the search filter below: does this title have an
+    // acronym match for foldedQ anywhere? (foldedQ is already folded+
+    // lowercased by the caller, same convention as filterRows uses.)
+    function titleHasAcronymMatch(title, foldedQ) {
+        return findAcronymRanges(title, foldedQ).length > 0;
+    }
+
     // -- dates -----------------------------------------------------------
     // Schema v3 collapsed the old two-field {date: "DD/MM/YYYY", precision}
     // into one canonical "DD-MM-YYYY" string, "00" standing in for an
@@ -316,6 +407,39 @@
         return 0.5;
     }
 
+    // Canonical order for the recording-type groups a "sort/group by
+    // master" view files a master-less recording under (Pro-Shot leads
+    // since it's by far the collection's biggest no-master category);
+    // anything not on this list still gets its own group, just placed
+    // alphabetically after these instead of unlisted.
+    const NO_MASTER_TYPE_ORDER = ["Pro-Shot", "House Cam", "Press Reel", "Demo", "Soundboard"];
+
+    // Where a recording falls in "sort/group by master", and what to call
+    // that group. Three buckets, in order:
+    //   0. No master at all (Pro-Shot, House Cam, Press Reel, ...) - these
+    //      were never going to have a taper's master to begin with, so
+    //      instead of dumping them in one blank "Untitled" bucket they
+    //      each get their own group named after what they actually are,
+    //      ordered per NO_MASTER_TYPE_ORDER above.
+    //   1. Master literally typed as "Unknown" (case-insensitive) - a
+    //      real taper's identity that's just not known, grouped together
+    //      right after the no-master types rather than sorting wherever
+    //      "U" happens to fall among real names.
+    //   2. An actual master name, alphabetical as before.
+    function masterGroupInfo(r) {
+        const master = String(r.master || "").trim();
+        if (!master) {
+            const type = r.recording_type || "Bootleg";
+            let idx = NO_MASTER_TYPE_ORDER.indexOf(type);
+            if (idx === -1) idx = NO_MASTER_TYPE_ORDER.length;
+            return { bucket: 0, sortText: String(idx).padStart(2, "0") + ":" + type, displayName: type };
+        }
+        if (master.toLowerCase() === "unknown") {
+            return { bucket: 1, sortText: "unknown", displayName: "Unknown" };
+        }
+        return { bucket: 2, sortText: master, displayName: master };
+    }
+
     function sortRows(rows, sortMode) {
         return [...rows].sort((a, b) => {
             if (sortMode === "title-asc") {
@@ -329,9 +453,12 @@
                 return timeOfDayRank(a.performance_time) - timeOfDayRank(b.performance_time);
             }
             if (sortMode === "master-asc") {
-                let masterCmp = String(a.master || "").localeCompare(String(b.master || ""), undefined, { sensitivity: "base" });
+                let aInfo = masterGroupInfo(a), bInfo = masterGroupInfo(b);
+                if (aInfo.bucket !== bInfo.bucket) return aInfo.bucket - bInfo.bucket;
+                let masterCmp = aInfo.sortText.localeCompare(bInfo.sortText, undefined, { sensitivity: "base" });
                 if (masterCmp !== 0) return masterCmp;
-                // Same taper: order their recordings chronologically too.
+                // Same taper (or same no-master group): order their
+                // recordings chronologically too.
                 return dateValue(a.date) - dateValue(b.date);
             }
             let d = dateValue(a.date) - dateValue(b.date);
@@ -357,7 +484,11 @@
     }
 
     function groupByMaster(rows) {
-        return groupByField(rows, r => r.master);
+        // Relies on rows already being sorted via sortRows(rows,
+        // "master-asc") - that's what puts the no-master/type groups
+        // first, "Unknown" next, then real masters alphabetically, since
+        // groupByField's Map preserves first-seen (i.e. row) order.
+        return groupByField(rows, r => masterGroupInfo(r).displayName);
     }
 
     // -- faceted filtering ------------------------------------------------
@@ -381,7 +512,12 @@
         const foldedQ = foldDiacritics(q);
 
         return rows.filter(r => {
-            if (foldedQ && !foldDiacritics(searchable(r)).includes(foldedQ)) return false;
+            // A title acronym match ("tbom" -> "The Book of Mormon") counts
+            // as a hit even when "tbom" isn't a literal substring anywhere
+            // - it's an alternative way IN, not a replacement for the
+            // ordinary substring check across every other field.
+            if (foldedQ && !foldDiacritics(searchable(r)).includes(foldedQ)
+                && !titleHasAcronymMatch(r.title, foldedQ)) return false;
             // is_proshot (bool) -> recording_type (Bootleg/Pro-Shot/House
             // Cam/Press Reel/Demo/Soundboard) in schema v3; "Proshot only"
             // keeps its old meaning of "exactly Pro-Shot" for now.
@@ -730,8 +866,29 @@
     // limit: cap how many entries render (used for the brief summary
     // lead-line); omitted/0 renders the full cast list (used in the
     // expanded Cast detail row).
+    //
+    // A raw line break typed into the cast field is a deliberate group
+    // break - e.g. disambiguating multiple versions of the same recording
+    // with their own cast list each on its own line - not just
+    // incidental whitespace, so the full detail-row rendering (limit
+    // falsy) preserves it as an actual line break. Entries within each
+    // line are still split and linked exactly as before; only what joins
+    // separate lines changed, from nothing (collapsed away) to <br>. The
+    // truncated lead-line preview (limit set) is a single-line,
+    // ellipsis-clamped hint, so it stays flattened to just the first
+    // line's entries - a hard line break wouldn't render sensibly there
+    // anyway, and falling through to splitCastEntries on the raw
+    // multi-line string would leak an unescaped "\n" into the HTML and
+    // mis-parse names across the line boundary.
     function renderCastHtml(castStr, q, castHighlightSlug, limit, mediaPage) {
         if (!castStr) return "-";
+        const lines = String(castStr).split(/\r\n|\r|\n/).map(l => l.trim()).filter(Boolean);
+        if (lines.length > 1) {
+            if (!limit) {
+                return lines.map(line => renderCastHtml(line, q, castHighlightSlug, 0, mediaPage)).join("<br>");
+            }
+            return renderCastHtml(lines[0], q, castHighlightSlug, limit, mediaPage);
+        }
         let entries = splitCastEntries(castStr);
         if (!entries.length) return hi(castStr, q);
         if (limit) entries = entries.slice(0, limit);
@@ -770,11 +927,15 @@
         // "M"/"E" filename convention (see archive_app.py's
         // get_expected_prefix).
         let dateWithTime = fmtDate(r.date, r.sequence_number) + perfTimeAbbrev(r.performance_time);
-        let titleParts = [];
-        if (groupMode !== "title" && r.title) titleParts.push(r.title);
-        if (whereText !== "-") titleParts.push(whereText);
-        titleParts.push(dateWithTime);
-        let titleText = titleParts.join(" · ");
+        // Each piece is highlighted on its own, not as one joined string -
+        // the title alone gets the acronym-aware hiTitle() treatment (see
+        // above); production/venue and the date stay on the plain
+        // substring hi(), same as every other field.
+        let titleLineParts = [];
+        if (groupMode !== "title" && r.title) titleLineParts.push(hiTitle(r.title, q));
+        if (whereText !== "-") titleLineParts.push(hi(whereText, q));
+        titleLineParts.push(hi(dateWithTime, q));
+        let titleLineHtml = titleLineParts.join(" · ");
 
         let { formats, sizes } = getColoredFormatsAndSizes(r.format, r.file_size, q);
         let statusPillHtml = renderStatusPill(r.trading_status);
@@ -784,6 +945,14 @@
         // actual type instead of a fixed "Proshot".
         let recTypePillHtml = (r.recording_type && r.recording_type !== "Bootleg")
             ? `<span class="proshot-pill">${ICONS.star} ${esc(r.recording_type)}</span>` : "";
+        // A Pro-Shot/House Cam/Press Reel/etc. recording doesn't come from
+        // a taper's master at all, so a bare "Master: -" row just reads as
+        // a missing field instead of the non-answer it actually is. When
+        // there's no master, swap the row to "Recording: <type>" (the
+        // same star icon/label as the summary pill above) so it explains
+        // itself instead of looking broken.
+        let masterLabelHtml = r.master ? `${ICONS.user} Master` : `${ICONS.star} Recording`;
+        let masterValueHtml = hi(r.master || r.recording_type || "Bootleg", q);
         // Shown when a sibling in the same group would otherwise look
         // identical in this collapsed view (see computeDisambiguationLabels).
         let disambigHtml = disambigLabel ? `<span class="disambig-pill">${hi(disambigLabel, q)}</span>` : "";
@@ -866,7 +1035,7 @@
         <details>
             <summary>
                 <div class="summary-title">
-                    <div class="title-line">${hi(titleText, q)}</div>
+                    <div class="title-line">${titleLineHtml}</div>
                     ${leads(r.cast) ? `<div class="lead-line">${renderCastHtml(r.cast, q, castHighlightSlug, 2, mediaPage)}</div>` : ""}
                 </div>
                 ${disambigHtml}
@@ -883,8 +1052,8 @@
             <div class="record-body">
                 <div class="record-body-inner">
                     <div class="detail">
-                        <span class="detail-label">${ICONS.user} Master</span>
-                        <span class="detail-value">${hi(r.master || "-", q)}</span>
+                        <span class="detail-label">${masterLabelHtml}</span>
+                        <span class="detail-value">${masterValueHtml}</span>
                     </div>${productionHtml}${venueHtml}${cityHtml}
                     <div class="detail">
                         <span class="detail-label">${ICONS.film} Performance</span>
@@ -918,7 +1087,7 @@
 
     return {
         ICONS,
-        esc, hi,
+        esc, hi, hiTitle, findAcronymRanges, titleHasAcronymMatch,
         dateValue, fmtDate, perfTimeAbbrev,
         leads, stripArticles, searchable,
         foldDiacritics, splitCastEntries, parseCastNames, distinctCastNames,

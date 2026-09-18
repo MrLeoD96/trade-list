@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-09-18T18:01:22Z",
+    "generated_at": "2026-09-18T21:49:36Z",
     "shows": [
         {
             "id": 1,
@@ -148,7 +148,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "03/09/2026",
-            "last_modified": "09/09/2026",
+            "last_modified": "18/09/2026",
             "audio_tracked": ""
         },
         {
@@ -4348,7 +4348,7 @@
             "trader_notes": "Ben Levi Ross's return to Broadway as Evan Hansen. He began a limited 8-week engagement on 22 March 2022 (through 15 May), so this was filmed sometime between 22–31 March. This month had 5 different StarCuffedJeans recordings with all different Evans, how about that?",
             "flags": "",
             "date_added": "16/09/2026",
-            "last_modified": "16/09/2026",
+            "last_modified": "18/09/2026",
             "audio_tracked": ""
         },
         {
@@ -4679,6 +4679,66 @@
             "flags": "",
             "date_added": "18/09/2026",
             "last_modified": "18/09/2026",
+            "audio_tracked": ""
+        },
+        {
+            "id": 161,
+            "title": "tick, tick... BOOM!",
+            "tour": "Off-Broadway",
+            "production": "Off-Broadway",
+            "venue": "Jane Street Theatre",
+            "city": "New York, NY",
+            "date": "18-09-2001",
+            "sequence_number": "",
+            "performance_time": "",
+            "performance_type": "",
+            "media_type": "Video",
+            "recording_type": "Bootleg",
+            "completeness": "Full Show",
+            "master": "Unknown",
+            "format": "VOB + smalls; MKV",
+            "resolution": "SD",
+            "subtitles": "",
+            "file_size_bytes": "3247038464; 3166572352",
+            "file_size": "3.02 GB; 2.95 GB",
+            "nft_date": "",
+            "trading_status": "",
+            "cast": "Raúl Esparza (Jonathan), Jerry Dixon (Michael), Amy Spanger (Susan)",
+            "master_notes": "Shot from front row mezzanine with lots of close-ups, and only a few jumpy bits. Digital. Pretty good for its time. Amy Spanger's penultimate performance.",
+            "trader_notes": "sometimes it's listed this video \"includes the NBC Today Show performance of Louder Than Words and the 2001 Gypsy of the Year Rent skit after the show.\" welp this copy doesn't. I believe it is higher generation as there is very visible digital artifacts throughout, like the JPEG blocks.",
+            "flags": "",
+            "date_added": "18/09/2026",
+            "last_modified": "18/09/2026",
+            "audio_tracked": ""
+        },
+        {
+            "id": 162,
+            "title": "Spring Awakening",
+            "tour": "Broadway",
+            "production": "Broadway",
+            "venue": "Eugene O'Neill Theatre",
+            "city": "New York, NY",
+            "date": "10-02-2007",
+            "sequence_number": "",
+            "performance_time": "",
+            "performance_type": "",
+            "media_type": "Video",
+            "recording_type": "Bootleg",
+            "completeness": "Full Show",
+            "master": "SunsetBlvd79",
+            "format": "VOB + smalls; MKV",
+            "resolution": "SD",
+            "subtitles": "MKV Embedded, External ASS",
+            "file_size_bytes": "4052162277; 3963693420",
+            "file_size": "3.77 GB; 3.69 GB",
+            "nft_date": "",
+            "trading_status": "",
+            "cast": "Jonathan Groff (Melchior Gabor), Lea Michele (Wendla Bergmann), John Gallagher Jr (Moritz Stiefel), Phoebe Strole (u/s Ilse Neumann), Lilli Cooper (Martha Bessell), Jonathan B Wright (Hanschen Rilow), Gideon Glick (Ernst Robel), Brian Charles Johnson (Otto Lämmermeier), Skylar Astin (Georg Zirschnitz), Krysta Rodriguez (u/s Anna), Remy Zaken (Thea Rilow), Frances Mercanti-Anthony (u/s The Adult Women), Stephen Spinella (The Adult Men)",
+            "master_notes": "AMAZING capture, closeups, performances. Not to be missed. A+",
+            "trader_notes": "includes partial nudity. Phoebe Strole (OBC Anna) is great as understudy Ilse. Overall really high quality capture. includes ASS positional subtitles.",
+            "flags": "",
+            "date_added": "19/09/2026",
+            "last_modified": "19/09/2026",
             "audio_tracked": ""
         }
     ]

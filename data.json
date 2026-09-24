@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-09-24T17:56:55Z",
+    "generated_at": "2026-09-24T20:10:21Z",
     "shows": [
         {
             "id": 1,
@@ -671,7 +671,7 @@
             "date": "12-05-2008",
             "sequence_number": "",
             "performance_time": "",
-            "performance_type": "DVD",
+            "performance_type": "",
             "media_type": "Video",
             "recording_type": "Pro-Shot",
             "completeness": "Full Show",
@@ -686,9 +686,9 @@
             "cast": "Josh Groban (Anatoly Sergievsky), Idina Menzel (Florence Vassy), Adam Pascal (Freddie Trumper), Kerry Ellis (Svetlana Sergievskaya), Marti Pellow (Arbiter), David Bedella (Molokov), Clarke Peters (Walter de Courcey)",
             "master_notes": "",
             "trader_notes": "Pro-shot concert. Includes subtitles and a trailer. MKV Muxed from DVD video includes embedded vobsubs+srt. There is a higher quality WEB-DL encode of this proshot.",
-            "flags": "",
+            "flags": "DVD",
             "date_added": "31/08/2026",
-            "last_modified": "09/09/2026",
+            "last_modified": "24/09/2026",
             "audio_tracked": ""
         },
         {
@@ -2291,7 +2291,7 @@
             "date": "12-05-2008",
             "sequence_number": "",
             "performance_time": "",
-            "performance_type": "WEB-DL",
+            "performance_type": "",
             "media_type": "Video",
             "recording_type": "Pro-Shot",
             "completeness": "Full Show",
@@ -2306,9 +2306,9 @@
             "cast": "Josh Groban (Anatoly Sergievsky), Idina Menzel (Florence Vassy), Adam Pascal (Freddie Trumper), Kerry Ellis (Svetlana Sergievskaya), Marti Pellow (Arbiter), David Bedella (Molokov), Clarke Peters (Walter de Courcey)",
             "master_notes": "",
             "trader_notes": "Pro-shot concert. This is a WEB-DL encode with proper AAC stereo sound and embedded SRT subtitles manually synced by LD.",
-            "flags": "",
+            "flags": "WEB-DL",
             "date_added": "31/08/2026",
-            "last_modified": "22/09/2026",
+            "last_modified": "24/09/2026",
             "audio_tracked": ""
         },
         {
@@ -3371,7 +3371,7 @@
             "date": "00-00-1999",
             "sequence_number": "",
             "performance_time": "",
-            "performance_type": "Film",
+            "performance_type": "",
             "media_type": "Video",
             "recording_type": "Pro-Shot",
             "completeness": "Full Show",
@@ -3388,7 +3388,7 @@
             "trader_notes": "",
             "flags": "",
             "date_added": "13/09/2026",
-            "last_modified": "18/09/2026",
+            "last_modified": "24/09/2026",
             "audio_tracked": ""
         },
         {
@@ -3865,10 +3865,10 @@
             "trading_status": "",
             "cast": "Brian d'Arcy James (Shrek), Sutton Foster (Princess Fiona), Christopher Sieber (Lord Farquaad), Daniel Breaker (Donkey), John Tartaglia (Pinocchio/Magic Mirror/Dragon Puppeteer), Haven Burton (Sugar Plum Fairy/Gingy)",
             "master_notes": "",
-            "trader_notes": "Filmed mid-October 2009 at the Broadway Theatre, a few months before the production closed on January 3, 2010. The pro-shot was released commercially on DVD and Blu-ray on October 15, 2013, which is the source of the \"2013\" date sometimes attached to this recording. this capture is sometimes listed in three encodes: MP4 (HD) 1.95gb, MKV (HD) 8.74gb, and M2TS 30gb. This is the MKV encode - a WEB-DL off of Amazon.",
-            "flags": "WEB-DL",
+            "trader_notes": "Filmed mid-October 2009 at the Broadway Theatre, a few months before the production closed on January 3, 2010. The proshot was released commercially on DVD and Blu-ray on October 15, 2013, which is the source of the \"2013\" date sometimes attached to this recording. this capture is sometimes listed in three encodes: MP4 (HD) 1.95gb, MKV (HD) 8.74gb, and M2TS 30gb. This is the MKV encode: a WEB-DL off of Amazon.",
+            "flags": "",
             "date_added": "15/09/2026",
-            "last_modified": "15/09/2026",
+            "last_modified": "24/09/2026",
             "audio_tracked": ""
         },
         {

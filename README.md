@@ -5,7 +5,7 @@
 
 {site status}
 {up since: July 30, 2026}
-{trade status: Open for Trading}
+{trade status: Limited Trading (Wants Only atm)}
 
 hiya, i'm **MrLeoD96** or LD. i started trading not too long ago (3 months or so) but i thought i'd do my own website for trading since those are always fun :) *this site is indefinitely a work in progress, you may give me feedback on it xx*
 
